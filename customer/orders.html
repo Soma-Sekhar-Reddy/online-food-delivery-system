@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <meta name="color-scheme" content="light dark" />
+    <!-- Instant Anti-Flash Dark Mode Script -->
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('quickbite_theme');
+          var theme = null;
+          if (saved) {
+            try { theme = JSON.parse(saved); } catch(e) { theme = saved; }
+          }
+          if (!theme) {
+            theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+          }
+          document.documentElement.setAttribute('data-theme', theme);
+          document.documentElement.style.colorScheme = theme;
+          if (theme === 'dark') {
+            document.documentElement.style.backgroundColor = '#090D16';
+          } else {
+            document.documentElement.style.backgroundColor = '#F8FAFC';
+          }
+        } catch(e) {}
+      })();
+    </script>
+    <style>
+      :root { color-scheme: light dark; }
+      html { background-color: #F8FAFC; color: #0F172A; }
+      html[data-theme="dark"] { background-color: #090D16 !important; color: #F8FAFC !important; color-scheme: dark; }
+      html[data-theme="light"] { background-color: #F8FAFC !important; color: #0F172A !important; color-scheme: light; }
+      body { background-color: inherit; }
+      @view-transition { navigation: auto; }
+    </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Orders | QuickBite</title>
+  
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍔</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/landing.css">
+  <link rel="stylesheet" href="../css/customer.css">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <header class="customer-nav">
+    <div class="container customer-nav-inner">
+      <a href="restaurants.html" class="brand-logo">
+        <div class="logo-icon-wrap">
+          <i class="fa-solid fa-burger"></i>
+        </div>
+        <div class="brand-text">Quick<span>Bite</span></div>
+      </a>
+
+      <nav class="customer-nav-links">
+        <a href="restaurants.html" class="c-nav-link">
+          <i class="fa-solid fa-utensils"></i> Restaurants
+        </a>
+        <a href="orders.html" class="c-nav-link active">
+          <i class="fa-solid fa-clock-rotate-left"></i> My Orders
+        </a>
+        <a href="tracking.html" class="c-nav-link">
+          <i class="fa-solid fa-route"></i> Live Track
+        </a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="btn-icon" id="theme-toggle-btn" title="Toggle Theme">
+          <i class="fa-solid fa-moon" id="theme-icon"></i>
+        </button>
+
+        <a href="cart.html" class="cart-btn" id="nav-cart-btn">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span>Cart</span>
+          <span class="cart-badge" id="nav-cart-badge" style="display: none;">0</span>
+        </a>
+
+        <a href="profile.html" class="btn-icon" title="Profile">
+          <i class="fa-regular fa-user"></i>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="section" style="padding-top: 36px; min-height: 80vh;">
+    <div class="container" style="max-width: 900px;">
+      
+      <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
+        <div>
+          <h1 style="font-size: 1.85rem; font-weight: 800;">Past & Active Orders</h1>
+          <p style="color: var(--color-text-muted); font-size: 0.925rem;">Track live deliveries, rate past experiences, or reorder in 1-click</p>
+        </div>
+
+        <a href="restaurants.html" class="btn btn-primary btn-sm">
+          <i class="fa-solid fa-plus"></i> Order Food
+        </a>
+      </div>
+
+      <!-- Filters & Search -->
+      <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+        <div style="display: flex; gap: 8px;" id="order-status-tabs">
+          <button class="c-filter-pill active" data-tab="all">All Orders</button>
+          <button class="c-filter-pill" data-tab="active">Active</button>
+          <button class="c-filter-pill" data-tab="delivered">Completed</button>
+          <button class="c-filter-pill" data-tab="cancelled">Cancelled</button>
+        </div>
+
+        <div class="c-search-box" style="max-width: 300px; padding: 7px 14px;">
+          <i class="fa-solid fa-magnifying-glass" style="color: var(--color-primary); font-size: 0.85rem;"></i>
+          <input type="text" id="order-search-input" placeholder="Search by restaurant, dish or ID..." style="font-size: 0.85rem;">
+        </div>
+      </div>
+
+      <!-- Orders List Container -->
+      <div class="orders-list-grid" id="orders-list-container">
+        <!-- Rendered by JavaScript -->
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Rate & Review Order Modal -->
+  <div class="modal-overlay" id="rating-modal">
+    <div class="modal-card" style="max-width: 440px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Rate Your Order</h3>
+        <button class="toast-close" onclick="closeRatingModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body" style="text-align: center;">
+        <p style="font-size: 0.95rem; margin-bottom: 6px;" id="rating-order-title">How was your food from The Royal Biryani?</p>
+        <p style="font-size: 0.825rem; color: var(--color-text-muted); margin-bottom: 20px;">Your review helps our partner kitchens improve</p>
+
+        <!-- Interactive Stars -->
+        <div style="display: flex; justify-content: center; gap: 12px; font-size: 2rem; color: #E2E8F0; margin-bottom: 20px;" id="star-rating-box">
+          <i class="fa-solid fa-star star-rate-item" data-val="1" style="cursor: pointer;"></i>
+          <i class="fa-solid fa-star star-rate-item" data-val="2" style="cursor: pointer;"></i>
+          <i class="fa-solid fa-star star-rate-item" data-val="3" style="cursor: pointer;"></i>
+          <i class="fa-solid fa-star star-rate-item" data-val="4" style="cursor: pointer;"></i>
+          <i class="fa-solid fa-star star-rate-item" data-val="5" style="cursor: pointer;"></i>
+        </div>
+
+        <textarea id="rating-comment" placeholder="Write feedback for the chef (taste, spice level, packaging...)" rows="3" style="width: 100%; padding: 12px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface-card); font-size: 0.9rem; resize: none;"></textarea>
+
+        <button class="btn btn-primary" style="width: 100%; margin-top: 20px;" onclick="submitOrderRating()">
+          Submit Review
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="../js/storage.js"></script>
+  <script>
+    let activeTab = 'all';
+    let searchQuery = '';
+    let ratingOrderId = null;
+    let selectedRatingVal = 5;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      renderOrdersList();
+      initTabs();
+      initStars();
+    });
+
+    function initTheme() {
+      const themeBtn = document.getElementById('theme-toggle-btn');
+      const themeIcon = document.getElementById('theme-icon');
+      const saved = QuickBiteDB.getTheme();
+      document.documentElement.setAttribute('data-theme', saved);
+      if (themeIcon) themeIcon.className = saved === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+
+      themeBtn?.addEventListener('click', () => {
+        const next = QuickBiteDB.toggleTheme();
+        if (themeIcon) themeIcon.className = next === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+      });
+
+      // Update cart count
+      const summary = QuickBiteDB.getCartSummary();
+      const badge = document.getElementById('nav-cart-badge');
+      if (badge && summary.totalItems > 0) {
+        badge.textContent = summary.totalItems;
+        badge.style.display = 'inline-flex';
+      }
+
+      window.addEventListener('quickbite:orders-updated', renderOrdersList);
+    }
+
+    function initTabs() {
+      document.querySelectorAll('#order-status-tabs .c-filter-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('#order-status-tabs .c-filter-pill').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          activeTab = btn.dataset.tab;
+          renderOrdersList();
+        });
+      });
+
+      document.getElementById('order-search-input')?.addEventListener('input', (e) => {
+        searchQuery = e.target.value.trim().toLowerCase();
+        renderOrdersList();
+      });
+    }
+
+    function renderOrdersList() {
+      const container = document.getElementById('orders-list-container');
+      let orders = QuickBiteDB.getOrders();
+
+      // Filter Tab
+      if (activeTab === 'active') {
+        orders = orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled');
+      } else if (activeTab === 'delivered') {
+        orders = orders.filter(o => o.status === 'delivered');
+      } else if (activeTab === 'cancelled') {
+        orders = orders.filter(o => o.status === 'cancelled');
+      }
+
+      // Search Query
+      if (searchQuery) {
+        orders = orders.filter(o => 
+          o.id.toLowerCase().includes(searchQuery) ||
+          o.restaurantName.toLowerCase().includes(searchQuery) ||
+          o.items.some(i => i.name.toLowerCase().includes(searchQuery))
+        );
+      }
+
+      if (orders.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; padding:60px 20px; background:var(--color-surface); border-radius:var(--radius-xl); border:1px solid var(--color-border);">
+            <i class="fa-solid fa-receipt" style="font-size:3.5rem; color:var(--color-text-subtle); margin-bottom:16px;"></i>
+            <h3>No Orders Found</h3>
+            <p style="color:var(--color-text-muted); margin-top:6px;">No orders match the selected filter criteria.</p>
+            <a href="restaurants.html" class="btn btn-primary btn-sm" style="margin-top:16px;">Order Now</a>
+          </div>
+        `;
+        return;
+      }
+
+      const statusBadgeMap = {
+        placed: '<span class="badge badge-warning">Placed</span>',
+        accepted: '<span class="badge badge-warning">Kitchen Accepted</span>',
+        preparing: '<span class="badge badge-warning">Preparing</span>',
+        ready_for_pickup: '<span class="badge badge-info">Ready for Pickup</span>',
+        out_for_delivery: '<span class="badge badge-primary"><i class="fa-solid fa-motorcycle"></i> Out for Delivery</span>',
+        delivered: '<span class="badge badge-success"><i class="fa-solid fa-check"></i> Delivered</span>',
+        cancelled: '<span class="badge badge-danger">Cancelled</span>'
+      };
+
+      container.innerHTML = orders.map(order => {
+        const orderDate = new Date(order.createdAt).toLocaleDateString([], {
+          day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+        const isActive = order.status !== 'delivered' && order.status !== 'cancelled';
+        const rest = QuickBiteDB.getRestaurantById(order.restaurantId);
+
+        return `
+          <div class="order-history-card">
+            <!-- Header -->
+            <div class="order-history-header">
+              <div style="display:flex; align-items:center; gap:14px;">
+                <img src="${rest?.image || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=100&q=80'}" style="width:48px; height:48px; border-radius:var(--radius-md); object-fit:cover;" onerror="handleImageError(this, 'restaurant')">
+                <div>
+                  <h3 style="font-size:1.15rem; font-weight:700;">${order.restaurantName}</h3>
+                  <p style="font-size:0.8rem; color:var(--color-text-muted);">#${order.id} • ${orderDate}</p>
+                </div>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px;">
+                ${statusBadgeMap[order.status] || `<span class="badge badge-primary">${order.status}</span>`}
+              </div>
+            </div>
+
+            <!-- Items -->
+            <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:16px;">
+              ${order.items.map(item => `
+                <div style="display:flex; justify-content:space-between; font-size:0.875rem;">
+                  <div>
+                    <span class="badge-diet ${item.isVeg ? 'veg' : 'non-veg'}" style="margin-right:6px;"></span>
+                    <span>${item.name} × <strong>${item.quantity}</strong></span>
+                  </div>
+                  <span style="font-weight:600;">₹${item.price * item.quantity}</span>
+                </div>
+              `).join('')}
+            </div>
+
+            <!-- Total and Actions -->
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; padding-top:14px; border-top:1px solid var(--color-border-subtle);">
+              <div>
+                <span style="font-size:0.8rem; color:var(--color-text-muted);">Total Amount</span>
+                <div style="font-size:1.2rem; font-weight:800; color:var(--color-primary);">₹${order.grandTotal}</div>
+              </div>
+
+              <div style="display:flex; gap:10px;">
+                ${isActive ? `
+                  <a href="tracking.html?orderId=${order.id}" class="btn btn-primary btn-sm">
+                    <i class="fa-solid fa-route"></i> Track Live
+                  </a>
+                ` : `
+                  <button class="btn btn-secondary btn-sm" onclick="openRatingModal('${order.id}', '${order.restaurantName}')">
+                    <i class="fa-regular fa-star"></i> ${order.rating ? `Rated ${order.rating}★` : 'Rate Order'}
+                  </button>
+                `}
+                <button class="btn btn-primary btn-sm" onclick="reorderItems('${order.id}')">
+                  <i class="fa-solid fa-rotate-right"></i> Reorder
+                </button>
+              </div>
+            </div>
+
+          </div>
+        `;
+      }).join('');
+    }
+
+    function reorderItems(orderId) {
+      const ok = QuickBiteDB.reorder(orderId);
+      if (ok) {
+        setTimeout(() => window.location.href = 'cart.html', 500);
+      }
+    }
+
+    function openRatingModal(orderId, restName) {
+      ratingOrderId = orderId;
+      document.getElementById('rating-order-title').textContent = `How was your food from ${restName}?`;
+      setStarRating(5);
+      document.getElementById('rating-modal')?.classList.add('active');
+    }
+
+    function closeRatingModal() {
+      document.getElementById('rating-modal')?.classList.remove('active');
+    }
+
+    function initStars() {
+      document.querySelectorAll('.star-rate-item').forEach(star => {
+        star.addEventListener('click', () => {
+          const val = parseInt(star.dataset.val);
+          setStarRating(val);
+        });
+      });
+    }
+
+    function setStarRating(val) {
+      selectedRatingVal = val;
+      document.querySelectorAll('.star-rate-item').forEach(star => {
+        const itemVal = parseInt(star.dataset.val);
+        star.style.color = itemVal <= val ? '#F59E0B' : '#E2E8F0';
+      });
+    }
+
+    function submitOrderRating() {
+      if (!ratingOrderId) return;
+      const comment = document.getElementById('rating-comment').value.trim();
+      QuickBiteDB.rateOrder(ratingOrderId, selectedRatingVal, comment);
+      closeRatingModal();
+      renderOrdersList();
+    }
+  </script>
+</body>
+</html>

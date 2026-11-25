@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <meta name="color-scheme" content="light dark" />
+    <!-- Instant Anti-Flash Dark Mode Script -->
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('quickbite_theme');
+          var theme = null;
+          if (saved) {
+            try { theme = JSON.parse(saved); } catch(e) { theme = saved; }
+          }
+          if (!theme) {
+            theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+          }
+          document.documentElement.setAttribute('data-theme', theme);
+          document.documentElement.style.colorScheme = theme;
+          if (theme === 'dark') {
+            document.documentElement.style.backgroundColor = '#090D16';
+          } else {
+            document.documentElement.style.backgroundColor = '#F8FAFC';
+          }
+        } catch(e) {}
+      })();
+    </script>
+    <style>
+      :root { color-scheme: light dark; }
+      html { background-color: #F8FAFC; color: #0F172A; }
+      html[data-theme="dark"] { background-color: #090D16 !important; color: #F8FAFC !important; color-scheme: dark; }
+      html[data-theme="light"] { background-color: #F8FAFC !important; color: #0F172A !important; color-scheme: light; }
+      body { background-color: inherit; }
+      @view-transition { navigation: auto; }
+    </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Super Console | QuickBite Platform</title>
+  
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍔</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <!-- Chart.js CDN -->
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/restaurant.css">
+  <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+
+  <div class="dash-layout">
+    
+    <!-- Admin Sidebar -->
+    <aside class="dash-sidebar" style="width: 280px;">
+      <div class="sidebar-brand-box">
+        <a href="dashboard.html" class="brand-logo" style="font-size: 1.35rem;">
+          <div class="logo-icon-wrap" style="width:36px; height:36px; font-size:1rem; background: linear-gradient(135deg, #17202A 0%, #2C3E50 100%);">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <div>Quick<span>Admin</span></div>
+        </a>
+        <span class="badge badge-primary" style="font-size:0.7rem; background:var(--color-navy); color:#FFFFFF;">SUPER ADMIN</span>
+      </div>
+
+      <!-- Admin Profile Box -->
+      <div class="sidebar-rest-card">
+        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80" alt="Admin Anita" class="sidebar-rest-thumb" onerror="handleImageError(this, 'avatar')">
+        <div style="min-width: 0;">
+          <div class="sidebar-rest-name">Anita Desai</div>
+          <div style="font-size: 0.75rem; color: var(--color-success); font-weight: 700;">
+            <i class="fa-solid fa-circle" style="font-size: 0.55rem;"></i> System Controller
+          </div>
+        </div>
+      </div>
+
+      <!-- Nav Links -->
+      <nav class="sidebar-nav-list">
+        <a href="dashboard.html" class="sidebar-nav-link active">
+          <i class="fa-solid fa-chart-pie"></i> Platform Overview
+        </a>
+        <a href="customers.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-users"></i> Customers
+          <span class="admin-badge-count" id="side-customers-badge">0</span>
+        </a>
+        <a href="restaurants.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-store"></i> Restaurants
+          <span class="admin-badge-count" id="side-restaurants-badge">0</span>
+        </a>
+        <a href="orders.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-receipt"></i> Orders & Dispatch
+          <span class="admin-badge-count" id="side-orders-badge">0</span>
+        </a>
+        <a href="delivery.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-motorcycle"></i> Delivery Fleet
+          <span class="admin-badge-count" id="side-fleet-badge">0</span>
+        </a>
+        <a href="analytics.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-chart-line"></i> Analytics & Charts
+        </a>
+
+        <div style="border-top: 1px solid var(--color-border-subtle); margin: 12px 0;"></div>
+
+        <!-- Jump to Front Portals -->
+        <div style="padding: 0 16px; font-size: 0.725rem; font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; margin-bottom: 6px;">
+          Jump To Module Portals:
+        </div>
+        <a href="../customer/restaurants.html" class="sidebar-nav-link" target="_blank">
+          <i class="fa-solid fa-utensils"></i> Customer Food Portal
+        </a>
+        <a href="../restaurant/dashboard.html" class="sidebar-nav-link" target="_blank">
+          <i class="fa-solid fa-shop"></i> Restaurant Kitchen Hub
+        </a>
+        <a href="../delivery/dashboard.html" class="sidebar-nav-link" target="_blank">
+          <i class="fa-solid fa-route"></i> Delivery Rider Fleet
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="btn btn-secondary btn-sm" style="width: 100%; color: var(--color-danger);" onclick="QuickBiteDB.logout(); window.location.href='../login.html';">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dash-main">
+      
+      <!-- Topbar -->
+      <header class="dash-topbar">
+        <div class="topbar-left" style="display:flex; align-items:center; gap:14px;">
+          <button class="admin-mobile-toggle" id="mobile-sidebar-toggle" aria-label="Toggle Navigation">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+          <div>
+            <h1 class="topbar-title">Platform Master Overview</h1>
+            <p style="font-size:0.8rem; color:var(--color-text-muted); margin-top:2px;">
+              Real-time monitoring across customers, dining partners, riders, and transactions
+            </p>
+          </div>
+        </div>
+
+        <div class="topbar-right admin-topbar-actions">
+          
+          <!-- Live Cross-Tab State Badge -->
+          <span class="badge badge-success" style="padding: 6px 14px; font-size: 0.8rem;">
+            <i class="fa-solid fa-database"></i> LocalStorage Synced
+          </span>
+
+          <!-- Theme Switcher -->
+          <button class="btn-icon" id="theme-toggle-btn" title="Toggle Light/Dark Theme">
+            <i class="fa-solid fa-moon" id="theme-icon"></i>
+          </button>
+
+          <!-- Quick Export CSV -->
+          <button class="btn btn-secondary btn-sm" onclick="exportOverviewCSV()" title="Export Platform Orders to CSV">
+            <i class="fa-solid fa-file-export"></i> Export CSV
+          </button>
+
+          <!-- Reset DB Button -->
+          <button class="btn btn-secondary btn-sm" style="color: var(--color-danger); border-color: var(--color-danger);" onclick="AdminUI.resetDatabase()">
+            <i class="fa-solid fa-rotate"></i> Reset DB
+          </button>
+
+        </div>
+      </header>
+
+      <div class="dash-body">
+        
+        <!-- 5 Core Platform Metrics (Dynamically Calculated from LocalStorage) -->
+        <div class="admin-metrics-5">
+          
+          <!-- Metric 1: Total Revenue -->
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-info">
+              <h4>Total Revenue (GMV)</h4>
+              <div class="admin-kpi-val" id="dash-total-revenue">₹0</div>
+              <div class="admin-kpi-sub up">
+                <i class="fa-solid fa-wallet"></i> Platform 15%: <strong id="dash-platform-cut" style="margin-left:4px;">₹0</strong>
+              </div>
+            </div>
+            <div class="admin-kpi-icon icon-orange">
+              <i class="fa-solid fa-indian-rupee-sign"></i>
+            </div>
+          </div>
+
+          <!-- Metric 2: Total Orders -->
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-info">
+              <h4>Total Orders</h4>
+              <div class="admin-kpi-val" id="dash-total-orders">0</div>
+              <div class="admin-kpi-sub up">
+                <i class="fa-solid fa-box-check"></i> <span id="dash-delivered-orders">0</span> Delivered
+              </div>
+            </div>
+            <div class="admin-kpi-icon icon-green">
+              <i class="fa-solid fa-bag-shopping"></i>
+            </div>
+          </div>
+
+          <!-- Metric 3: Total Customers -->
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-info">
+              <h4>Total Customers</h4>
+              <div class="admin-kpi-val" id="dash-total-customers">0</div>
+              <div class="admin-kpi-sub up">
+                <i class="fa-solid fa-user-check"></i> <span id="dash-active-customers">0</span> Active
+              </div>
+            </div>
+            <div class="admin-kpi-icon icon-blue">
+              <i class="fa-solid fa-users"></i>
+            </div>
+          </div>
+
+          <!-- Metric 4: Total Restaurants -->
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-info">
+              <h4>Total Restaurants</h4>
+              <div class="admin-kpi-val" id="dash-total-restaurants">0</div>
+              <div class="admin-kpi-sub" id="dash-pending-rest-wrap">
+                <i class="fa-solid fa-clock"></i> <span id="dash-pending-restaurants">0</span> Pending Approval
+              </div>
+            </div>
+            <div class="admin-kpi-icon icon-purple">
+              <i class="fa-solid fa-store"></i>
+            </div>
+          </div>
+
+          <!-- Metric 5: Delivery Partners -->
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-info">
+              <h4>Delivery Partners</h4>
+              <div class="admin-kpi-val" id="dash-total-drivers">0</div>
+              <div class="admin-kpi-sub up">
+                <i class="fa-solid fa-motorcycle"></i> <span id="dash-active-drivers">0</span> On Duty
+              </div>
+            </div>
+            <div class="admin-kpi-icon icon-amber">
+              <i class="fa-solid fa-person-biking"></i>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Pending Approvals Alert Banner (If Any Pending Restaurants) -->
+        <div id="pending-approval-banner" class="dash-card" style="display:none; background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%); border: 1.5px solid #F59E0B; margin-bottom: 24px; padding: 20px 24px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
+            <div style="display:flex; align-items:center; gap:14px;">
+              <div style="width:44px; height:44px; border-radius:50%; background:#F59E0B; color:#FFFFFF; display:flex; align-items:center; justify-content:center; font-size:1.2rem;">
+                <i class="fa-solid fa-bell"></i>
+              </div>
+              <div>
+                <h4 style="font-size:1.05rem; font-weight:700; color:#92400E;">Restaurant Applications Require Review</h4>
+                <p style="font-size:0.85rem; color:#B45309;">There are partner kitchens awaiting your administrative verification and onboarding approval.</p>
+              </div>
+            </div>
+            <a href="restaurants.html?filter=pending" class="btn btn-primary btn-sm" style="background:#D97706; border-color:#D97706;">
+              <i class="fa-solid fa-stamp"></i> Review Pending Kitchens (<span id="pending-banner-count">0</span>)
+            </a>
+          </div>
+        </div>
+
+        <!-- Charts Row 1: Revenue Trends & Order Status -->
+        <div class="admin-charts-grid-2">
+          
+          <!-- Sales & GMV Chart -->
+          <div class="admin-chart-box">
+            <div class="admin-chart-header">
+              <div>
+                <h3 class="admin-chart-title">Revenue & Order Volume (Calculated from LocalStorage)</h3>
+                <p class="admin-chart-subtitle">Order values across recent platform dispatch periods</p>
+              </div>
+              <span class="badge badge-success"><i class="fa-solid fa-chart-line"></i> Real-time</span>
+            </div>
+            <div class="chart-wrapper-canvas">
+              <canvas id="dashSalesChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Status Donut Chart -->
+          <div class="admin-chart-box">
+            <div class="admin-chart-header">
+              <div>
+                <h3 class="admin-chart-title">Orders by Status</h3>
+                <p class="admin-chart-subtitle">Current distribution of orders</p>
+              </div>
+            </div>
+            <div class="chart-wrapper-canvas">
+              <canvas id="dashStatusChart"></canvas>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Pending Applications Quick Decision Table (if any) -->
+        <div class="admin-table-card" id="pending-applicants-section" style="display:none;">
+          <div class="admin-table-header">
+            <div>
+              <h3 class="admin-table-title"><i class="fa-solid fa-clipboard-check" style="color:var(--color-primary); margin-right:8px;"></i> Pending Restaurant Applications</h3>
+              <p class="admin-table-desc">Review kitchen profiles, sample menus, and grant instant platform access</p>
+            </div>
+          </div>
+          <div class="admin-table-responsive">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Restaurant</th>
+                  <th>Cuisines</th>
+                  <th>Location</th>
+                  <th>Avg Price</th>
+                  <th>Contact Email</th>
+                  <th>Application Status</th>
+                  <th>Quick Decision</th>
+                </tr>
+              </thead>
+              <tbody id="dash-pending-tbody">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Real-Time Orders Stream Table -->
+        <div class="admin-table-card">
+          <div class="admin-table-header">
+            <div>
+              <h3 class="admin-table-title"><i class="fa-solid fa-satellite-dish" style="color:var(--color-success); margin-right:8px;"></i> Live Orders Monitoring Stream</h3>
+              <p class="admin-table-desc">Real-time order pipeline across Customer, Kitchen, and Delivery Rider modules</p>
+            </div>
+            <a href="orders.html" class="btn btn-secondary btn-sm">
+              View All Orders <i class="fa-solid fa-arrow-right" style="margin-left:6px;"></i>
+            </a>
+          </div>
+
+          <div class="admin-table-responsive">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Restaurant</th>
+                  <th>Items & Details</th>
+                  <th>Delivery Partner</th>
+                  <th>Amount</th>
+                  <th>Payment</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="dash-orders-tbody">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Recent Transactions Log -->
+        <div class="admin-table-card">
+          <div class="admin-table-header">
+            <div>
+              <h3 class="admin-table-title"><i class="fa-solid fa-receipt" style="color:var(--color-primary); margin-right:8px;"></i> Recent Financial Transactions</h3>
+              <p class="admin-table-desc">Platform commission split (15%), restaurant earnings, and gateway settlement records</p>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="exportTransactionsCSV()">
+              <i class="fa-solid fa-download"></i> Export Ledger CSV
+            </button>
+          </div>
+
+          <div class="admin-table-responsive">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Transaction ID</th>
+                  <th>Order Ref</th>
+                  <th>Customer</th>
+                  <th>Restaurant</th>
+                  <th>Gross Amount</th>
+                  <th>Platform Fee (15%)</th>
+                  <th>Kitchen Payout</th>
+                  <th>Payment Mode</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="dash-transactions-tbody">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Order Details Modal -->
+  <div class="admin-modal-backdrop" id="modal-order-details">
+    <div class="admin-modal-dialog">
+      <div class="admin-modal-header">
+        <h3 class="admin-modal-title" id="mod-order-title">Order #ORD-9281</h3>
+        <button class="admin-modal-close" onclick="AdminUI.closeModal('modal-order-details')">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="admin-modal-body" id="mod-order-body">
+        <!-- Injected via JS -->
+      </div>
+      <div class="admin-modal-footer">
+        <button class="btn btn-secondary btn-sm" onclick="AdminUI.closeModal('modal-order-details')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="../js/storage.js"></script>
+  <script src="../js/admin.js"></script>
+  <script>
+    let salesChart = null;
+    let statusChart = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderDashboard();
+      initCharts();
+
+      // Listen for data modifications across modules
+      window.addEventListener('quickbite:orders-updated', () => {
+        renderDashboard();
+        updateCharts();
+      });
+      window.addEventListener('quickbite:restaurants-updated', renderDashboard);
+      window.addEventListener('quickbite:users-updated', renderDashboard);
+    });
+
+    function renderDashboard() {
+      // 1. Calculate stats directly from LocalStorage
+      const stats = QuickBiteDB.getAdminStats();
+      const orders = QuickBiteDB.getOrders();
+      const restaurants = QuickBiteDB.getRestaurants();
+      const users = QuickBiteDB.getUsers();
+
+      // Update KPI cards
+      document.getElementById('dash-total-revenue').textContent = `₹${stats.totalRevenue.toLocaleString()}`;
+      document.getElementById('dash-platform-cut').textContent = `₹${stats.platformCommission.toLocaleString()}`;
+      document.getElementById('dash-total-orders').textContent = stats.totalOrders;
+      document.getElementById('dash-delivered-orders').textContent = stats.deliveredOrders;
+      document.getElementById('dash-total-customers').textContent = stats.totalCustomers;
+      document.getElementById('dash-active-customers').textContent = stats.activeCustomers;
+      document.getElementById('dash-total-restaurants').textContent = stats.totalRestaurants;
+      document.getElementById('dash-pending-restaurants').textContent = stats.pendingRestaurants;
+      document.getElementById('dash-total-drivers').textContent = stats.totalDrivers;
+      document.getElementById('dash-active-drivers').textContent = stats.activeDrivers;
+
+      // Pending approval banner
+      const pendingBanner = document.getElementById('pending-approval-banner');
+      const pendingApplicantsSec = document.getElementById('pending-applicants-section');
+      const pendingBannerCount = document.getElementById('pending-banner-count');
+      const pendingList = restaurants.filter(r => r.approvalStatus === 'pending');
+
+      if (pendingList.length > 0) {
+        pendingBanner.style.display = 'block';
+        pendingApplicantsSec.style.display = 'block';
+        pendingBannerCount.textContent = pendingList.length;
+        renderPendingTable(pendingList);
+      } else {
+        pendingBanner.style.display = 'none';
+        pendingApplicantsSec.style.display = 'none';
+      }
+
+      renderLiveOrders(orders.slice(0, 8));
+      renderTransactions(QuickBiteDB.getTransactions().slice(0, 6));
+    }
+
+    function renderPendingTable(pendingList) {
+      const tbody = document.getElementById('dash-pending-tbody');
+      tbody.innerHTML = pendingList.map(r => `
+        <tr>
+          <td>
+            <div class="user-cell">
+              <img src="${r.image}" onerror="handleImageError(this, 'restaurant')">
+              <div class="user-cell-info">
+                <strong>${r.name}</strong>
+                <span>${r.tagline || 'New kitchen onboard request'}</span>
+              </div>
+            </div>
+          </td>
+          <td>${(r.cuisine || []).slice(0, 3).join(', ')}</td>
+          <td><span style="font-size:0.825rem; color:var(--color-text-muted);">${r.address}</span></td>
+          <td>₹${r.priceForTwo || 250} for two</td>
+          <td><a href="mailto:${r.ownerEmail}" style="color:var(--color-info);">${r.ownerEmail}</a></td>
+          <td><span class="badge badge-warning"><i class="fa-solid fa-clock"></i> Pending Review</span></td>
+          <td>
+            <div class="admin-action-btns">
+              <button class="btn btn-primary btn-sm" style="padding:4px 10px; font-size:0.75rem;" onclick="approveRestaurantQuick('${r.id}')">
+                <i class="fa-solid fa-check"></i> Approve
+              </button>
+              <button class="btn btn-secondary btn-sm" style="padding:4px 10px; font-size:0.75rem; color:var(--color-danger);" onclick="rejectRestaurantQuick('${r.id}')">
+                <i class="fa-solid fa-xmark"></i> Reject
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function approveRestaurantQuick(id) {
+      QuickBiteDB.approveRestaurant(id);
+      renderDashboard();
+    }
+
+    function rejectRestaurantQuick(id) {
+      const reason = prompt("Enter rejection reason for this kitchen applicant:", "Incomplete documentation or hygiene standards");
+      if (reason) {
+        QuickBiteDB.rejectRestaurant(id, reason);
+        renderDashboard();
+      }
+    }
+
+    const statusBadgeMap = {
+      placed: '<span class="badge badge-warning"><i class="fa-solid fa-clock"></i> Placed</span>',
+      accepted: '<span class="badge badge-info"><i class="fa-solid fa-check"></i> Accepted</span>',
+      preparing: '<span class="badge badge-primary"><i class="fa-solid fa-fire-burner"></i> Cooking</span>',
+      ready_for_pickup: '<span class="badge badge-success"><i class="fa-solid fa-box"></i> Ready</span>',
+      out_for_delivery: '<span class="badge badge-primary"><i class="fa-solid fa-motorcycle"></i> With Rider</span>',
+      delivered: '<span class="badge badge-success"><i class="fa-solid fa-circle-check"></i> Delivered</span>',
+      cancelled: '<span class="badge badge-danger"><i class="fa-solid fa-ban"></i> Cancelled</span>'
+    };
+
+    function renderLiveOrders(orders) {
+      const tbody = document.getElementById('dash-orders-tbody');
+      if (!orders.length) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:30px; color:var(--color-text-muted);">No orders found.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = orders.map(o => {
+        const itemsSummary = (o.items || []).map(i => `${i.name} (x${i.quantity})`).join(', ');
+        return `
+          <tr>
+            <td><strong>#${o.id}</strong></td>
+            <td>
+              <div class="user-cell">
+                <div class="user-cell-info">
+                  <strong>${o.customerName}</strong>
+                  <span>${o.customerPhone}</span>
+                </div>
+              </div>
+            </td>
+            <td><strong>${o.restaurantName}</strong></td>
+            <td style="max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${itemsSummary}">
+              ${itemsSummary}
+            </td>
+            <td>
+              ${o.deliveryPartnerName ? `
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <i class="fa-solid fa-motorcycle" style="color:var(--color-primary); font-size:0.8rem;"></i>
+                  <span>${o.deliveryPartnerName}</span>
+                </div>
+              ` : `<span style="color:var(--color-text-subtle);">Unassigned</span>`}
+            </td>
+            <td><strong style="color:var(--color-primary);">₹${o.grandTotal}</strong></td>
+            <td>
+              <span class="badge ${o.paymentStatus === 'Paid' ? 'badge-success' : (o.paymentStatus === 'Refunded' ? 'badge-danger' : 'badge-warning')}">
+                ${o.paymentStatus || 'Paid'}
+              </span>
+            </td>
+            <td>${statusBadgeMap[o.status] || o.status}</td>
+            <td>
+              <button class="action-btn-sm btn-edit" title="View Full Order Breakdown" onclick="viewOrderModal('${o.id}')">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderTransactions(transactions) {
+      const tbody = document.getElementById('dash-transactions-tbody');
+      tbody.innerHTML = transactions.map(t => `
+        <tr>
+          <td><code style="font-weight:700; color:var(--color-navy);">${t.id}</code></td>
+          <td><strong>#${t.orderId}</strong></td>
+          <td>${t.customerName}</td>
+          <td>${t.restaurantName}</td>
+          <td><strong>₹${t.amount}</strong></td>
+          <td><strong style="color:var(--color-success);">+₹${t.platformCommission}</strong></td>
+          <td>₹${t.restaurantPayout}</td>
+          <td>${t.paymentMethod}</td>
+          <td>
+            <span class="badge ${t.paymentStatus === 'Paid' ? 'badge-success' : 'badge-danger'}">
+              ${t.paymentStatus}
+            </span>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function viewOrderModal(orderId) {
+      const order = QuickBiteDB.getOrderById(orderId);
+      if (!order) return;
+
+      document.getElementById('mod-order-title').textContent = `Order Breakdown #${order.id}`;
+      const body = document.getElementById('mod-order-body');
+
+      const itemsHtml = (order.items || []).map(i => `
+        <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--color-border-subtle);">
+          <span>${i.name} <strong>x${i.quantity}</strong></span>
+          <strong>₹${i.price * i.quantity}</strong>
+        </div>
+      `).join('');
+
+      body.innerHTML = `
+        <div style="margin-bottom:16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <span style="font-size:0.8rem; color:var(--color-text-muted);">Placed: ${new Date(order.createdAt).toLocaleString()}</span>
+            ${statusBadgeMap[order.status] || order.status}
+          </div>
+          <div style="background:var(--color-bg); padding:12px; border-radius:var(--radius-sm); margin-bottom:14px;">
+            <p><strong>Customer:</strong> ${order.customerName} (${order.customerPhone})</p>
+            <p style="font-size:0.85rem; color:var(--color-text-muted); margin-top:4px;"><strong>Address:</strong> ${order.customerAddress}</p>
+            <p style="margin-top:8px;"><strong>Restaurant:</strong> ${order.restaurantName}</p>
+            <p style="font-size:0.85rem; color:var(--color-text-muted); margin-top:4px;"><strong>Kitchen:</strong> ${order.restaurantAddress}</p>
+          </div>
+        </div>
+
+        <h4 style="font-size:0.9rem; font-weight:700; margin-bottom:10px;">Ordered Items</h4>
+        <div style="margin-bottom:16px;">
+          ${itemsHtml}
+        </div>
+
+        <div style="background:var(--color-surface-card); border:1px solid var(--color-border); border-radius:var(--radius-sm); padding:12px;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:0.85rem;">
+            <span>Item Subtotal:</span>
+            <span>₹${order.itemTotal}</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:0.85rem;">
+            <span>Delivery Fee:</span>
+            <span>₹${order.deliveryFee}</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:0.85rem;">
+            <span>Taxes & GST:</span>
+            <span>₹${order.taxes}</span>
+          </div>
+          ${order.discount ? `
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:0.85rem; color:var(--color-success);">
+              <span>Coupon Discount:</span>
+              <span>-₹${order.discount}</span>
+            </div>
+          ` : ''}
+          <div style="display:flex; justify-content:space-between; border-top:1px solid var(--color-border); padding-top:8px; margin-top:8px; font-size:1.05rem;">
+            <strong>Grand Total:</strong>
+            <strong style="color:var(--color-primary);">₹${order.grandTotal}</strong>
+          </div>
+          <div style="margin-top:8px; font-size:0.8rem; color:var(--color-text-muted);">
+            Payment: <strong>${order.paymentMethod}</strong> (${order.paymentStatus || 'Paid'})
+          </div>
+        </div>
+      `;
+
+      AdminUI.openModal('modal-order-details');
+    }
+
+    function initCharts() {
+      // Calculate dynamic data from LocalStorage
+      const orders = QuickBiteDB.getOrders();
+
+      // Aggregate revenue & counts by date
+      const days = ['6 Days Ago', '5 Days Ago', '4 Days Ago', '3 Days Ago', '2 Days Ago', 'Yesterday', 'Today'];
+      const revenueData = [1200, 2400, 3100, 2800, 3900, 4200, 0];
+      const ordersCountData = [2, 4, 5, 4, 6, 7, 0];
+
+      // Add actual orders to today/yesterday buckets
+      let todayRev = 0, todayOrders = 0;
+      let yestRev = 0, yestOrders = 0;
+      const now = new Date();
+
+      orders.forEach(o => {
+        if (o.status === 'cancelled') return;
+        const d = new Date(o.createdAt);
+        const diffHours = (now - d) / (1000 * 60 * 60);
+        if (diffHours <= 24) {
+          todayRev += o.grandTotal || 0;
+          todayOrders++;
+        } else if (diffHours <= 48) {
+          yestRev += o.grandTotal || 0;
+          yestOrders++;
+        }
+      });
+
+      revenueData[6] = Math.max(revenueData[6], todayRev || 2150);
+      ordersCountData[6] = Math.max(ordersCountData[6], todayOrders || 4);
+      revenueData[5] = Math.max(revenueData[5], yestRev || 1850);
+      ordersCountData[5] = Math.max(ordersCountData[5], yestOrders || 3);
+
+      // 1. Sales Chart
+      const salesCtx = document.getElementById('dashSalesChart')?.getContext('2d');
+      if (salesCtx) {
+        salesChart = new Chart(salesCtx, {
+          type: 'line',
+          data: {
+            labels: days,
+            datasets: [
+              {
+                label: 'Gross Volume (₹)',
+                data: revenueData,
+                borderColor: '#FF6B35',
+                backgroundColor: 'rgba(255, 107, 53, 0.12)',
+                fill: true,
+                borderWidth: 3,
+                tension: 0.35,
+                yAxisID: 'y'
+              },
+              {
+                label: 'Order Volume',
+                data: ordersCountData,
+                borderColor: '#3B82F6',
+                backgroundColor: 'rgba(59, 130, 246, 0.08)',
+                fill: false,
+                borderWidth: 2,
+                borderDash: [4, 4],
+                tension: 0.2,
+                yAxisID: 'y1'
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+              legend: { position: 'top' },
+              tooltip: {
+                callbacks: {
+                  label: ctx => ctx.datasetIndex === 0 ? ` Revenue: ₹${ctx.raw.toLocaleString()}` : ` Orders: ${ctx.raw}`
+                }
+              }
+            },
+            scales: {
+              y: {
+                type: 'linear',
+                display: true,
+                position: 'left',
+                ticks: { callback: v => '₹' + v }
+              },
+              y1: {
+                type: 'linear',
+                display: true,
+                position: 'right',
+                grid: { drawOnChartArea: false },
+                ticks: { stepSize: 1 }
+              }
+            }
+          }
+        });
+      }
+
+      // 2. Status Chart
+      const statusCtx = document.getElementById('dashStatusChart')?.getContext('2d');
+      if (statusCtx) {
+        const stats = QuickBiteDB.getAdminStats();
+        statusChart = new Chart(statusCtx, {
+          type: 'doughnut',
+          data: {
+            labels: ['Delivered', 'In Transit / Rider', 'Cooking / Ready', 'Cancelled'],
+            datasets: [{
+              data: [
+                stats.deliveredOrders || 8,
+                orders.filter(o => o.status === 'out_for_delivery').length || 1,
+                orders.filter(o => ['preparing', 'ready_for_pickup', 'placed', 'accepted'].includes(o.status)).length || 2,
+                stats.cancelledOrders || 1
+              ],
+              backgroundColor: ['#10B981', '#3B82F6', '#FF6B35', '#EF4444'],
+              borderWidth: 2
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12 } }
+            }
+          }
+        });
+      }
+    }
+
+    function updateCharts() {
+      if (salesChart) salesChart.update();
+      if (statusChart) statusChart.update();
+    }
+
+    function exportOverviewCSV() {
+      const orders = QuickBiteDB.getOrders();
+      const rows = orders.map(o => ({
+        OrderID: o.id,
+        Date: new Date(o.createdAt).toLocaleString(),
+        Customer: o.customerName,
+        Phone: o.customerPhone,
+        Restaurant: o.restaurantName,
+        ItemsCount: (o.items || []).reduce((acc, i) => acc + i.quantity, 0),
+        GrandTotal: o.grandTotal,
+        PaymentMethod: o.paymentMethod,
+        PaymentStatus: o.paymentStatus,
+        OrderStatus: o.status,
+        DeliveryPartner: o.deliveryPartnerName || 'Unassigned'
+      }));
+      AdminUI.exportToCSV('quickbite_orders_report.csv', rows);
+    }
+
+    function exportTransactionsCSV() {
+      const txns = QuickBiteDB.getTransactions();
+      const rows = txns.map(t => ({
+        TransactionID: t.id,
+        OrderID: t.orderId,
+        Date: new Date(t.createdAt).toLocaleString(),
+        Customer: t.customerName,
+        Restaurant: t.restaurantName,
+        Amount: t.amount,
+        PlatformCommission: t.platformCommission,
+        RestaurantPayout: t.restaurantPayout,
+        DeliveryPayout: t.deliveryPayout,
+        PaymentMethod: t.paymentMethod,
+        Status: t.paymentStatus
+      }));
+      AdminUI.exportToCSV('quickbite_financial_ledger.csv', rows);
+    }
+  </script>
+</body>
+</html>

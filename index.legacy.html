@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <meta name="color-scheme" content="light dark" />
+    <!-- Instant Anti-Flash Dark Mode Script -->
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('quickbite_theme');
+          var theme = null;
+          if (saved) {
+            try { theme = JSON.parse(saved); } catch(e) { theme = saved; }
+          }
+          if (!theme) {
+            theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+          }
+          document.documentElement.setAttribute('data-theme', theme);
+          document.documentElement.style.colorScheme = theme;
+          if (theme === 'dark') {
+            document.documentElement.style.backgroundColor = '#090D16';
+          } else {
+            document.documentElement.style.backgroundColor = '#F8FAFC';
+          }
+        } catch(e) {}
+      })();
+    </script>
+    <style>
+      :root { color-scheme: light dark; }
+      html { background-color: #F8FAFC; color: #0F172A; }
+      html[data-theme="dark"] { background-color: #090D16 !important; color: #F8FAFC !important; color-scheme: dark; }
+      html[data-theme="light"] { background-color: #F8FAFC !important; color: #0F172A !important; color-scheme: light; }
+      body { background-color: inherit; }
+      @view-transition { navigation: auto; }
+    </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuickBite | Premium Food Delivery & Artisanal Dining</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍔</text></svg>">
+
+  <!-- Google Fonts: Poppins & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/landing.css">
+</head>
+<body>
+
+  <!-- Top Demo Bar: Switch Between Connected Modules -->
+  <div class="demo-bar">
+    <div class="container demo-bar-inner">
+      <div class="demo-bar-left">
+        <span class="demo-badge"><i class="fa-solid fa-bolt"></i> QuickBite Multi-Role System</span>
+        <span style="opacity: 0.8; font-size: 0.8rem;">Switch active session to simulate interconnected modules:</span>
+      </div>
+      <div class="demo-roles-group">
+        <button class="demo-role-btn active" data-role="customer">
+          <i class="fa-solid fa-user"></i> Customer
+        </button>
+        <button class="demo-role-btn" data-role="restaurant">
+          <i class="fa-solid fa-shop"></i> Restaurant
+        </button>
+        <button class="demo-role-btn" data-role="delivery">
+          <i class="fa-solid fa-motorcycle"></i> Delivery Partner
+        </button>
+        <button class="demo-role-btn" data-role="admin">
+          <i class="fa-solid fa-shield-halved"></i> Admin
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Navigation Bar -->
+  <header class="navbar">
+    <div class="container nav-container">
+      
+      <!-- Brand Logo -->
+      <a href="index.html" class="brand-logo" aria-label="QuickBite Home">
+        <div class="logo-icon-wrap">
+          <i class="fa-solid fa-burger"></i>
+        </div>
+        <div class="brand-text">Quick<span>Bite</span></div>
+      </a>
+
+      <!-- Delivery Location Selector -->
+      <div class="location-picker" title="Click to change delivery location">
+        <i class="fa-solid fa-location-dot"></i>
+        <div>
+          <span class="loc-tag">Deliver to: </span>
+          <span class="loc-text">Banjara Hills, Hyderabad</span>
+        </div>
+        <i class="fa-solid fa-chevron-down" style="font-size: 0.75rem; color: var(--color-text-subtle);"></i>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="nav-links">
+        <a href="#categories-section" class="nav-link">Categories</a>
+        <a href="#popular-restaurants-section" class="nav-link">Restaurants</a>
+        <a href="#trending-dishes-section" class="nav-link">Trending Food</a>
+        <a href="#offers-section" class="nav-link">Special Offers</a>
+        <a href="#how-it-works-section" class="nav-link">How It Works</a>
+      </nav>
+
+      <!-- Navigation Actions -->
+      <div class="nav-actions">
+        
+        <!-- Theme Switcher Button -->
+        <button class="btn-icon" id="theme-toggle-btn" title="Toggle Light / Dark mode" aria-label="Toggle theme">
+          <i class="fa-solid fa-moon" id="theme-icon"></i>
+        </button>
+
+        <!-- Cart Button -->
+        <button class="cart-btn" id="cart-toggle-btn" aria-label="Open Cart">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span>Cart</span>
+          <span class="cart-badge" id="cart-badge-count" style="display: none;">0</span>
+        </button>
+
+        <!-- User Profile / Sign In Button -->
+        <button class="btn btn-secondary btn-sm" id="user-profile-btn" style="border-radius: var(--radius-full);">
+          <i class="fa-regular fa-user"></i>
+          <span id="user-name-display">Rahul</span>
+        </button>
+
+        <!-- Mobile Nav Toggle Hamburger -->
+        <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle mobile menu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- 1. HERO SECTION -->
+  <section class="hero-section" id="hero-section">
+    <div class="container hero-grid">
+      
+      <!-- Hero Left: Content & Search -->
+      <div class="hero-content-wrap">
+        <div class="hero-tag">
+          <i class="fa-solid fa-fire-flame-curved"></i> Superfast 30-Min Express Food Delivery
+        </div>
+        
+        <h1 class="hero-title">
+          Flavours of the City, <br>
+          <span class="highlight">Delivered Hot</span> to Your Doorstep.
+        </h1>
+
+        <p class="hero-description">
+          Order handcrafted meals, authentic Hyderabadi biryanis, artisanal woodfired pizzas, crunchy smash burgers, and sweet desserts from top-rated restaurants near you.
+        </p>
+
+        <!-- Food Search Box -->
+        <div class="hero-search-box">
+          <div class="search-input-wrap">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input 
+              type="text" 
+              id="hero-search-input" 
+              placeholder="Search dishes, royal biryani, pizza, burgers, sushi..." 
+              autocomplete="off"
+            >
+          </div>
+          <button class="btn btn-primary" id="hero-search-btn">
+            Find Food
+          </button>
+        </div>
+
+        <!-- Quick Filters Pills -->
+        <div class="hero-pills">
+          <span class="hero-pills-label">Popular searches:</span>
+          <button class="hero-pill-btn" data-query="Biryani">🍗 Biryani</button>
+          <button class="hero-pill-btn" data-query="Pizzas">🍕 Pizza</button>
+          <button class="hero-pill-btn" data-query="Burgers">🍔 Burgers</button>
+          <button class="hero-pill-btn" data-query="Pure Veg">🌱 Pure Veg</button>
+          <button class="hero-pill-btn" data-query="Desserts">🍰 Desserts</button>
+        </div>
+      </div>
+
+      <!-- Hero Right: Dynamic Visual Composition with Floating Cards -->
+      <div class="hero-visual-wrapper">
+        <div class="hero-main-img-box">
+          <img 
+            src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1000&q=80" 
+            alt="Delicious Gourmet Food Selection"
+            onerror="handleImageError(this, 'food')"
+          >
+        </div>
+
+        <!-- Floating Card 1: Express Delivery -->
+        <div class="hero-floating-card floating-delivery">
+          <div class="float-icon green">
+            <i class="fa-solid fa-stopwatch"></i>
+          </div>
+          <div class="float-text">
+            <strong>25 - 35 mins</strong>
+            <span>Express Delivery</span>
+          </div>
+        </div>
+
+        <!-- Floating Card 2: Highest Rated Food -->
+        <div class="hero-floating-card floating-rating">
+          <div class="float-icon orange">
+            <i class="fa-solid fa-star"></i>
+          </div>
+          <div class="float-text">
+            <strong>4.9 / 5.0 Rating</strong>
+            <span>From 50,000+ Foodies</span>
+          </div>
+        </div>
+
+        <!-- Floating Card 3: Discount Promo -->
+        <div class="hero-floating-card floating-discount">
+          <div class="float-icon navy">
+            <i class="fa-solid fa-percent"></i>
+          </div>
+          <div class="float-text">
+            <strong>Flat 50% OFF</strong>
+            <span>Use Code: QUICK50</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 2. FOOD CATEGORIES SECTION -->
+  <section class="section" id="categories-section" style="background: var(--color-surface); border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border);">
+    <div class="container">
+      <div class="section-header" style="margin-bottom: 30px;">
+        <span class="section-subtitle">What's on your mind?</span>
+        <h2 class="section-title">Explore Delicious Categories</h2>
+        <p class="section-desc">Select a food category to discover curated delicacies and specialty dining options</p>
+      </div>
+
+      <!-- Category Slider -->
+      <div class="categories-wrapper">
+        <div class="category-scroll-container" id="categories-container">
+          <!-- Populated dynamically by app.js -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. POPULAR RESTAURANTS SECTION -->
+  <section class="section" id="popular-restaurants-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-subtitle">Top Gourmet Kitchens</span>
+        <h2 class="section-title">Popular Restaurants in Your City</h2>
+        <p class="section-desc">Hand-picked iconic dining spots renowned for hygiene, flavor, and speedy delivery</p>
+      </div>
+
+      <div class="restaurant-grid" id="restaurants-container">
+        <!-- Populated dynamically by app.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. TRENDING DISHES SECTION -->
+  <section class="section" id="trending-dishes-section" style="background: var(--color-surface); border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border);">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-subtitle">Customer Favorites</span>
+        <h2 class="section-title">Trending Dishes This Week</h2>
+        <p class="section-desc">Most ordered cravings prepared by master chefs and delivered steaming hot</p>
+      </div>
+
+      <div class="dishes-grid" id="dishes-container">
+        <!-- Populated dynamically by app.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. SPECIAL OFFERS & COUPONS SECTION -->
+  <section class="section" id="offers-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-subtitle">Exclusive Deals</span>
+        <h2 class="section-title">Unlock Delicious Savings</h2>
+        <p class="section-desc">Enjoy maximum discounts and zero delivery fee offers on every order</p>
+      </div>
+
+      <div class="offers-grid" id="offers-container">
+        <!-- Populated dynamically by app.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. HOW IT WORKS SECTION -->
+  <section class="section how-it-works-section" id="how-it-works-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-subtitle">Simple & Effortless</span>
+        <h2 class="section-title">How QuickBite Works</h2>
+        <p class="section-desc">Four seamless steps from craving to dining comfort in under 35 minutes</p>
+      </div>
+
+      <div class="steps-grid">
+        
+        <!-- Step 1 -->
+        <div class="step-card">
+          <div class="step-num-bubble">1</div>
+          <div class="step-icon-wrap">
+            <i class="fa-solid fa-map-location-dot"></i>
+          </div>
+          <h3 class="step-title">Choose Your Location</h3>
+          <p class="step-desc">Enter your delivery address to explore verified top restaurants and cloud kitchens in your neighborhood.</p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step-card">
+          <div class="step-num-bubble">2</div>
+          <div class="step-icon-wrap">
+            <i class="fa-solid fa-utensils"></i>
+          </div>
+          <h3 class="step-title">Select Favorite Dishes</h3>
+          <p class="step-desc">Browse rich menus with transparent prices, high-res photos, veg/non-veg tags, and customize with single clicks.</p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step-card">
+          <div class="step-num-bubble">3</div>
+          <div class="step-icon-wrap">
+            <i class="fa-solid fa-fire-burner"></i>
+          </div>
+          <h3 class="step-title">Fresh Live Cooking</h3>
+          <p class="step-desc">Partner restaurants prepare your food fresh to order using hygienic standards and temperature-sealed packaging.</p>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="step-card">
+          <div class="step-num-bubble">4</div>
+          <div class="step-icon-wrap">
+            <i class="fa-solid fa-motorcycle"></i>
+          </div>
+          <h3 class="step-title">Express Doorstep Delivery</h3>
+          <p class="step-desc">Our dedicated delivery partners pick up your meal and bring it safely to your door with live GPS status updates.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. CUSTOMER TESTIMONIALS SECTION -->
+  <section class="section" id="testimonials-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-subtitle">Real Foodie Stories</span>
+        <h2 class="section-title">What Our Customers Say</h2>
+        <p class="section-desc">Hear how QuickBite is redefining the online food delivery experience across the nation</p>
+      </div>
+
+      <div class="testimonials-grid" id="testimonials-container">
+        <!-- Populated dynamically by app.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. APP DOWNLOAD BANNER SECTION -->
+  <section class="section" style="padding-top: 0;">
+    <div class="container">
+      <div class="app-banner-card">
+        <div class="app-banner-content">
+          <h2>Get the QuickBite Mobile Experience</h2>
+          <p>Download our top-rated iOS and Android apps to unlock live order tracking, exclusive app-only coupons, and 1-tap reordering.</p>
+          
+          <div class="store-buttons">
+            <a href="javascript:void(0)" class="store-btn" onclick="QuickBiteDB.showToast('App Store download coming soon!', 'info')">
+              <i class="fa-brands fa-apple"></i>
+              <div class="store-btn-text">
+                <span>Download on the</span>
+                <strong>Apple App Store</strong>
+              </div>
+            </a>
+            <a href="javascript:void(0)" class="store-btn" onclick="QuickBiteDB.showToast('Google Play download coming soon!', 'info')">
+              <i class="fa-brands fa-google-play"></i>
+              <div class="store-btn-text">
+                <span>GET IT ON</span>
+                <strong>Google Play</strong>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <div class="app-banner-image">
+          <img 
+            src="https://images.unsplash.com/photo-1526367790999-0150786686a2?auto=format&fit=crop&w=600&q=80" 
+            alt="QuickBite Mobile Food Delivery" 
+            class="app-mockup-img"
+            onerror="handleImageError(this, 'food')"
+          >
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. GLOBAL FOOTER -->
+  <footer class="main-footer">
+    <div class="container">
+      
+      <div class="footer-top-grid">
+        
+        <!-- Brand Col -->
+        <div class="footer-brand">
+          <a href="index.html" class="brand-logo">
+            <div class="logo-icon-wrap">
+              <i class="fa-solid fa-burger"></i>
+            </div>
+            <div class="brand-text">Quick<span style="color:var(--color-primary);">Bite</span></div>
+          </a>
+          <p>
+            QuickBite is an enterprise-grade food delivery ecosystem uniting customers, restaurants, delivery fleets, and management under one seamless real-time platform.
+          </p>
+          <div class="footer-social-links">
+            <a href="javascript:void(0)" class="social-icon" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="javascript:void(0)" class="social-icon" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            <a href="javascript:void(0)" class="social-icon" aria-label="Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+            <a href="javascript:void(0)" class="social-icon" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+          </div>
+        </div>
+
+        <!-- Quick Links: Interconnected Modules -->
+        <div class="footer-col">
+          <h4>Platform Modules</h4>
+          <ul class="footer-links-list">
+            <li><a href="customer/restaurants.html">Customer Portal & Ordering</a></li>
+            <li><a href="restaurant/dashboard.html">Restaurant Partner Dashboard</a></li>
+            <li><a href="delivery/dashboard.html">Delivery Partner Fleet Dashboard</a></li>
+            <li><a href="admin/dashboard.html">Admin Master Console</a></li>
+            <li><a href="#offers-section">Promo Offers & Deals</a></li>
+          </ul>
+        </div>
+
+        <!-- Cuisines & Discover -->
+        <div class="footer-col">
+          <h4>Popular Cuisines</h4>
+          <ul class="footer-links-list">
+            <li><a href="javascript:void(0)" onclick="document.querySelector('[data-category=\'Biryani\']')?.click()">Hyderabadi Biryani</a></li>
+            <li><a href="javascript:void(0)" onclick="document.querySelector('[data-category=\'Pizzas\']')?.click()">Woodfired Pizzas</a></li>
+            <li><a href="javascript:void(0)" onclick="document.querySelector('[data-category=\'Burgers\']')?.click()">Gourmet Burgers</a></li>
+            <li><a href="javascript:void(0)" onclick="document.querySelector('[data-category=\'Asian & Noodles\']')?.click()">Pan-Asian & Dimsums</a></li>
+            <li><a href="javascript:void(0)" onclick="document.querySelector('[data-category=\'Desserts\']')?.click()">Belgian Desserts</a></li>
+          </ul>
+        </div>
+
+        <!-- Newsletter & Contact -->
+        <div class="footer-col">
+          <h4>Stay Updated</h4>
+          <p style="color: #94A3B8; font-size: 0.85rem; margin-bottom: 12px;">Subscribe for exclusive secret chef drops and special weekend discount codes.</p>
+          <form class="newsletter-form">
+            <input type="email" placeholder="Enter your email address" class="newsletter-input" required>
+            <button type="submit" class="btn btn-primary btn-sm" style="width: 100%;">
+              Subscribe & Get ₹100 OFF
+            </button>
+          </form>
+        </div>
+
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 QuickBite Technologies Inc. All rights reserved. Crafted with precision for food lovers.</p>
+        <div style="display: flex; gap: 20px;">
+          <a href="javascript:void(0)">Privacy Policy</a>
+          <a href="javascript:void(0)">Terms of Service</a>
+          <a href="javascript:void(0)">Security</a>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- Slide-Out Shopping Cart Drawer -->
+  <div class="cart-drawer-overlay" id="cart-drawer-overlay"></div>
+  <aside class="cart-drawer" id="cart-drawer" aria-label="Shopping Cart">
+    
+    <div class="cart-drawer-header">
+      <h3 class="cart-drawer-title">
+        <i class="fa-solid fa-bag-shopping" style="color: var(--color-primary);"></i>
+        Your Cart
+      </h3>
+      <button class="toast-close" id="close-cart-btn" aria-label="Close Cart">
+        <i class="fa-solid fa-xmark" style="font-size: 1.4rem;"></i>
+      </button>
+    </div>
+
+    <!-- Cart Items Container -->
+    <div class="cart-items-list" id="cart-items-container">
+      <!-- Injected by app.js -->
+    </div>
+
+    <!-- Empty State Container -->
+    <div class="cart-empty-state" id="cart-empty-container" style="display: none;">
+      <i class="fa-solid fa-bowl-food"></i>
+      <h3>Your cart is empty</h3>
+      <p style="color: var(--color-text-muted); margin-top: 6px; font-size: 0.9rem;">
+        Explore top restaurants and add mouthwatering dishes to your bag!
+      </p>
+      <button class="btn btn-primary btn-sm" style="margin-top: 20px;" onclick="document.getElementById('close-cart-btn').click(); document.getElementById('trending-dishes-section').scrollIntoView({behavior:'smooth'});">
+        Browse Trending Food
+      </button>
+    </div>
+
+    <!-- Cart Footer & Bill Summary -->
+    <div class="cart-drawer-footer" id="cart-footer-container">
+      
+      <!-- Coupon Application -->
+      <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+        <input 
+          type="text" 
+          id="cart-coupon-input" 
+          placeholder="Apply promo code (e.g. QUICK50)" 
+          style="flex: 1; padding: 10px 14px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-size: 0.85rem; text-transform: uppercase;"
+        >
+        <button class="btn btn-secondary btn-sm" id="cart-apply-coupon-btn">
+          Apply
+        </button>
+      </div>
+
+      <!-- Bill Breakdown -->
+      <div class="cart-bill-row">
+        <span>Item Subtotal</span>
+        <strong id="cart-subtotal">₹0</strong>
+      </div>
+      
+      <div class="cart-bill-row">
+        <span>Delivery Partner Fee</span>
+        <strong id="cart-delivery-fee">₹30</strong>
+      </div>
+
+      <div class="cart-bill-row discount" id="cart-discount-row" style="display: none;">
+        <span>Promo Coupon Discount</span>
+        <strong id="cart-discount-amt">-₹0</strong>
+      </div>
+
+      <div class="cart-bill-row total">
+        <span>To Pay</span>
+        <strong id="cart-grand-total" style="color: var(--color-primary); font-size: 1.3rem;">₹0</strong>
+      </div>
+
+      <button class="btn btn-primary btn-lg" id="cart-checkout-btn" style="width: 100%; margin-top: 16px; border-radius: var(--radius-full);">
+        <i class="fa-solid fa-shield-check"></i> Place Order (Simulated)
+      </button>
+      <p style="text-align: center; font-size: 0.75rem; color: var(--color-text-subtle); margin-top: 8px;">
+        <i class="fa-solid fa-lock"></i> Synchronized via Shared LocalStorage Database
+      </p>
+
+    </div>
+  </aside>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="js/storage.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>

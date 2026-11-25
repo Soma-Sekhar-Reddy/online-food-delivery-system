@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <meta name="color-scheme" content="light dark" />
+    <!-- Instant Anti-Flash Dark Mode Script -->
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('quickbite_theme');
+          var theme = null;
+          if (saved) {
+            try { theme = JSON.parse(saved); } catch(e) { theme = saved; }
+          }
+          if (!theme) {
+            theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+          }
+          document.documentElement.setAttribute('data-theme', theme);
+          document.documentElement.style.colorScheme = theme;
+          if (theme === 'dark') {
+            document.documentElement.style.backgroundColor = '#090D16';
+          } else {
+            document.documentElement.style.backgroundColor = '#F8FAFC';
+          }
+        } catch(e) {}
+      })();
+    </script>
+    <style>
+      :root { color-scheme: light dark; }
+      html { background-color: #F8FAFC; color: #0F172A; }
+      html[data-theme="dark"] { background-color: #090D16 !important; color: #F8FAFC !important; color-scheme: dark; }
+      html[data-theme="light"] { background-color: #F8FAFC !important; color: #0F172A !important; color-scheme: light; }
+      body { background-color: inherit; }
+      @view-transition { navigation: auto; }
+    </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restaurant Menu | QuickBite Food Delivery</title>
+  
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍔</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/landing.css">
+  <link rel="stylesheet" href="../css/customer.css">
+</head>
+<body>
+
+  <!-- Customer Header Navigation -->
+  <header class="customer-nav">
+    <div class="container customer-nav-inner">
+      <a href="restaurants.html" class="brand-logo">
+        <div class="logo-icon-wrap">
+          <i class="fa-solid fa-burger"></i>
+        </div>
+        <div class="brand-text">Quick<span>Bite</span></div>
+      </a>
+
+      <div class="location-picker">
+        <i class="fa-solid fa-location-dot" style="color: var(--color-primary);"></i>
+        <div>
+          <span class="loc-tag">Delivering to: </span>
+          <span class="loc-text" id="menu-loc-text">Banjara Hills, Hyderabad</span>
+        </div>
+      </div>
+
+      <nav class="customer-nav-links">
+        <a href="restaurants.html" class="c-nav-link active">
+          <i class="fa-solid fa-utensils"></i> Restaurants
+        </a>
+        <a href="orders.html" class="c-nav-link">
+          <i class="fa-solid fa-clock-rotate-left"></i> My Orders
+        </a>
+        <a href="tracking.html" class="c-nav-link">
+          <i class="fa-solid fa-route"></i> Live Track
+        </a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="btn-icon" id="theme-toggle-btn" title="Toggle Theme">
+          <i class="fa-solid fa-moon" id="theme-icon"></i>
+        </button>
+
+        <a href="cart.html" class="cart-btn" id="nav-cart-btn">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span>Cart</span>
+          <span class="cart-badge" id="nav-cart-badge" style="display: none;">0</span>
+        </a>
+
+        <a href="profile.html" class="btn-icon" title="My Profile">
+          <i class="fa-regular fa-user"></i>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Restaurant Hero Header -->
+  <section class="restaurant-hero-header">
+    <div class="container" style="max-width: 1080px;">
+      
+      <!-- Breadcrumb -->
+      <div class="menu-breadcrumb" id="menu-breadcrumb">
+        <a href="../index.html">Home</a>
+        <span>/</span>
+        <a href="restaurants.html">Hyderabad</a>
+        <span>/</span>
+        <a href="restaurants.html">Restaurants</a>
+        <span>/</span>
+        <span id="breadcrumb-rest-name" style="color: var(--color-text-main); font-weight: 700;">Restaurant</span>
+      </div>
+
+      <div id="rest-header-details">
+        <!-- Rendered by JavaScript -->
+      </div>
+
+      <!-- Restaurant Offers Carousel -->
+      <div class="rest-deals-row">
+        <div class="deal-card">
+          <div class="deal-icon-box"><i class="fa-solid fa-tag"></i></div>
+          <div>
+            <div class="deal-title">50% OFF up to ₹100</div>
+            <div class="deal-sub">Use code QUICK50 | Min order ₹249</div>
+          </div>
+        </div>
+        <div class="deal-card">
+          <div class="deal-icon-box"><i class="fa-solid fa-gift"></i></div>
+          <div>
+            <div class="deal-title">Flat ₹50 OFF</div>
+            <div class="deal-sub">Use code WELCOME | For new orders</div>
+          </div>
+        </div>
+        <div class="deal-card">
+          <div class="deal-icon-box"><i class="fa-solid fa-fire"></i></div>
+          <div>
+            <div class="deal-title">Flat ₹150 OFF on orders > ₹999</div>
+            <div class="deal-sub">Use code PARTY | Party feast saving</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Sticky Controls Bar (Category Jump, In-Menu Search & Toggles) -->
+  <nav class="menu-category-nav" id="sticky-menu-nav">
+    <div class="container" style="max-width: 1080px;">
+      <div class="menu-controls-wrap">
+        
+        <!-- Category Nav Pills -->
+        <div class="menu-cat-list" id="menu-cat-filters">
+          <!-- Injected by JavaScript -->
+        </div>
+
+        <!-- Search & Filter Toggles -->
+        <div class="menu-search-and-toggles">
+          <!-- In-menu search -->
+          <div class="menu-in-search">
+            <i class="fa-solid fa-magnifying-glass" style="color: var(--color-text-subtle);"></i>
+            <input type="text" id="menu-search-input" placeholder="Search in menu...">
+            <button id="clear-search-btn" style="display:none; color:var(--color-text-subtle); cursor:pointer;">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <!-- Veg Only Toggle -->
+          <button type="button" class="menu-filter-toggle" id="veg-toggle-btn" title="Toggle Veg Only">
+            <span class="fssai-symbol veg"><span class="fssai-dot"></span></span>
+            <span>Veg</span>
+          </button>
+
+          <!-- Non-Veg Toggle -->
+          <button type="button" class="menu-filter-toggle" id="nonveg-toggle-btn" title="Toggle Non-Veg">
+            <span class="fssai-symbol non-veg"><span class="fssai-triangle"></span></span>
+            <span>Non-Veg</span>
+          </button>
+
+          <!-- Bestseller Toggle -->
+          <button type="button" class="menu-filter-toggle" id="bestseller-toggle-btn" title="Toggle Bestsellers">
+            <span style="color:#F59E0B;">★</span>
+            <span>Bestseller</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </nav>
+
+  <!-- Menu Content Stream -->
+  <main class="section" style="padding-top: 36px; padding-bottom: 120px; min-height: 60vh;">
+    <div class="container" style="max-width: 1080px;">
+      
+      <!-- Live Search & Filtering Status Message -->
+      <div id="filter-status-banner" style="display: none; justify-content: space-between; align-items: center; margin-bottom: 24px; padding: 12px 20px; background: var(--color-surface-card); border-radius: var(--radius-md); border: 1px solid var(--color-border);">
+        <span style="font-weight: 700; font-size: 0.9rem;" id="filter-status-text">Showing filtered results</span>
+        <button class="btn btn-outline-primary btn-sm" id="reset-menu-filters-btn" style="padding: 4px 14px; font-size: 0.8rem;">
+          Reset Filters
+        </button>
+      </div>
+
+      <!-- Categorized Sections Container -->
+      <div class="menu-sections-container" id="menu-sections-container">
+        <!-- Rendered by JavaScript -->
+      </div>
+
+      <!-- Empty State -->
+      <div id="empty-menu-state" style="display: none; text-align: center; padding: 80px 20px; background: var(--color-surface); border-radius: var(--radius-xl); border: 1px solid var(--color-border); box-shadow: var(--shadow-sm);">
+        <div style="font-size: 3.5rem; margin-bottom: 16px;">🍽️</div>
+        <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 8px;">No matching dishes found</h3>
+        <p style="color: var(--color-text-muted); max-width: 420px; margin: 0 auto 20px;">
+          We couldn't find any dish matching your search or filters. Try clearing the search or changing diet toggles.
+        </p>
+        <button class="btn btn-primary btn-sm" onclick="resetAllMenuFilters()">
+          Clear All Filters
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Floating Browse Menu Button (Swiggy Style) -->
+  <button class="floating-menu-catalog-btn" id="browse-menu-btn" title="Browse Menu Categories">
+    <i class="fa-solid fa-book-open"></i>
+    <span>BROWSE MENU</span>
+    <span style="background: rgba(255,255,255,0.25); padding: 2px 8px; border-radius: var(--radius-full); font-size: 0.75rem;" id="browse-menu-count">0</span>
+  </button>
+
+  <!-- Categories Jump Modal Drawer -->
+  <div class="menu-jump-modal-overlay" id="menu-jump-modal">
+    <div class="menu-jump-modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--color-border-subtle);">
+        <h3 style="font-size: 1.15rem; font-weight: 800;">Browse Menu Categories</h3>
+        <button class="btn-icon" id="close-jump-modal-btn" style="width: 32px; height: 32px;">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div id="menu-jump-list" style="display: flex; flex-direction: column; gap: 4px;">
+        <!-- Injected by JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Sticky Cart Bar -->
+  <div class="floating-cart-bar" id="floating-cart-bar" style="display: none;">
+    <div class="floating-cart-left">
+      <div class="floating-cart-count" id="float-cart-count">1</div>
+      <div>
+        <div style="font-weight: 800; font-size: 0.95rem;">Item(s) added in cart</div>
+        <div style="font-size: 0.8rem; opacity: 0.9;" id="float-cart-total">Total: ₹0</div>
+      </div>
+    </div>
+    <a href="cart.html" class="btn btn-primary btn-sm" style="box-shadow: none; font-weight: 800; padding: 10px 22px;">
+      View Cart <i class="fa-solid fa-arrow-right"></i>
+    </a>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="../js/storage.js"></script>
+  <script>
+    // URL Params
+    const urlParams = new URLSearchParams(window.location.search);
+    const restaurantId = urlParams.get('id') || 'rest-1';
+
+    let restaurant = null;
+    let allDishes = [];
+    let selectedCategory = 'all';
+    let filterDiet = 'all'; // 'all', 'veg', 'non-veg'
+    let filterBestsellerOnly = false;
+    let searchQuery = '';
+    const collapsedSections = new Set();
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      loadRestaurant();
+      initEvents();
+      updateFloatingCart();
+    });
+
+    function initTheme() {
+      const themeBtn = document.getElementById('theme-toggle-btn');
+      const themeIcon = document.getElementById('theme-icon');
+      const saved = QuickBiteDB.getTheme();
+      document.documentElement.setAttribute('data-theme', saved);
+      if (themeIcon) themeIcon.className = saved === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+
+      themeBtn?.addEventListener('click', () => {
+        const next = QuickBiteDB.toggleTheme();
+        if (themeIcon) themeIcon.className = next === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+      });
+
+      const user = QuickBiteDB.getCurrentUser();
+      if (user && user.addresses?.[0]) {
+        document.getElementById('menu-loc-text').textContent = user.addresses[0].street.split(',')[0];
+      }
+    }
+
+    function loadRestaurant() {
+      restaurant = QuickBiteDB.getRestaurantById(restaurantId);
+      if (!restaurant) {
+        restaurant = QuickBiteDB.getRestaurants()[0];
+      }
+
+      document.title = `${restaurant.name} Menu | QuickBite`;
+      document.getElementById('breadcrumb-rest-name').textContent = restaurant.name;
+
+      // Get all dishes for this restaurant
+      allDishes = QuickBiteDB.getDishesByRestaurant(restaurant.id);
+
+      renderHeroHeader();
+      renderCategoryFilters();
+      renderCategorizedMenu();
+    }
+
+    function renderHeroHeader() {
+      const favs = QuickBiteDB.getFavorites();
+      const isFav = favs.includes(restaurant.id);
+      const cuisines = Array.isArray(restaurant.cuisine) ? restaurant.cuisine.join(' • ') : (restaurant.cuisine || '');
+
+      document.getElementById('rest-header-details').innerHTML = `
+        <div class="rest-header-card">
+          <div style="position: relative;">
+            <img src="${restaurant.image}" alt="${restaurant.name}" class="rest-header-img" onerror="handleImageError(this, 'restaurant')">
+            ${restaurant.isPureVeg ? `
+              <span style="position: absolute; top: 12px; left: 12px; background: #0F8A5F; color: #FFFFFF; font-size: 0.72rem; font-weight: 800; padding: 4px 10px; border-radius: var(--radius-full); box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 5px;">
+                <span class="fssai-symbol veg" style="width:12px; height:12px; border-width:1.5px;"><span class="fssai-dot" style="width:5px; height:5px;"></span></span>
+                PURE VEG
+              </span>
+            ` : ''}
+          </div>
+
+          <div class="rest-header-info">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;">
+              <div>
+                <h1 class="rest-header-title">${restaurant.name}</h1>
+                <p class="rest-header-cuisines">${cuisines}</p>
+                <p style="font-size: 0.85rem; color: var(--color-text-muted); display: flex; align-items: center; gap: 6px;">
+                  <i class="fa-solid fa-location-dot" style="color: var(--color-primary);"></i>
+                  ${restaurant.address || 'Banjara Hills, Hyderabad'}
+                </p>
+              </div>
+
+              <button class="rest-btn-fav ${isFav ? 'active' : ''}" style="position: static; flex-shrink: 0;" onclick="toggleRestaurantFav(this, '${restaurant.id}')" title="Save Restaurant">
+                <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
+              </button>
+            </div>
+
+            <div class="rest-header-stats-row">
+              <span class="rating-pill">
+                <i class="fa-solid fa-star"></i> ${restaurant.rating} (${restaurant.ratingCount || '500'}+)
+              </span>
+              <span class="rest-stat-item">
+                <i class="fa-solid fa-clock" style="color: var(--color-primary);"></i> ${restaurant.deliveryTime}
+              </span>
+              <span class="rest-stat-item">
+                <i class="fa-solid fa-wallet" style="color: var(--color-primary);"></i> ₹${restaurant.priceForTwo} for two
+              </span>
+              ${restaurant.discount ? `
+                <span class="badge badge-primary" style="margin-left: auto;">
+                  <i class="fa-solid fa-tag"></i> ${restaurant.discount}
+                </span>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function getUniqueCategories() {
+      const cats = new Set();
+      allDishes.forEach(d => {
+        if (d.category) cats.add(d.category);
+      });
+      return Array.from(cats);
+    }
+
+    function renderCategoryFilters() {
+      const categories = getUniqueCategories();
+      const catNav = document.getElementById('menu-cat-filters');
+      const jumpList = document.getElementById('menu-jump-list');
+
+      document.getElementById('browse-menu-count').textContent = `${categories.length} Categories`;
+
+      // Horizontal pills
+      catNav.innerHTML = `
+        <button class="menu-cat-link ${selectedCategory === 'all' ? 'active' : ''}" data-cat="all">
+          All Dishes (${allDishes.length})
+        </button>
+        ${categories.map(cat => {
+          const count = allDishes.filter(d => d.category === cat).length;
+          return `
+            <button class="menu-cat-link ${selectedCategory === cat ? 'active' : ''}" data-cat="${cat}">
+              ${cat} (${count})
+            </button>
+          `;
+        }).join('')}
+      `;
+
+      // Jump modal drawer list
+      jumpList.innerHTML = `
+        <div class="menu-jump-item" onclick="selectJumpCategory('all')">
+          <span>All Dishes</span>
+          <span style="color: var(--color-text-muted); font-size: 0.85rem;">${allDishes.length}</span>
+        </div>
+        ${categories.map(cat => {
+          const count = allDishes.filter(d => d.category === cat).length;
+          return `
+            <div class="menu-jump-item" onclick="selectJumpCategory('${cat}')">
+              <span>${cat}</span>
+              <span style="color: var(--color-text-muted); font-size: 0.85rem;">${count}</span>
+            </div>
+          `;
+        }).join('')}
+      `;
+
+      catNav.querySelectorAll('.menu-cat-link').forEach(btn => {
+        btn.addEventListener('click', () => {
+          catNav.querySelectorAll('.menu-cat-link').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          selectedCategory = btn.dataset.cat;
+          renderCategorizedMenu();
+        });
+      });
+    }
+
+    function selectJumpCategory(cat) {
+      selectedCategory = cat;
+      const catNav = document.getElementById('menu-cat-filters');
+      catNav.querySelectorAll('.menu-cat-link').forEach(b => {
+        b.classList.toggle('active', b.dataset.cat === cat);
+      });
+      closeJumpModal();
+      renderCategorizedMenu();
+
+      if (cat !== 'all') {
+        setTimeout(() => {
+          const el = document.getElementById(`section-${cat.replace(/[^a-zA-Z0-9]/g, '-')}`);
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+      }
+    }
+
+    function filterDishes(dishesList) {
+      let filtered = [...dishesList];
+
+      // Dietary filter
+      if (filterDiet === 'veg') {
+        filtered = filtered.filter(d => d.isVeg === true);
+      } else if (filterDiet === 'non-veg') {
+        filtered = filtered.filter(d => d.isVeg === false);
+      }
+
+      // Bestseller filter
+      if (filterBestsellerOnly) {
+        filtered = filtered.filter(d => d.isBestseller === true);
+      }
+
+      // Live search query
+      if (searchQuery.trim()) {
+        const q = searchQuery.trim().toLowerCase();
+        filtered = filtered.filter(d => 
+          d.name.toLowerCase().includes(q) ||
+          (d.description && d.description.toLowerCase().includes(q)) ||
+          (d.category && d.category.toLowerCase().includes(q))
+        );
+      }
+
+      return filtered;
+    }
+
+    function renderCategorizedMenu() {
+      const container = document.getElementById('menu-sections-container');
+      const emptyState = document.getElementById('empty-menu-state');
+      const statusBanner = document.getElementById('filter-status-banner');
+      const statusText = document.getElementById('filter-status-text');
+      const cart = QuickBiteDB.getCart();
+
+      // Check if any filter is active
+      const isFiltered = filterDiet !== 'all' || filterBestsellerOnly || searchQuery.trim().length > 0 || selectedCategory !== 'all';
+      if (isFiltered) {
+        statusBanner.style.display = 'flex';
+        const parts = [];
+        if (selectedCategory !== 'all') parts.push(`Category: ${selectedCategory}`);
+        if (filterDiet === 'veg') parts.push('Veg Only');
+        if (filterDiet === 'non-veg') parts.push('Non-Veg Only');
+        if (filterBestsellerOnly) parts.push('Bestsellers');
+        if (searchQuery.trim()) parts.push(`"${searchQuery}"`);
+        statusText.textContent = `Filtered by: ${parts.join(', ')}`;
+      } else {
+        statusBanner.style.display = 'none';
+      }
+
+      // Determine which categories to display
+      let categoriesToDisplay = getUniqueCategories();
+      if (selectedCategory !== 'all') {
+        categoriesToDisplay = categoriesToDisplay.filter(c => c === selectedCategory);
+      }
+
+      let totalVisibleDishes = 0;
+      let sectionsHTML = '';
+
+      categoriesToDisplay.forEach(cat => {
+        const catDishes = allDishes.filter(d => d.category === cat);
+        const visibleCatDishes = filterDishes(catDishes);
+
+        if (visibleCatDishes.length === 0) return;
+
+        totalVisibleDishes += visibleCatDishes.length;
+        const sectionId = `section-${cat.replace(/[^a-zA-Z0-9]/g, '-')}`;
+        const isCollapsed = collapsedSections.has(cat);
+
+        sectionsHTML += `
+          <div class="menu-category-card" id="${sectionId}">
+            <button class="menu-category-header-btn ${!isCollapsed ? 'open' : ''}" onclick="toggleSectionCollapse('${cat}')" aria-expanded="${!isCollapsed}">
+              <div class="menu-category-title-wrap">
+                <span class="menu-category-title">${cat}</span>
+                <span class="menu-category-count-badge">(${visibleCatDishes.length})</span>
+              </div>
+              <div class="menu-category-toggle-icon">
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+            </button>
+
+            <div class="menu-category-dishes-stream" style="display: ${isCollapsed ? 'none' : 'block'};">
+              ${visibleCatDishes.map(dish => renderDishRow(dish, cart)).join('')}
+            </div>
+          </div>
+        `;
+      });
+
+      if (totalVisibleDishes === 0) {
+        container.style.display = 'none';
+        emptyState.style.display = 'block';
+      } else {
+        container.style.display = 'flex';
+        emptyState.style.display = 'none';
+        container.innerHTML = sectionsHTML;
+      }
+    }
+
+    function renderDishRow(dish, cart) {
+      const cartItem = cart.items.find(i => i.dishId === dish.id);
+      const qty = cartItem ? cartItem.quantity : 0;
+      const actualPrice = dish.discountPrice || dish.price;
+      const hasDiscount = dish.discountPrice && dish.discountPrice < dish.price;
+
+      return `
+        <div class="swiggy-dish-row" data-id="${dish.id}">
+          <!-- Left: Dish Info -->
+          <div class="dish-left-col">
+            <div class="dish-indicator-strip">
+              <span class="fssai-symbol ${dish.isVeg ? 'veg' : 'non-veg'}" title="${dish.isVeg ? 'Vegetarian' : 'Non-Vegetarian'}">
+                ${dish.isVeg ? '<span class="fssai-dot"></span>' : '<span class="fssai-triangle"></span>'}
+              </span>
+
+              ${dish.isBestseller ? `
+                <span class="bestseller-ribbon">
+                  <span>★</span> BESTSELLER
+                </span>
+              ` : ''}
+
+              ${dish.category ? `
+                <span style="font-size: 0.72rem; font-weight: 700; color: var(--color-text-subtle); text-transform: uppercase; letter-spacing: 0.5px;">
+                  ${dish.category}
+                </span>
+              ` : ''}
+            </div>
+
+            <h3 class="dish-name-heading">${dish.name}</h3>
+
+            <div class="dish-price-tag-row">
+              <span class="dish-price-current">₹${actualPrice}</span>
+              ${hasDiscount ? `<span class="dish-price-original">₹${dish.price}</span>` : ''}
+              
+              <span class="dish-rating-badge">
+                <i class="fa-solid fa-star" style="font-size: 0.7rem;"></i> ${dish.rating || '4.8'}
+                <span style="color: var(--color-text-subtle); font-weight: 500;">(${dish.reviewsCount || '150'})</span>
+              </span>
+            </div>
+
+            <p class="dish-desc-paragraph">${dish.description || 'Prepared fresh with premium ingredients, spices and aromatic herbs.'}</p>
+
+            <div class="dish-tags-row">
+              ${dish.prepTime ? `<span class="dish-tag-chip"><i class="fa-regular fa-clock"></i> ${dish.prepTime}</span>` : ''}
+              <span class="dish-tag-chip"><i class="fa-solid fa-user-group"></i> Serves 1-2</span>
+              ${!dish.isVeg ? '<span class="dish-tag-chip"><i class="fa-solid fa-drumstick-bite"></i> Non-Veg</span>' : '<span class="dish-tag-chip" style="color:#0F8A5F;"><i class="fa-solid fa-leaf"></i> Pure Veg</span>'}
+            </div>
+          </div>
+
+          <!-- Right: Image & Floating Overlay ADD Button -->
+          <div class="dish-right-col">
+            <div class="dish-thumbnail-box">
+              <img src="${dish.image}" alt="${dish.name}" loading="lazy" onerror="handleImageError(this, 'food')">
+            </div>
+
+            <div class="dish-add-btn-wrapper">
+              ${qty === 0 ? `
+                <button type="button" class="swiggy-add-btn" onclick="addDishToCart('${dish.id}')">
+                  <span>ADD</span>
+                  <span style="font-size: 0.8rem; margin-top: -1px;">+</span>
+                </button>
+              ` : `
+                <div class="swiggy-qty-stepper">
+                  <button type="button" class="stepper-btn" onclick="updateDishQty('${dish.id}', ${qty - 1})">−</button>
+                  <span class="stepper-val">${qty}</span>
+                  <button type="button" class="stepper-btn" onclick="updateDishQty('${dish.id}', ${qty + 1})">+</button>
+                </div>
+              `}
+              <div class="customisable-label">Customisable</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function toggleSectionCollapse(category) {
+      if (collapsedSections.has(category)) {
+        collapsedSections.delete(category);
+      } else {
+        collapsedSections.add(category);
+      }
+      renderCategorizedMenu();
+    }
+
+    function addDishToCart(dishId) {
+      QuickBiteDB.addToCart(dishId, 1);
+      renderCategorizedMenu();
+      updateFloatingCart();
+    }
+
+    function updateDishQty(dishId, newQty) {
+      QuickBiteDB.updateCartQuantity(dishId, newQty);
+      renderCategorizedMenu();
+      updateFloatingCart();
+    }
+
+    function toggleRestaurantFav(btn, id) {
+      const added = QuickBiteDB.toggleFavorite(id);
+      btn.classList.toggle('active', added);
+      const icon = btn.querySelector('i');
+      if (icon) icon.className = added ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
+      QuickBiteDB.showToast(added ? 'Added to favorites' : 'Removed from favorites', added ? 'success' : 'info');
+    }
+
+    function updateFloatingCart() {
+      const summary = QuickBiteDB.getCartSummary();
+      const floatBar = document.getElementById('floating-cart-bar');
+      const navBadge = document.getElementById('nav-cart-badge');
+
+      if (navBadge) {
+        navBadge.textContent = summary.totalItems;
+        navBadge.style.display = summary.totalItems > 0 ? 'inline-flex' : 'none';
+      }
+
+      if (floatBar) {
+        if (summary.totalItems > 0) {
+          floatBar.style.display = 'flex';
+          document.getElementById('float-cart-count').textContent = summary.totalItems;
+          document.getElementById('float-cart-total').textContent = `Total: ₹${summary.total}`;
+        } else {
+          floatBar.style.display = 'none';
+        }
+      }
+    }
+
+    function resetAllMenuFilters() {
+      selectedCategory = 'all';
+      filterDiet = 'all';
+      filterBestsellerOnly = false;
+      searchQuery = '';
+
+      document.getElementById('veg-toggle-btn').classList.remove('active');
+      document.getElementById('nonveg-toggle-btn').classList.remove('active');
+      document.getElementById('bestseller-toggle-btn').classList.remove('active');
+      
+      const searchInput = document.getElementById('menu-search-input');
+      if (searchInput) searchInput.value = '';
+      document.getElementById('clear-search-btn').style.display = 'none';
+
+      document.querySelectorAll('#menu-cat-filters .menu-cat-link').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.cat === 'all');
+      });
+
+      renderCategorizedMenu();
+    }
+
+    function closeJumpModal() {
+      document.getElementById('menu-jump-modal').classList.remove('active');
+    }
+
+    function initEvents() {
+      // In-menu live search
+      const searchInput = document.getElementById('menu-search-input');
+      const clearSearchBtn = document.getElementById('clear-search-btn');
+
+      searchInput?.addEventListener('input', (e) => {
+        searchQuery = e.target.value;
+        clearSearchBtn.style.display = searchQuery ? 'inline-block' : 'none';
+        renderCategorizedMenu();
+      });
+
+      clearSearchBtn?.addEventListener('click', () => {
+        searchInput.value = '';
+        searchQuery = '';
+        clearSearchBtn.style.display = 'none';
+        renderCategorizedMenu();
+      });
+
+      // Veg Toggle
+      const vegBtn = document.getElementById('veg-toggle-btn');
+      vegBtn?.addEventListener('click', () => {
+        if (filterDiet === 'veg') {
+          filterDiet = 'all';
+          vegBtn.classList.remove('active');
+        } else {
+          filterDiet = 'veg';
+          vegBtn.classList.add('active');
+          document.getElementById('nonveg-toggle-btn').classList.remove('active');
+        }
+        renderCategorizedMenu();
+      });
+
+      // Non-Veg Toggle
+      const nonVegBtn = document.getElementById('nonveg-toggle-btn');
+      nonVegBtn?.addEventListener('click', () => {
+        if (filterDiet === 'non-veg') {
+          filterDiet = 'all';
+          nonVegBtn.classList.remove('active');
+        } else {
+          filterDiet = 'non-veg';
+          nonVegBtn.classList.add('active');
+          document.getElementById('veg-toggle-btn').classList.remove('active');
+        }
+        renderCategorizedMenu();
+      });
+
+      // Bestseller Toggle
+      const bestBtn = document.getElementById('bestseller-toggle-btn');
+      bestBtn?.addEventListener('click', () => {
+        filterBestsellerOnly = !filterBestsellerOnly;
+        bestBtn.classList.toggle('active', filterBestsellerOnly);
+        renderCategorizedMenu();
+      });
+
+      // Reset filters button
+      document.getElementById('reset-menu-filters-btn')?.addEventListener('click', resetAllMenuFilters);
+
+      // Browse Menu Modal Toggle
+      const browseBtn = document.getElementById('browse-menu-btn');
+      const modal = document.getElementById('menu-jump-modal');
+      const closeModalBtn = document.getElementById('close-jump-modal-btn');
+
+      browseBtn?.addEventListener('click', () => {
+        modal.classList.add('active');
+      });
+
+      closeModalBtn?.addEventListener('click', closeJumpModal);
+      modal?.addEventListener('click', (e) => {
+        if (e.target === modal) closeJumpModal();
+      });
+
+      // Sync across tabs & storage events
+      window.addEventListener('quickbite:cart-updated', () => {
+        renderCategorizedMenu();
+        updateFloatingCart();
+      });
+    }
+  </script>
+</body>
+</html>

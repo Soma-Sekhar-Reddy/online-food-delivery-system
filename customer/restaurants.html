@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <meta name="color-scheme" content="light dark" />
+    <!-- Instant Anti-Flash Dark Mode Script -->
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('quickbite_theme');
+          var theme = null;
+          if (saved) {
+            try { theme = JSON.parse(saved); } catch(e) { theme = saved; }
+          }
+          if (!theme) {
+            theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+          }
+          document.documentElement.setAttribute('data-theme', theme);
+          document.documentElement.style.colorScheme = theme;
+          if (theme === 'dark') {
+            document.documentElement.style.backgroundColor = '#090D16';
+          } else {
+            document.documentElement.style.backgroundColor = '#F8FAFC';
+          }
+        } catch(e) {}
+      })();
+    </script>
+    <style>
+      :root { color-scheme: light dark; }
+      html { background-color: #F8FAFC; color: #0F172A; }
+      html[data-theme="dark"] { background-color: #090D16 !important; color: #F8FAFC !important; color-scheme: dark; }
+      html[data-theme="light"] { background-color: #F8FAFC !important; color: #0F172A !important; color-scheme: light; }
+      body { background-color: inherit; }
+      @view-transition { navigation: auto; }
+    </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Explore Restaurants | QuickBite</title>
+  
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍔</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/landing.css">
+  <link rel="stylesheet" href="../css/customer.css">
+</head>
+<body>
+
+  <!-- Customer Header Navigation -->
+  <header class="customer-nav">
+    <div class="container customer-nav-inner">
+      
+      <!-- Brand Logo -->
+      <a href="restaurants.html" class="brand-logo">
+        <div class="logo-icon-wrap">
+          <i class="fa-solid fa-burger"></i>
+        </div>
+        <div class="brand-text">Quick<span>Bite</span></div>
+      </a>
+
+      <!-- Location Picker -->
+      <div class="location-picker" id="nav-location-picker" title="Change delivery address">
+        <i class="fa-solid fa-location-dot"></i>
+        <div>
+          <span class="loc-tag">Delivering to: </span>
+          <span class="loc-text" id="current-location-text">Banjara Hills, Hyderabad</span>
+        </div>
+        <i class="fa-solid fa-chevron-down" style="font-size: 0.75rem; color: var(--color-text-subtle);"></i>
+      </div>
+
+      <!-- Links -->
+      <nav class="customer-nav-links">
+        <a href="restaurants.html" class="c-nav-link active">
+          <i class="fa-solid fa-utensils"></i> Restaurants
+        </a>
+        <a href="orders.html" class="c-nav-link">
+          <i class="fa-solid fa-clock-rotate-left"></i> My Orders
+        </a>
+        <a href="tracking.html" class="c-nav-link">
+          <i class="fa-solid fa-route"></i> Live Track
+        </a>
+      </nav>
+
+      <!-- Nav Actions -->
+      <div class="nav-actions">
+        <!-- Theme Switcher -->
+        <button class="btn-icon" id="theme-toggle-btn" title="Toggle Theme">
+          <i class="fa-solid fa-moon" id="theme-icon"></i>
+        </button>
+
+        <!-- Cart Nav Button -->
+        <a href="cart.html" class="cart-btn" id="nav-cart-btn">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span>Cart</span>
+          <span class="cart-badge" id="nav-cart-badge" style="display: none;">0</span>
+        </a>
+
+        <!-- User Profile Dropdown -->
+        <div class="user-menu-wrap">
+          <button class="user-nav-btn" id="user-menu-toggle">
+            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80" alt="User Avatar" class="user-nav-avatar" id="nav-user-avatar" onerror="handleImageError(this, 'avatar')">
+            <span id="nav-user-name">Rahul</span>
+            <i class="fa-solid fa-chevron-down" style="font-size: 0.75rem; color: var(--color-text-muted);"></i>
+          </button>
+          
+          <div class="user-dropdown-menu" id="user-dropdown">
+            <div class="dropdown-user-header">
+              <div class="dropdown-user-name" id="dropdown-name">Rahul Sharma</div>
+              <div class="dropdown-user-email" id="dropdown-email">customer@quickbite.com</div>
+            </div>
+            <a href="profile.html" class="dropdown-item">
+              <i class="fa-regular fa-user"></i> My Profile
+            </a>
+            <a href="orders.html" class="dropdown-item">
+              <i class="fa-solid fa-receipt"></i> Orders & Reorder
+            </a>
+            <a href="profile.html?tab=addresses" class="dropdown-item">
+              <i class="fa-solid fa-map-pin"></i> Saved Addresses
+            </a>
+            <a href="profile.html?tab=favorites" class="dropdown-item">
+              <i class="fa-regular fa-heart"></i> Favorite Places
+            </a>
+            <div style="border-top: 1px solid var(--color-border-subtle); margin: 4px 0;"></div>
+            <a href="javascript:void(0)" class="dropdown-item" style="color: var(--color-danger);" onclick="QuickBiteDB.logout(); window.location.href='../login.html';">
+              <i class="fa-solid fa-arrow-right-from-bracket" style="color: var(--color-danger);"></i> Sign Out
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Filter & Search Bar Section -->
+  <section class="filter-bar-section">
+    <div class="container filter-bar-inner">
+      
+      <div class="search-and-sort-row">
+        <!-- Live Search -->
+        <div class="c-search-box">
+          <i class="fa-solid fa-magnifying-glass" style="color: var(--color-primary);"></i>
+          <input type="text" id="rest-search-input" placeholder="Search for restaurant name, cuisine, biryani, pizza, or dish...">
+        </div>
+
+        <!-- Sort Dropdown -->
+        <div class="sort-select-wrap">
+          <i class="fa-solid fa-arrow-down-wide-short" style="color: var(--color-text-muted);"></i>
+          <select id="rest-sort-select">
+            <option value="rating">Rating: High to Low</option>
+            <option value="deliveryTime">Fastest Delivery</option>
+            <option value="costLow">Cost: Low to High</option>
+            <option value="costHigh">Cost: High to Low</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Quick Filter Pills -->
+      <div class="quick-filter-pills-row" id="filter-pills-container">
+        <button class="c-filter-pill active" data-filter="all">All Restaurants</button>
+        <button class="c-filter-pill" data-filter="pure-veg"><i class="fa-solid fa-leaf" style="color:#10B981;"></i> Pure Veg</button>
+        <button class="c-filter-pill" data-filter="fast"><i class="fa-solid fa-stopwatch"></i> Under 30 mins</button>
+        <button class="c-filter-pill" data-filter="top-rated"><i class="fa-solid fa-star" style="color:#F59E0B;"></i> 4.5+ Rated</button>
+        <button class="c-filter-pill" data-filter="favorites"><i class="fa-solid fa-heart" style="color:#EF4444;"></i> Favorites</button>
+        <button class="c-filter-pill" data-filter="Biryani">Biryani & Mughlai</button>
+        <button class="c-filter-pill" data-filter="Italian">Italian & Pizza</button>
+        <button class="c-filter-pill" data-filter="Burgers">Burgers & Fast Food</button>
+        <button class="c-filter-pill" data-filter="Pan-Asian">Pan-Asian & Chinese</button>
+        <button class="c-filter-pill" data-filter="South Indian">South Indian & Dosa</button>
+        <button class="c-filter-pill" data-filter="Punjabi">North Indian & Dhaba</button>
+        <button class="c-filter-pill" data-filter="Street Food">Street Food & Chaat</button>
+        <button class="c-filter-pill" data-filter="Shawarma">Middle Eastern & Shawarma</button>
+        <button class="c-filter-pill" data-filter="Seafood">Seafood & Coastal</button>
+        <button class="c-filter-pill" data-filter="Sizzlers">Sizzlers & BBQ</button>
+        <button class="c-filter-pill" data-filter="Ice Cream">Ice Cream & Sundaes</button>
+        <button class="c-filter-pill" data-filter="Café">Café & Breakfast</button>
+        <button class="c-filter-pill" data-filter="Desserts">Bakery & Desserts</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Restaurant List Section -->
+  <main class="section" style="padding-top: 40px; min-height: 60vh;">
+    <div class="container">
+      
+      <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 24px;">
+        <h2 style="font-size: 1.6rem; font-weight: 800;" id="results-count-title">Available Restaurants (10)</h2>
+        <span style="font-size: 0.875rem; color: var(--color-text-muted);" id="location-subtext">Open now near Banjara Hills</span>
+      </div>
+
+      <!-- Grid -->
+      <div class="restaurant-grid" id="restaurants-grid">
+        <!-- Rendered by JavaScript -->
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Floating Sticky Cart Bar (Shown when items in cart) -->
+  <div class="floating-cart-bar" id="floating-cart-bar" style="display: none;">
+    <div class="floating-cart-left">
+      <div class="floating-cart-count" id="float-cart-count">1</div>
+      <div>
+        <div style="font-weight: 700; font-size: 0.95rem;">Item(s) added in your cart</div>
+        <div style="font-size: 0.8rem; opacity: 0.85;" id="float-cart-total">Total: ₹0</div>
+      </div>
+    </div>
+    <a href="cart.html" class="btn btn-primary btn-sm" style="box-shadow: none;">
+      View Cart <i class="fa-solid fa-arrow-right"></i>
+    </a>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="../js/storage.js"></script>
+  <script>
+    // State
+    let currentFilter = 'all';
+    let searchQuery = '';
+    let currentSort = 'rating';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initCustomerNav();
+      renderRestaurants();
+      updateFloatingCart();
+    });
+
+    // Navigation setup
+    function initCustomerNav() {
+      // Theme
+      const themeBtn = document.getElementById('theme-toggle-btn');
+      const themeIcon = document.getElementById('theme-icon');
+      const saved = QuickBiteDB.getTheme();
+      document.documentElement.setAttribute('data-theme', saved);
+      if (themeIcon) themeIcon.className = saved === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+
+      themeBtn?.addEventListener('click', () => {
+        const next = QuickBiteDB.toggleTheme();
+        if (themeIcon) themeIcon.className = next === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+      });
+
+      // User session info
+      const user = QuickBiteDB.getCurrentUser();
+      if (user) {
+        document.getElementById('nav-user-name').textContent = user.name.split(' ')[0];
+        document.getElementById('dropdown-name').textContent = user.name;
+        document.getElementById('dropdown-email').textContent = user.email;
+        if (user.avatar) {
+          document.getElementById('nav-user-avatar').src = user.avatar;
+        }
+        if (user.addresses && user.addresses[0]) {
+          document.getElementById('current-location-text').textContent = user.addresses[0].street.split(',')[0];
+        }
+      }
+
+      // User dropdown toggle
+      const menuToggle = document.getElementById('user-menu-toggle');
+      const dropdown = document.getElementById('user-dropdown');
+      menuToggle?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdown?.classList.toggle('show');
+      });
+      document.addEventListener('click', () => dropdown?.classList.remove('show'));
+
+      // Location picker prompt
+      document.getElementById('nav-location-picker')?.addEventListener('click', () => {
+        const loc = prompt("Enter your delivery address or area:", "Banjara Hills, Hyderabad");
+        if (loc) {
+          document.getElementById('current-location-text').textContent = loc;
+          document.getElementById('location-subtext').textContent = `Open now near ${loc}`;
+          QuickBiteDB.showToast(`Delivery location set to: ${loc}`, 'info');
+        }
+      });
+
+      // Filters listeners
+      document.querySelectorAll('.c-filter-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+          document.querySelectorAll('.c-filter-pill').forEach(p => p.classList.remove('active'));
+          pill.classList.add('active');
+          currentFilter = pill.dataset.filter;
+          renderRestaurants();
+        });
+      });
+
+      // Search input listener
+      const searchInput = document.getElementById('rest-search-input');
+      searchInput?.addEventListener('input', () => {
+        searchQuery = searchInput.value.trim().toLowerCase();
+        renderRestaurants();
+      });
+
+      // Sort select listener
+      const sortSelect = document.getElementById('rest-sort-select');
+      sortSelect?.addEventListener('change', () => {
+        currentSort = sortSelect.value;
+        renderRestaurants();
+      });
+
+      // Storage sync
+      window.addEventListener('quickbite:cart-updated', updateFloatingCart);
+      window.addEventListener('quickbite:favorites-updated', renderRestaurants);
+    }
+
+    // Render restaurants with filters & sorting
+    function renderRestaurants() {
+      const grid = document.getElementById('restaurants-grid');
+      let list = QuickBiteDB.getRestaurants();
+      const favs = QuickBiteDB.getFavorites();
+
+      // Search
+      if (searchQuery) {
+        list = list.filter(r => 
+          r.name.toLowerCase().includes(searchQuery) ||
+          r.cuisine.some(c => c.toLowerCase().includes(searchQuery)) ||
+          r.address.toLowerCase().includes(searchQuery)
+        );
+      }
+
+      // Filter Pill
+      if (currentFilter === 'pure-veg') {
+        list = list.filter(r => r.isPureVeg);
+      } else if (currentFilter === 'fast') {
+        list = list.filter(r => parseInt(r.deliveryTime) <= 30);
+      } else if (currentFilter === 'top-rated') {
+        list = list.filter(r => r.rating >= 4.7);
+      } else if (currentFilter === 'favorites') {
+        list = list.filter(r => favs.includes(r.id));
+      } else if (currentFilter !== 'all') {
+        list = list.filter(r => r.cuisine.some(c => c.toLowerCase().includes(currentFilter.toLowerCase())));
+      }
+
+      // Sort
+      if (currentSort === 'rating') {
+        list.sort((a, b) => b.rating - a.rating);
+      } else if (currentSort === 'deliveryTime') {
+        list.sort((a, b) => parseInt(a.deliveryTime) - parseInt(b.deliveryTime));
+      } else if (currentSort === 'costLow') {
+        list.sort((a, b) => a.priceForTwo - b.priceForTwo);
+      } else if (currentSort === 'costHigh') {
+        list.sort((a, b) => b.priceForTwo - a.priceForTwo);
+      }
+
+      document.getElementById('results-count-title').textContent = `Available Restaurants (${list.length})`;
+
+      if (list.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+            <i class="fa-solid fa-utensils" style="font-size: 3.5rem; color: var(--color-text-subtle); margin-bottom: 16px;"></i>
+            <h3>No restaurants matched your filters</h3>
+            <p style="color: var(--color-text-muted); margin-top: 6px;">Try clearing your search query or picking another cuisine</p>
+            <button class="btn btn-primary btn-sm" style="margin-top: 20px;" onclick="document.getElementById('rest-search-input').value=''; searchQuery=''; currentFilter='all'; document.querySelector('[data-filter=\\'all\\']').click();">
+              Reset Filters
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = list.map(r => {
+        const isFav = favs.includes(r.id);
+        return `
+          <div class="restaurant-card" onclick="window.location.href='menu.html?id=${r.id}'" style="cursor: pointer;">
+            <div class="rest-img-wrapper">
+              <img src="${r.image}" alt="${r.name}" onerror="handleImageError(this, 'restaurant')">
+              ${r.discount ? `<span class="rest-badge-discount"><i class="fa-solid fa-tag"></i> ${r.discount}</span>` : ''}
+              <button class="rest-btn-fav ${isFav ? 'active' : ''}" data-id="${r.id}" onclick="event.stopPropagation(); toggleFav(this, '${r.id}')" title="Save restaurant">
+                <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
+              </button>
+            </div>
+            <div class="rest-body">
+              <div class="rest-header-line">
+                <h3 class="rest-name">${r.name}</h3>
+                <span class="rating-pill">
+                  <i class="fa-solid fa-star"></i> ${r.rating}
+                </span>
+              </div>
+              <p class="rest-cuisines">${r.cuisine.join(' • ')}</p>
+              <div class="rest-meta-row">
+                <span class="rest-meta-item">
+                  <i class="fa-solid fa-clock"></i> ${r.deliveryTime}
+                </span>
+                <span class="rest-meta-item">
+                  <i class="fa-solid fa-wallet"></i> ₹${r.priceForTwo} for two
+                </span>
+                <a href="menu.html?id=${r.id}" class="btn btn-outline-primary btn-sm" onclick="event.stopPropagation();">
+                  Order Now
+                </a>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleFav(btn, id) {
+      const added = QuickBiteDB.toggleFavorite(id);
+      btn.classList.toggle('active', added);
+      const icon = btn.querySelector('i');
+      if (icon) icon.className = added ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
+    }
+
+    function updateFloatingCart() {
+      const summary = QuickBiteDB.getCartSummary();
+      const floatBar = document.getElementById('floating-cart-bar');
+      const navBadge = document.getElementById('nav-cart-badge');
+
+      if (navBadge) {
+        navBadge.textContent = summary.totalItems;
+        navBadge.style.display = summary.totalItems > 0 ? 'inline-flex' : 'none';
+      }
+
+      if (floatBar) {
+        if (summary.totalItems > 0) {
+          floatBar.style.display = 'flex';
+          document.getElementById('float-cart-count').textContent = summary.totalItems;
+          document.getElementById('float-cart-total').textContent = `Total: ₹${summary.total}`;
+        } else {
+          floatBar.style.display = 'none';
+        }
+      }
+    }
+  </script>
+</body>
+</html>

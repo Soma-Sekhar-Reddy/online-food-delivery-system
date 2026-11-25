@@ -1,0 +1,495 @@
+/* ==========================================================================
+   QUICKBITE - Restaurant Owner Dashboard Stylesheet
+   Styles for: dashboard, orders, menu CRUD, analytics & charts
+   ========================================================================== */
+
+.dash-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--color-bg);
+}
+
+/* --------------------------------------------------------------------------
+   1. Dashboard Sidebar
+   -------------------------------------------------------------------------- */
+.dash-sidebar {
+  width: 270px;
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  z-index: 95;
+  transition: all var(--transition-normal);
+}
+
+.sidebar-brand-box {
+  padding: 24px 22px;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sidebar-rest-card {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--color-border-subtle);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--color-surface-card);
+}
+
+.sidebar-rest-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  border: 1.5px solid var(--color-primary);
+}
+
+.sidebar-rest-name {
+  font-size: 0.925rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+}
+
+.sidebar-rest-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-success);
+}
+
+.sidebar-rest-status.offline {
+  color: var(--color-danger);
+}
+
+.sidebar-nav-list {
+  padding: 18px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.sidebar-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  font-size: 0.925rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.sidebar-nav-link:hover, .sidebar-nav-link.active {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+[data-theme="dark"] .sidebar-nav-link:hover,
+[data-theme="dark"] .sidebar-nav-link.active {
+  background: rgba(255, 107, 53, 0.15);
+}
+
+.sidebar-nav-link.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 15%;
+  height: 70%;
+  width: 4px;
+  background: var(--color-primary);
+  border-radius: 0 4px 4px 0;
+}
+
+.sidebar-badge-count {
+  margin-left: auto;
+  background: var(--color-primary);
+  color: #FFFFFF;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.sidebar-footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--color-border);
+}
+
+/* --------------------------------------------------------------------------
+   2. Main Content & Top Bar
+   -------------------------------------------------------------------------- */
+.dash-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.dash-topbar {
+  height: 74px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  position: sticky;
+  top: 0;
+  z-index: 90;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.topbar-title {
+  font-size: 1.45rem;
+  font-weight: 800;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.rest-status-toggle-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+/* Custom Toggle Switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 42px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #CBD5E1;
+  transition: .3s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .3s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+input:checked + .slider {
+  background-color: var(--color-success);
+}
+
+input:checked + .slider:before {
+  transform: translateX(18px);
+}
+
+.dash-body {
+  padding: 32px;
+  flex: 1;
+}
+
+/* --------------------------------------------------------------------------
+   3. Metrics & Stats Cards
+   -------------------------------------------------------------------------- */
+.metrics-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 22px;
+  margin-bottom: 32px;
+}
+
+.metric-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 22px 24px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all var(--transition-normal);
+}
+
+.metric-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(255, 107, 53, 0.3);
+}
+
+.metric-info h4 {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.metric-val {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--color-text-main);
+  line-height: 1.1;
+  margin-bottom: 6px;
+}
+
+.metric-trend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.775rem;
+  font-weight: 700;
+}
+
+.metric-trend.up { color: var(--color-success); }
+.metric-trend.down { color: var(--color-danger); }
+
+.metric-icon-box {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+}
+
+.metric-icon-orange { background: var(--color-primary-light); color: var(--color-primary); }
+.metric-icon-green  { background: var(--color-success-bg); color: var(--color-success); }
+.metric-icon-blue   { background: var(--color-info-bg); color: var(--color-info); }
+.metric-icon-purple { background: rgba(139, 92, 246, 0.12); color: #8B5CF6; }
+
+/* --------------------------------------------------------------------------
+   4. Orders Table & Kanban Cards
+   -------------------------------------------------------------------------- */
+.dash-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 24px 28px;
+  margin-bottom: 30px;
+}
+
+.dash-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.dash-table-wrap {
+  overflow-x: auto;
+}
+
+.dash-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.dash-table th {
+  padding: 12px 16px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface-card);
+}
+
+.dash-table td {
+  padding: 16px;
+  font-size: 0.9rem;
+  border-bottom: 1px solid var(--color-border-subtle);
+  vertical-align: middle;
+}
+
+.dash-table tr:hover td {
+  background: var(--color-surface-card);
+}
+
+/* Kanban / Live Incoming Orders Grid */
+.kanban-cols-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.kanban-col {
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 500px;
+}
+
+.kanban-col-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.kanban-col-title {
+  font-size: 1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.order-live-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
+}
+
+.order-live-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-primary);
+}
+
+.order-live-card.new-pulse {
+  border-color: var(--color-primary);
+  animation: pulseGlow 2.5s infinite;
+}
+
+/* --------------------------------------------------------------------------
+   5. Food Menu Dishes Grid (CRUD)
+   -------------------------------------------------------------------------- */
+.menu-grid-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 24px;
+}
+
+.menu-dish-manage-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  transition: all var(--transition-normal);
+}
+
+.menu-dish-manage-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: rgba(255, 107, 53, 0.3);
+}
+
+.manage-card-media {
+  position: relative;
+  height: 170px;
+  overflow: hidden;
+}
+
+.manage-card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.manage-card-body {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.manage-card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-border-subtle);
+  margin-top: auto;
+}
+
+/* --------------------------------------------------------------------------
+   6. Chart.js Containers
+   -------------------------------------------------------------------------- */
+.chart-container-box {
+  position: relative;
+  width: 100%;
+  height: 320px;
+}
+
+.charts-double-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 26px;
+  margin-bottom: 30px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .dash-layout {
+    flex-direction: column;
+  }
+  .dash-sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
+  .charts-double-grid {
+    grid-template-columns: 1fr;
+  }
+  .kanban-cols-grid {
+    grid-template-columns: 1fr;
+  }
+}

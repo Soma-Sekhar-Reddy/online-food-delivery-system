@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account Settings & Payments | QuickBite</title>
+  
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍔</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/landing.css">
+  <link rel="stylesheet" href="../css/customer.css">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <header class="customer-nav">
+    <div class="container customer-nav-inner">
+      <a href="restaurants.html" class="brand-logo">
+        <div class="logo-icon-wrap">
+          <i class="fa-solid fa-burger"></i>
+        </div>
+        <div class="brand-text">Quick<span>Bite</span></div>
+      </a>
+
+      <nav class="customer-nav-links">
+        <a href="restaurants.html" class="c-nav-link">
+          <i class="fa-solid fa-utensils"></i> Restaurants
+        </a>
+        <a href="orders.html" class="c-nav-link">
+          <i class="fa-solid fa-clock-rotate-left"></i> My Orders
+        </a>
+        <a href="tracking.html" class="c-nav-link">
+          <i class="fa-solid fa-route"></i> Live Track
+        </a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="btn-icon" id="theme-toggle-btn" title="Toggle Theme">
+          <i class="fa-solid fa-moon" id="theme-icon"></i>
+        </button>
+
+        <a href="cart.html" class="cart-btn" id="nav-cart-btn">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span>Cart</span>
+          <span class="cart-badge" id="nav-cart-badge" style="display: none;">0</span>
+        </a>
+
+        <a href="profile.html" class="btn-icon" style="background:var(--color-primary-light); color:var(--color-primary);" title="Profile">
+          <i class="fa-solid fa-user"></i>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="section" style="padding-top: 36px; min-height: 80vh; padding-bottom: 70px;">
+    <div class="container">
+      
+      <div style="margin-bottom: 28px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+        <div>
+          <h1 style="font-size: 1.85rem; font-weight: 800; margin: 0 0 4px;">Account Settings</h1>
+          <p style="color: var(--color-text-muted); font-size: 0.925rem; margin: 0;">
+            Manage personal information, QuickBite wallet, payment cards, delivery addresses, and food preferences
+          </p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <a href="restaurants.html" class="btn btn-secondary btn-sm" style="border-radius: var(--radius-full);">
+            <i class="fa-solid fa-utensils"></i> Browse Kitchens
+          </a>
+          <a href="orders.html" class="btn btn-primary btn-sm" style="border-radius: var(--radius-full);">
+            <i class="fa-solid fa-receipt"></i> Orders
+          </a>
+        </div>
+      </div>
+
+      <div class="profile-layout-grid">
+        
+        <!-- Left: Profile Sidebar -->
+        <div class="profile-sidebar-card">
+          <div style="position: relative; display: inline-block; margin-bottom: 14px;">
+            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80" alt="Avatar" id="profile-avatar-img" style="width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid var(--color-primary);" onerror="handleImageError(this, 'avatar')">
+            <button onclick="changeAvatarPrompt()" style="position: absolute; bottom: 0; right: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--color-primary); color: #FFFFFF; font-size: 0.75rem; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-sm); cursor: pointer; border: 2px solid #fff;" title="Change photo">
+              <i class="fa-solid fa-camera"></i>
+            </button>
+          </div>
+
+          <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 2px;" id="side-user-name">Rahul Sharma</h3>
+          <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 10px;" id="side-user-email">customer@quickbite.com</p>
+          <span class="badge badge-primary">Verified Customer</span>
+
+          <!-- Tab List -->
+          <div class="profile-tab-list">
+            <button class="profile-tab-btn active" data-tab="details" onclick="switchProfileTab('details')">
+              <i class="fa-regular fa-user"></i> Personal Details
+            </button>
+            <button class="profile-tab-btn" data-tab="wallet" onclick="switchProfileTab('wallet')">
+              <i class="fa-solid fa-wallet"></i> Wallet & Payments
+            </button>
+            <button class="profile-tab-btn" data-tab="addresses" onclick="switchProfileTab('addresses')">
+              <i class="fa-solid fa-location-dot"></i> Saved Addresses
+            </button>
+            <button class="profile-tab-btn" data-tab="preferences" onclick="switchProfileTab('preferences')">
+              <i class="fa-solid fa-sliders"></i> Food Preferences
+            </button>
+            <button class="profile-tab-btn" data-tab="security" onclick="switchProfileTab('security')">
+              <i class="fa-solid fa-shield-halved"></i> Security & 2FA
+            </button>
+            <button class="profile-tab-btn" data-tab="favorites" onclick="switchProfileTab('favorites')">
+              <i class="fa-regular fa-heart"></i> Favorite Places
+            </button>
+            <button class="profile-tab-btn" style="color: var(--color-danger);" onclick="QuickBiteDB.logout(); window.location.href='../login.html';">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: Tab Content -->
+        <div style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 32px; box-shadow: var(--shadow-sm);">
+          
+          <!-- TAB 1: Personal Details Form -->
+          <div id="tab-pane-details">
+            <h2 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 20px;">Edit Profile Information</h2>
+            
+            <form id="profile-edit-form" style="display: flex; flex-direction: column; gap: 18px;">
+              <div>
+                <label class="form-label" style="font-weight: 700; margin-bottom: 6px; display: block;">Full Name</label>
+                <input type="text" id="prof-name" value="Rahul Sharma" required style="width: 100%; padding: 12px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface-card); font-size: 0.95rem;">
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div>
+                  <label class="form-label" style="font-weight: 700; margin-bottom: 6px; display: block;">Email Address (Account ID)</label>
+                  <input type="email" id="prof-email" value="customer@quickbite.com" disabled style="width: 100%; padding: 12px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface-card); font-size: 0.95rem; opacity: 0.7;">
+                </div>
+                <div>
+                  <label class="form-label" style="font-weight: 700; margin-bottom: 6px; display: block;">Phone Number</label>
+                  <input type="tel" id="prof-phone" value="+91 98765 43210" required style="width: 100%; padding: 12px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface-card); font-size: 0.95rem;">
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="align-self: flex-start; margin-top: 10px; font-weight: 700;">
+                <i class="fa-solid fa-check"></i> Save Profile Changes
+              </button>
+            </form>
+          </div>
+
+          <!-- TAB 2: Wallet & Payments Manager -->
+          <div id="tab-pane-wallet" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; flex-wrap: wrap; gap: 14px;">
+              <div>
+                <h2 style="font-size: 1.35rem; font-weight: 800; margin: 0 0 4px;">QuickBite Wallet & Saved Payments</h2>
+                <p style="color: var(--color-text-muted); font-size: 0.85rem; margin: 0;">Top up wallet, manage credit cards, and save UPI IDs</p>
+              </div>
+              <div style="background: linear-gradient(135deg, var(--color-primary) 0%, #ff834f 100%); color: #fff; padding: 12px 20px; border-radius: var(--radius-md); text-align: right;">
+                <div style="font-size: 0.72rem; text-transform: uppercase; opacity: 0.9;">Wallet Balance</div>
+                <div style="font-size: 1.6rem; font-weight: 900;" id="prof-wallet-bal">₹450</div>
+              </div>
+            </div>
+
+            <!-- Top Up Wallet Section -->
+            <div style="background: var(--color-surface-card); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 20px; margin-bottom: 24px;">
+              <h3 style="font-size: 1rem; font-weight: 800; margin-bottom: 12px;">
+                <i class="fa-solid fa-circle-plus" style="color: var(--color-primary); margin-right: 6px;"></i> Top Up Wallet Balance
+              </h3>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="setStaticTopUp(100)">+ ₹100</button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="setStaticTopUp(250)">+ ₹250</button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="setStaticTopUp(500)">+ ₹500</button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="setStaticTopUp(1000)">+ ₹1000</button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="setStaticTopUp(2000)">+ ₹2000</button>
+              </div>
+              <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                <input type="number" id="static-topup-input" value="500" min="50" style="padding: 10px 14px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-size: 0.95rem; font-weight: 700; width: 140px; background: var(--color-surface);">
+                <button type="button" class="btn btn-primary" onclick="submitStaticTopUp()" style="font-weight: 700;">
+                  <i class="fa-solid fa-bolt"></i> Add Money Instantly
+                </button>
+              </div>
+            </div>
+
+            <!-- Saved Cards -->
+            <div style="margin-bottom: 24px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <h3 style="font-size: 1.05rem; font-weight: 800; margin: 0;">Saved Credit & Debit Cards</h3>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="openAddCardModal()">
+                  <i class="fa-solid fa-plus"></i> Add Card
+                </button>
+              </div>
+              <div id="prof-cards-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px;">
+                <!-- Injected by JS -->
+              </div>
+            </div>
+
+            <!-- Saved UPI VPAs -->
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <h3 style="font-size: 1.05rem; font-weight: 800; margin: 0;">Saved UPI IDs</h3>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="openAddUpiModal()">
+                  <i class="fa-solid fa-plus"></i> Add UPI
+                </button>
+              </div>
+              <div id="prof-upi-container" style="display: flex; flex-direction: column; gap: 10px;">
+                <!-- Injected by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 3: Saved Addresses Manager -->
+          <div id="tab-pane-addresses" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+              <h2 style="font-size: 1.35rem; font-weight: 800; margin: 0;">Saved Delivery Locations</h2>
+              <button class="btn btn-primary btn-sm" onclick="openProfileAddressModal()" style="font-weight: 700;">
+                <i class="fa-solid fa-plus"></i> Add Address
+              </button>
+            </div>
+
+            <div id="profile-addresses-grid" style="display: flex; flex-direction: column; gap: 14px;">
+              <!-- Injected by JavaScript -->
+            </div>
+          </div>
+
+          <!-- TAB 4: Food & Delivery Preferences -->
+          <div id="tab-pane-preferences" style="display: none;">
+            <h2 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 18px;">Food & Delivery Preferences</h2>
+            <form onsubmit="saveStaticPreferences(event)" style="display: flex; flex-direction: column; gap: 18px;">
+              <div>
+                <label style="font-weight: 700; font-size: 0.88rem; display: block; margin-bottom: 6px;">Dietary Choice</label>
+                <select id="pref-dietary" style="width: 100%; padding: 12px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface-card); font-size: 0.9rem;">
+                  <option value="all">All Cuisines (No Restriction)</option>
+                  <option value="veg">Pure Vegetarian Only</option>
+                  <option value="non-veg">Non-Vegetarian</option>
+                  <option value="vegan">100% Vegan</option>
+                </select>
+              </div>
+
+              <div>
+                <label style="font-weight: 700; font-size: 0.88rem; display: block; margin-bottom: 6px;">Default Delivery Instruction</label>
+                <select id="pref-instruction" style="width: 100%; padding: 12px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface-card); font-size: 0.9rem;">
+                  <option value="Leave at door">Leave at door / Contactless delivery</option>
+                  <option value="Do not ring bell">Do not ring bell / Avoid disturbance</option>
+                  <option value="Leave with security">Leave with society security guard</option>
+                </select>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                  <input type="checkbox" id="pref-wa" checked>
+                  <span style="font-size: 0.88rem; font-weight: 600;">Receive WhatsApp live tracking alerts</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                  <input type="checkbox" id="pref-promo" checked>
+                  <span style="font-size: 0.88rem; font-weight: 600;">Receive weekend promo offers and discounts</span>
+                </label>
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="align-self: flex-start; font-weight: 700;">
+                <i class="fa-solid fa-check"></i> Save Preferences
+              </button>
+            </form>
+          </div>
+
+          <!-- TAB 5: Security & 2FA -->
+          <div id="tab-pane-security" style="display: none;">
+            <h2 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 18px;">Security & Passwords</h2>
+            
+            <form onsubmit="submitStaticPasswordChange(event)" style="display: flex; flex-direction: column; gap: 14px; max-width: 500px; margin-bottom: 24px;">
+              <div>
+                <label style="font-weight: 700; font-size: 0.85rem; display: block; margin-bottom: 4px;">Current Password</label>
+                <input type="password" id="sec-current-pass" required placeholder="••••••••" style="width: 100%; padding: 10px 14px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-size: 0.9rem;">
+              </div>
+              <div>
+                <label style="font-weight: 700; font-size: 0.85rem; display: block; margin-bottom: 4px;">New Password</label>
+                <input type="password" id="sec-new-pass" required placeholder="Min 6 characters" style="width: 100%; padding: 10px 14px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-size: 0.9rem;">
+              </div>
+              <button type="submit" class="btn btn-primary btn-sm" style="align-self: flex-start; font-weight: 700;">
+                Update Password
+              </button>
+            </form>
+
+            <div style="border-top: 1px solid var(--color-border); padding-top: 18px; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-weight: 800; font-size: 1rem;">Two-Factor Authentication</div>
+                <div style="font-size: 0.8rem; color: var(--color-text-muted);">Require OTP code on high value orders</div>
+              </div>
+              <button type="button" class="btn btn-secondary btn-sm" id="btn-toggle-2fa" onclick="toggle2FA()" style="font-weight: 700;">
+                ENABLE 2FA
+              </button>
+            </div>
+          </div>
+
+          <!-- TAB 6: Favorite Restaurants -->
+          <div id="tab-pane-favorites" style="display: none;">
+            <h2 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 20px;">Your Favorite Restaurants</h2>
+            <div id="profile-favorites-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px;">
+              <!-- Injected by JavaScript -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Add Address Modal Overlay -->
+  <div class="modal-overlay" id="profile-address-modal">
+    <div class="modal-card" style="max-width: 500px; width: 100%; border-radius: var(--radius-lg); padding: 0; overflow: hidden; background: var(--color-surface); box-shadow: var(--shadow-lg);">
+      <div style="padding: 20px 24px; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; background: var(--color-surface-card);">
+        <h3 style="font-size: 1.15rem; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-location-dot" style="color: var(--color-primary);"></i> Add Delivery Address
+        </h3>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeProfileAddressModal()" style="border-radius: var(--radius-full); width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="profile-new-addr-form" onsubmit="handleSaveProfileAddress(event)" style="padding: 24px; display: flex; flex-direction: column; gap: 16px;">
+        <!-- Tag Selector -->
+        <div>
+          <label class="form-label" style="font-weight: 600; font-size: 0.85rem; margin-bottom: 8px; display: block;">Address Type</label>
+          <div style="display: flex; gap: 10px;" id="prof-addr-tag-options">
+            <button type="button" class="btn btn-primary btn-sm prof-tag-btn active" data-tag="Home" onclick="selectProfAddressTag('Home')" style="flex: 1; padding: 8px;">
+              <i class="fa-solid fa-house"></i> Home
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm prof-tag-btn" data-tag="Work" onclick="selectProfAddressTag('Work')" style="flex: 1; padding: 8px;">
+              <i class="fa-solid fa-briefcase"></i> Work
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm prof-tag-btn" data-tag="Other" onclick="selectProfAddressTag('Other')" style="flex: 1; padding: 8px;">
+              <i class="fa-solid fa-location-dot"></i> Other
+            </button>
+          </div>
+          <input type="hidden" id="prof-modal-addr-tag" value="Home">
+        </div>
+
+        <!-- House / Flat / Building -->
+        <div class="form-group" style="margin: 0;">
+          <label class="form-label" style="font-weight: 600; font-size: 0.85rem; margin-bottom: 6px; display: block;">
+            Flat / House No. / Building <span style="color: var(--color-danger);">*</span>
+          </label>
+          <input type="text" id="prof-modal-addr-flat" class="form-control" placeholder="e.g. Flat 302, Lakeview Apartments" required style="width: 100%; padding: 12px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-card); font-size: 0.9rem;">
+        </div>
+
+        <!-- Street / Area -->
+        <div class="form-group" style="margin: 0;">
+          <label class="form-label" style="font-weight: 600; font-size: 0.85rem; margin-bottom: 6px; display: block;">
+            Street / Area / Locality <span style="color: var(--color-danger);">*</span>
+          </label>
+          <input type="text" id="prof-modal-addr-street" class="form-control" placeholder="e.g. Road No 36, Jubilee Hills" required style="width: 100%; padding: 12px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-card); font-size: 0.9rem;">
+        </div>
+
+        <!-- Landmark -->
+        <div class="form-group" style="margin: 0;">
+          <label class="form-label" style="font-weight: 600; font-size: 0.85rem; margin-bottom: 6px; display: block;">
+            Nearby Landmark (Optional)
+          </label>
+          <input type="text" id="prof-modal-addr-landmark" class="form-control" placeholder="e.g. Near Metro Station / D-Mart" style="width: 100%; padding: 12px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-card); font-size: 0.9rem;">
+        </div>
+
+        <!-- City & Pincode -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group" style="margin: 0;">
+            <label class="form-label" style="font-weight: 600; font-size: 0.85rem; margin-bottom: 6px; display: block;">City</label>
+            <input type="text" id="prof-modal-addr-city" class="form-control" value="Hyderabad" required style="width: 100%; padding: 12px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-card); font-size: 0.9rem;">
+          </div>
+          <div class="form-group" style="margin: 0;">
+            <label class="form-label" style="font-weight: 600; font-size: 0.85rem; margin-bottom: 6px; display: block;">Pincode</label>
+            <input type="text" id="prof-modal-addr-pincode" class="form-control" value="500081" required style="width: 100%; padding: 12px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-card); font-size: 0.9rem;">
+          </div>
+        </div>
+
+        <!-- Default Checkbox -->
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.85rem; margin-top: 4px;">
+          <input type="checkbox" id="prof-modal-addr-default" checked style="accent-color: var(--color-primary); width: 16px; height: 16px;">
+          <span>Set as default address</span>
+        </label>
+
+        <!-- Submit Buttons -->
+        <div style="display: flex; gap: 12px; margin-top: 10px;">
+          <button type="submit" class="btn btn-primary" style="flex: 2; padding: 12px; font-weight: 700; border-radius: var(--radius-sm);">
+            <i class="fa-solid fa-check"></i> Save Address
+          </button>
+          <button type="button" class="btn btn-secondary" onclick="closeProfileAddressModal()" style="flex: 1; padding: 12px; border-radius: var(--radius-sm);">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add New Card Modal Overlay -->
+  <div class="modal-overlay" id="profile-card-modal">
+    <div class="modal-card" style="max-width: 460px; width: 100%; border-radius: var(--radius-lg); padding: 0; overflow: hidden; background: var(--color-surface); box-shadow: var(--shadow-lg);">
+      <div style="padding: 18px 22px; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; background: var(--color-surface-card);">
+        <h3 style="font-size: 1.15rem; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-credit-card" style="color: var(--color-primary);"></i> Add Payment Card
+        </h3>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeAddCardModal()" style="border-radius: var(--radius-full); width: 30px; height: 30px; padding: 0; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="profile-card-form" onsubmit="handleSaveNewCard(event)" style="padding: 22px; display: flex; flex-direction: column; gap: 14px;">
+        <div>
+          <label class="form-label" style="font-weight: 600; font-size: 0.825rem; margin-bottom: 6px; display: block;">Cardholder Name</label>
+          <input type="text" id="card-modal-holder" value="Rahul Sharma" required placeholder="Name on card" style="width: 100%; padding: 11px 12px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-card); font-size: 0.9rem;">
+        </div>
+
+        <div>
+          <label class="form-label" style="font-weight: 600; font-size: 0.825rem; margin-bottom: 6px; display: block;">Card Number (16 Digits)</label>
+          <input type="text" id="card-modal-number" required placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCardInput(this)" style="width: 100%; padding: 11px 12px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-card); font-size: 0.9rem; letter-spacing: 1px;">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 10px;">
+          <div>
+            <label class="form-label" style="font-weight: 600; font-size: 0.825rem; margin-bottom: 6px; display: block;">Expiry</label>
+            <input type="text" id="card-modal-expiry" required placeholder="MM/YY" maxlength="5" oninput="formatExpiryInput(this)" style="width: 100%; padding: 11px 10px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-card); font-size: 0.9rem;">
+          </div>
+          <div>
+            <label class="form-label" style="font-weight: 600; font-size: 0.825rem; margin-bottom: 6px; display: block;">CVV</label>
+            <input type="password" id="card-modal-cvv" required placeholder="•••" maxlength="4" style="width: 100%; padding: 11px 10px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-card); font-size: 0.9rem;">
+          </div>
+          <div>
+            <label class="form-label" style="font-weight: 600; font-size: 0.825rem; margin-bottom: 6px; display: block;">Bank</label>
+            <input type="text" id="card-modal-bank" value="HDFC Bank" placeholder="Bank Name" style="width: 100%; padding: 11px 10px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-card); font-size: 0.9rem;">
+          </div>
+        </div>
+
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.85rem; margin-top: 4px;">
+          <input type="checkbox" id="card-modal-default" style="accent-color: var(--color-primary); width: 16px; height: 16px;">
+          <span>Set as primary default card</span>
+        </label>
+
+        <div style="display: flex; gap: 12px; margin-top: 10px;">
+          <button type="submit" class="btn btn-primary" style="flex: 2; padding: 12px; font-weight: 700; border-radius: var(--radius-sm);">
+            <i class="fa-solid fa-lock"></i> Save Card Securely
+          </button>
+          <button type="button" class="btn btn-secondary" onclick="closeAddCardModal()" style="flex: 1; padding: 12px; border-radius: var(--radius-sm);">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add New UPI Modal Overlay -->
+  <div class="modal-overlay" id="profile-upi-modal">
+    <div class="modal-card" style="max-width: 440px; width: 100%; border-radius: var(--radius-lg); padding: 0; overflow: hidden; background: var(--color-surface); box-shadow: var(--shadow-lg);">
+      <div style="padding: 18px 22px; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; background: var(--color-surface-card);">
+        <h3 style="font-size: 1.15rem; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-qrcode" style="color: var(--color-primary);"></i> Save UPI ID / VPA
+        </h3>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeAddUpiModal()" style="border-radius: var(--radius-full); width: 30px; height: 30px; padding: 0; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="profile-upi-form" onsubmit="handleSaveNewUpi(event)" style="padding: 22px; display: flex; flex-direction: column; gap: 14px;">
+        <div>
+          <label class="form-label" style="font-weight: 600; font-size: 0.825rem; margin-bottom: 6px; display: block;">UPI ID (Virtual Payment Address)</label>
+          <input type="text" id="upi-modal-vpa" required placeholder="e.g. rahul@okaxis or 9876543210@paytm" style="width: 100%; padding: 11px 12px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-card); font-size: 0.9rem;">
+        </div>
+
+        <div>
+          <label class="form-label" style="font-weight: 600; font-size: 0.825rem; margin-bottom: 6px; display: block;">Provider App</label>
+          <select id="upi-modal-app" style="width: 100%; padding: 11px 12px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-card); font-size: 0.9rem;">
+            <option value="Google Pay">Google Pay</option>
+            <option value="PhonePe">PhonePe</option>
+            <option value="Paytm">Paytm</option>
+            <option value="BHIM UPI">BHIM UPI</option>
+            <option value="Cred">Cred</option>
+          </select>
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-top: 10px;">
+          <button type="submit" class="btn btn-primary" style="flex: 2; padding: 12px; font-weight: 700; border-radius: var(--radius-sm);">
+            <i class="fa-solid fa-check"></i> Save UPI ID
+          </button>
+          <button type="button" class="btn btn-secondary" onclick="closeAddUpiModal()" style="flex: 1; padding: 12px; border-radius: var(--radius-sm);">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="../js/storage.js"></script>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialTab = urlParams.get('tab') || 'details';
+    let is2FAActive = false;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      loadProfileData();
+      switchProfileTab(initialTab);
+    });
+
+    function initTheme() {
+      const themeBtn = document.getElementById('theme-toggle-btn');
+      const themeIcon = document.getElementById('theme-icon');
+      const saved = QuickBiteDB.getTheme();
+      document.documentElement.setAttribute('data-theme', saved);
+      if (themeIcon) themeIcon.className = saved === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+
+      themeBtn?.addEventListener('click', () => {
+        const next = QuickBiteDB.toggleTheme();
+        if (themeIcon) themeIcon.className = next === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+      });
+
+      // Update cart count
+      const summary = QuickBiteDB.getCartSummary();
+      const badge = document.getElementById('nav-cart-badge');
+      if (badge && summary.totalItems > 0) {
+        badge.textContent = summary.totalItems;
+        badge.style.display = 'inline-flex';
+      }
+    }
+
+    function loadProfileData() {
+      const user = QuickBiteDB.getCurrentUser();
+      if (!user) {
+        window.location.href = '../login.html';
+        return;
+      }
+
+      document.getElementById('side-user-name').textContent = user.name;
+      document.getElementById('side-user-email').textContent = user.email;
+      if (user.avatar) {
+        document.getElementById('profile-avatar-img').src = user.avatar;
+      }
+
+      document.getElementById('prof-name').value = user.name;
+      document.getElementById('prof-email').value = user.email;
+      document.getElementById('prof-phone').value = user.phone || '+91 98765 43210';
+
+      renderWalletTab();
+      renderAddressesList();
+      renderFavoritesList();
+    }
+
+    function switchProfileTab(tabName) {
+      document.querySelectorAll('.profile-tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tabName);
+      });
+
+      document.getElementById('tab-pane-details').style.display = tabName === 'details' ? 'block' : 'none';
+      document.getElementById('tab-pane-wallet').style.display = tabName === 'wallet' ? 'block' : 'none';
+      document.getElementById('tab-pane-addresses').style.display = tabName === 'addresses' ? 'block' : 'none';
+      document.getElementById('tab-pane-preferences').style.display = tabName === 'preferences' ? 'block' : 'none';
+      document.getElementById('tab-pane-security').style.display = tabName === 'security' ? 'block' : 'none';
+      document.getElementById('tab-pane-favorites').style.display = tabName === 'favorites' ? 'block' : 'none';
+    }
+
+    // Profile form submit
+    document.getElementById('profile-edit-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const user = QuickBiteDB.getCurrentUser();
+      if (user) {
+        const name = document.getElementById('prof-name').value.trim();
+        const email = document.getElementById('prof-email').value.trim();
+        const phone = document.getElementById('prof-phone').value.trim();
+
+        QuickBiteDB.updateUserProfile(user.id, { name, email, phone });
+        loadProfileData();
+      }
+    });
+
+    const AVATAR_PRESETS = [
+      'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80',
+      'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=200&q=80',
+      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80',
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80'
+    ];
+    let avatarIdx = 0;
+    function changeAvatarPrompt() {
+      const user = QuickBiteDB.getCurrentUser();
+      if (!user) return;
+      avatarIdx = (avatarIdx + 1) % AVATAR_PRESETS.length;
+      const nextAvatar = AVATAR_PRESETS[avatarIdx];
+      QuickBiteDB.updateUserProfile(user.id, { avatar: nextAvatar });
+      const img = document.getElementById('profile-avatar-img');
+      if (img) img.src = nextAvatar;
+      QuickBiteDB.showToast('Profile photo updated!', 'success');
+    }
+
+    // Wallet & Payments
+    function renderWalletTab() {
+      const wallet = QuickBiteDB.getWallet ? QuickBiteDB.getWallet() : { balance: 450 };
+      const balEl = document.getElementById('prof-wallet-bal');
+      if (balEl) balEl.textContent = `₹${wallet.balance}`;
+
+      // Cards
+      const cards = QuickBiteDB.getSavedCards ? QuickBiteDB.getSavedCards() : [];
+      const cardsContainer = document.getElementById('prof-cards-container');
+      if (cardsContainer) {
+        if (cards.length === 0) {
+          cardsContainer.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 24px; background: var(--color-bg); border-radius: var(--radius-md); border: 1px dashed var(--color-border);">
+              <i class="fa-solid fa-credit-card" style="font-size: 2rem; color: var(--color-text-subtle); margin-bottom: 8px;"></i>
+              <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 10px;">No saved payment cards found</p>
+              <button class="btn btn-primary btn-sm" onclick="openAddCardModal()">
+                <i class="fa-solid fa-plus"></i> Add First Card
+              </button>
+            </div>
+          `;
+        } else {
+          cardsContainer.innerHTML = cards.map(c => `
+            <div style="border:${c.isDefault ? '2px solid var(--color-primary)' : '1px solid var(--color-border)'}; border-radius:var(--radius-md); padding:16px; background:var(--color-surface-card); box-shadow:${c.isDefault ? '0 4px 14px rgba(255,90,38,0.12)' : 'none'}; display:flex; flex-direction:column; justify-content:space-between;">
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                  <span style="font-weight:800; font-size:0.88rem; display:flex; align-items:center; gap:6px;">
+                    <i class="fa-solid fa-credit-card" style="color:var(--color-primary);"></i> ${c.bank || 'Card'}
+                  </span>
+                  ${c.isDefault ? '<span class="badge badge-primary" style="font-size:0.7rem; text-transform:uppercase;">Default</span>' : `<button type="button" class="btn btn-secondary btn-sm" style="font-size:0.72rem; padding:2px 8px;" onclick="setDefaultCardItem('${c.id}')">Make Default</button>`}
+                </div>
+                <div style="font-size:1.05rem; font-weight:800; letter-spacing:1px; margin-bottom:8px; font-family:monospace;">${c.number}</div>
+                <div style="font-size:0.75rem; color:var(--color-text-muted); display:flex; justify-content:space-between;">
+                  <span>${c.holder}</span>
+                  <span>Exp: ${c.expiry}</span>
+                </div>
+              </div>
+              <div style="border-top:1px solid var(--color-border); margin-top:12px; padding-top:8px; display:flex; justify-content:flex-end;">
+                <button type="button" class="btn btn-secondary btn-sm" style="color:var(--color-danger); font-size:0.75rem; padding:3px 8px;" onclick="removeCardItem('${c.id}')" title="Delete card">
+                  <i class="fa-regular fa-trash-can"></i> Remove
+                </button>
+              </div>
+            </div>
+          `).join('');
+        }
+      }
+
+      // UPI
+      const upiList = QuickBiteDB.getSavedUpi ? QuickBiteDB.getSavedUpi() : [];
+      const upiContainer = document.getElementById('prof-upi-container');
+      if (upiContainer) {
+        if (upiList.length === 0) {
+          upiContainer.innerHTML = `
+            <div style="text-align: center; padding: 24px; background: var(--color-bg); border-radius: var(--radius-md); border: 1px dashed var(--color-border);">
+              <i class="fa-solid fa-qrcode" style="font-size: 2rem; color: var(--color-text-subtle); margin-bottom: 8px;"></i>
+              <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 10px;">No saved UPI IDs found</p>
+              <button class="btn btn-primary btn-sm" onclick="openAddUpiModal()">
+                <i class="fa-solid fa-plus"></i> Add UPI ID
+              </button>
+            </div>
+          `;
+        } else {
+          upiContainer.innerHTML = upiList.map(u => `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 16px; border:1px solid var(--color-border); border-radius:var(--radius-md); background:var(--color-surface-card);">
+              <div style="display:flex; align-items:center; gap:12px;">
+                <div style="width:36px; height:36px; border-radius:50%; background:rgba(255,90,38,0.1); color:var(--color-primary); display:flex; align-items:center; justify-content:center;">
+                  <i class="fa-solid fa-qrcode"></i>
+                </div>
+                <div>
+                  <strong style="font-size:0.92rem; color:var(--color-text-main);">${u.vpa}</strong>
+                  <div style="font-size:0.75rem; color:var(--color-text-muted);">${u.appName || 'UPI App'}</div>
+                </div>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                ${u.isDefault ? '<span class="badge badge-primary" style="font-size:0.72rem;">Primary</span>' : `<button type="button" class="btn btn-secondary btn-sm" style="font-size:0.72rem; padding:2px 8px;" onclick="setDefaultUpiItem('${u.id}')">Set Primary</button>`}
+                <button type="button" class="btn btn-secondary btn-sm" style="color:var(--color-danger); padding:4px 8px;" onclick="removeUpiItem('${u.id}')" title="Delete UPI">
+                  <i class="fa-regular fa-trash-can"></i>
+                </button>
+              </div>
+            </div>
+          `).join('');
+        }
+      }
+    }
+
+    function setStaticTopUp(amt) {
+      document.getElementById('static-topup-input').value = amt;
+    }
+
+    function submitStaticTopUp() {
+      const amt = parseFloat(document.getElementById('static-topup-input').value);
+      if (isNaN(amt) || amt < 50) {
+        QuickBiteDB.showToast("Minimum top-up is ₹50", "warning");
+        return;
+      }
+      QuickBiteDB.addWalletMoney(amt, 'Instant UPI Top-up');
+      QuickBiteDB.showToast(`Successfully added ₹${amt} to QuickBite Wallet!`, 'success');
+      renderWalletTab();
+    }
+
+    // Card Modal Handlers
+    function openAddCardModal() {
+      const modal = document.getElementById('profile-card-modal');
+      if (modal) {
+        modal.classList.add('active');
+        document.getElementById('card-modal-number')?.focus();
+      }
+    }
+
+    function closeAddCardModal() {
+      const modal = document.getElementById('profile-card-modal');
+      if (modal) modal.classList.remove('active');
+    }
+
+    function formatCardInput(input) {
+      const raw = input.value.replace(/\D/g, '').slice(0, 16);
+      input.value = raw.replace(/(\d{4})(?=\d)/g, '$1 ');
+    }
+
+    function formatExpiryInput(input) {
+      const raw = input.value.replace(/\D/g, '').slice(0, 4);
+      if (raw.length >= 2) {
+        input.value = `${raw.slice(0, 2)}/${raw.slice(2)}`;
+      } else {
+        input.value = raw;
+      }
+    }
+
+    function handleSaveNewCard(e) {
+      e.preventDefault();
+      const holder = document.getElementById('card-modal-holder').value.trim();
+      const rawNum = document.getElementById('card-modal-number').value.replace(/\s+/g, '');
+      const expiry = document.getElementById('card-modal-expiry').value.trim();
+      const cvv = document.getElementById('card-modal-cvv').value.trim();
+      const bank = document.getElementById('card-modal-bank').value.trim() || 'HDFC Bank';
+      const isDefault = document.getElementById('card-modal-default').checked;
+
+      if (rawNum.length < 12) {
+        QuickBiteDB.showToast('Please enter a valid 16-digit card number', 'error');
+        return;
+      }
+      if (expiry.length < 5) {
+        QuickBiteDB.showToast('Please enter expiry as MM/YY', 'error');
+        return;
+      }
+
+      const masked = `•••• •••• •••• ${rawNum.slice(-4)}`;
+      QuickBiteDB.saveCard({
+        holder,
+        number: masked,
+        expiry,
+        bank,
+        isDefault
+      });
+
+      renderWalletTab();
+      closeAddCardModal();
+      document.getElementById('card-modal-number').value = '';
+      document.getElementById('card-modal-cvv').value = '';
+    }
+
+    function setDefaultCardItem(cardId) {
+      QuickBiteDB.setDefaultCard(cardId);
+      renderWalletTab();
+    }
+
+    function removeCardItem(cardId) {
+      if (confirm('Are you sure you want to remove this card?')) {
+        QuickBiteDB.removeCard(cardId);
+        renderWalletTab();
+      }
+    }
+
+    // UPI Modal Handlers
+    function openAddUpiModal() {
+      const modal = document.getElementById('profile-upi-modal');
+      if (modal) {
+        modal.classList.add('active');
+        document.getElementById('upi-modal-vpa')?.focus();
+      }
+    }
+
+    function closeAddUpiModal() {
+      const modal = document.getElementById('profile-upi-modal');
+      if (modal) modal.classList.remove('active');
+    }
+
+    function handleSaveNewUpi(e) {
+      e.preventDefault();
+      const vpa = document.getElementById('upi-modal-vpa').value.trim();
+      const appName = document.getElementById('upi-modal-app').value;
+
+      if (!vpa.includes('@')) {
+        QuickBiteDB.showToast('Please enter a valid UPI VPA (e.g. user@okhdfcbank)', 'error');
+        return;
+      }
+
+      const res = QuickBiteDB.saveUpi(vpa, appName);
+      if (res) {
+        renderWalletTab();
+        closeAddUpiModal();
+        document.getElementById('upi-modal-vpa').value = '';
+      }
+    }
+
+    function setDefaultUpiItem(upiId) {
+      QuickBiteDB.setDefaultUpi(upiId);
+      renderWalletTab();
+    }
+
+    function removeUpiItem(upiId) {
+      if (confirm('Are you sure you want to remove this UPI ID?')) {
+        QuickBiteDB.removeUpi(upiId);
+        renderWalletTab();
+      }
+    }
+
+    // Render Saved Addresses
+    function renderAddressesList() {
+      const container = document.getElementById('profile-addresses-grid');
+      const addresses = QuickBiteDB.getUserAddresses ? QuickBiteDB.getUserAddresses() : QuickBiteDB.getAddresses();
+
+      if (!addresses || addresses.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 30px; background: var(--color-bg); border-radius: var(--radius-md); border: 1px dashed var(--color-border);">
+            <i class="fa-solid fa-map-location-dot" style="font-size: 2.2rem; color: var(--color-primary); margin-bottom: 10px;"></i>
+            <p style="font-weight: 600; margin-bottom: 10px;">No saved delivery addresses found</p>
+            <button class="btn btn-primary btn-sm" onclick="openProfileAddressModal()">
+              <i class="fa-solid fa-plus"></i> Add New Address
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = addresses.map(addr => `
+        <div style="border:1px solid var(--color-border); border-radius:var(--radius-md); padding:16px; background:var(--color-surface-card); display:flex; justify-content:space-between; align-items:flex-start;">
+          <div>
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+              <span class="badge ${addr.tag === 'Home' ? 'badge-primary' : (addr.tag === 'Work' ? 'badge-success' : 'badge-warning')}">
+                <i class="fa-solid ${addr.tag === 'Home' ? 'fa-house' : (addr.tag === 'Work' ? 'fa-briefcase' : 'fa-location-dot')}"></i>
+                ${addr.tag || addr.type || 'Home'}
+              </span>
+              ${addr.isDefault ? `<span class="badge badge-info" style="font-size:0.75rem;"><i class="fa-solid fa-check"></i> Default</span>` : `<button class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 2px 8px;" onclick="setDefaultAddressItem('${addr.id}')">Set Default</button>`}
+            </div>
+            <h4 style="font-size:0.95rem; font-weight:700; margin-bottom: 2px;">${addr.street || addr.address}</h4>
+            ${addr.landmark ? `<p style="font-size:0.8rem; color:var(--color-text-subtle); margin-bottom: 2px;"><i class="fa-regular fa-compass"></i> Near ${addr.landmark}</p>` : ''}
+            <p style="font-size:0.825rem; color:var(--color-text-muted);">${addr.city || 'Hyderabad'} - ${addr.pincode || '500081'}</p>
+          </div>
+          <button class="btn btn-secondary btn-sm" style="color:var(--color-danger);" onclick="deleteAddressItem('${addr.id}')" title="Delete address">
+            <i class="fa-regular fa-trash-can"></i>
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function openProfileAddressModal() {
+      const modal = document.getElementById('profile-address-modal');
+      if (modal) {
+        modal.classList.add('active');
+        document.getElementById('prof-modal-addr-flat')?.focus();
+      }
+    }
+
+    function closeProfileAddressModal() {
+      const modal = document.getElementById('profile-address-modal');
+      if (modal) modal.classList.remove('active');
+    }
+
+    function selectProfAddressTag(tag) {
+      document.getElementById('prof-modal-addr-tag').value = tag;
+      document.querySelectorAll('#prof-addr-tag-options .prof-tag-btn').forEach(btn => {
+        if (btn.dataset.tag === tag) {
+          btn.className = 'btn btn-primary btn-sm prof-tag-btn active';
+        } else {
+          btn.className = 'btn btn-secondary btn-sm prof-tag-btn';
+        }
+      });
+    }
+
+    function handleSaveProfileAddress(e) {
+      e.preventDefault();
+      const tag = document.getElementById('prof-modal-addr-tag').value || 'Home';
+      const flat = document.getElementById('prof-modal-addr-flat').value.trim();
+      const street = document.getElementById('prof-modal-addr-street').value.trim();
+      const landmark = document.getElementById('prof-modal-addr-landmark').value.trim();
+      const city = document.getElementById('prof-modal-addr-city').value.trim() || 'Hyderabad';
+      const pincode = document.getElementById('prof-modal-addr-pincode').value.trim() || '500081';
+      const isDefault = document.getElementById('prof-modal-addr-default').checked;
+
+      if (!flat || !street) {
+        QuickBiteDB.showToast("Please enter complete street and flat details", "warning");
+        return;
+      }
+
+      const fullStreet = landmark ? `${flat}, ${street} (Near ${landmark})` : `${flat}, ${street}`;
+      const user = QuickBiteDB.getCurrentUser();
+
+      QuickBiteDB.addAddress(user?.id || null, {
+        tag: tag,
+        type: tag,
+        street: fullStreet,
+        address: fullStreet,
+        landmark: landmark,
+        city: city,
+        pincode: pincode,
+        isDefault: isDefault
+      });
+
+      renderAddressesList();
+      closeProfileAddressModal();
+      document.getElementById('prof-modal-addr-flat').value = '';
+      document.getElementById('prof-modal-addr-street').value = '';
+      document.getElementById('prof-modal-addr-landmark').value = '';
+      QuickBiteDB.showToast("Address saved successfully!", "success");
+    }
+
+    function setDefaultAddressItem(addrId) {
+      QuickBiteDB.setDefaultAddress(addrId);
+      renderAddressesList();
+    }
+
+    function deleteAddressItem(addrId) {
+      const user = QuickBiteDB.getCurrentUser();
+      if (confirm("Are you sure you want to delete this address?")) {
+        QuickBiteDB.deleteAddress(user?.id || null, addrId);
+        renderAddressesList();
+      }
+    }
+
+    // Preferences & Security
+    function saveStaticPreferences(e) {
+      e.preventDefault();
+      QuickBiteDB.showToast("Preferences saved successfully!", "success");
+    }
+
+    function submitStaticPasswordChange(e) {
+      e.preventDefault();
+      const curr = document.getElementById('sec-current-pass').value;
+      const next = document.getElementById('sec-new-pass').value;
+      const res = QuickBiteDB.changePassword(curr, next);
+      if (res && res.success) {
+        document.getElementById('sec-current-pass').value = '';
+        document.getElementById('sec-new-pass').value = '';
+      }
+    }
+
+    function toggle2FA() {
+      is2FAActive = !is2FAActive;
+      const btn = document.getElementById('btn-toggle-2fa');
+      if (btn) {
+        btn.textContent = is2FAActive ? '2FA ACTIVE' : 'ENABLE 2FA';
+        btn.className = is2FAActive ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm';
+      }
+      QuickBiteDB.showToast(`Two-Factor Authentication ${is2FAActive ? 'Enabled' : 'Disabled'}`, is2FAActive ? 'success' : 'info');
+    }
+
+    // Render Favorites List
+    function renderFavoritesList() {
+      const container = document.getElementById('profile-favorites-grid');
+      const favs = QuickBiteDB.getFavorites();
+      const allRest = QuickBiteDB.getRestaurants();
+      const favRestaurants = allRest.filter(r => favs.includes(r.id));
+
+      if (favRestaurants.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+            <i class="fa-regular fa-heart" style="font-size: 3rem; color: var(--color-text-subtle); margin-bottom: 12px;"></i>
+            <h3>No Favorite Restaurants Yet</h3>
+            <p style="color: var(--color-text-muted); margin-top: 6px;">Tap the heart icon on any restaurant to save it here</p>
+            <a href="restaurants.html" class="btn btn-primary btn-sm" style="margin-top: 16px;">Explore Restaurants</a>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = favRestaurants.map(r => `
+        <div style="border:1px solid var(--color-border); border-radius:var(--radius-lg); overflow:hidden; background:var(--color-surface); box-shadow:var(--shadow-sm);">
+          <img src="${r.image}" alt="${r.name}" style="width:100%; height:130px; object-fit:cover;" onerror="handleImageError(this, 'restaurant')">
+          <div style="padding:14px;">
+            <h4 style="font-size:1rem; font-weight:700; margin-bottom:4px;">${r.name}</h4>
+            <p style="font-size:0.8rem; color:var(--color-text-muted); margin-bottom:12px;">${r.cuisine.slice(0, 2).join(', ')} • ★ ${r.rating}</p>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <a href="menu.html?id=${r.id}" class="btn btn-primary btn-sm">Order Now</a>
+              <button class="btn-icon" style="color:#EF4444;" onclick="QuickBiteDB.toggleFavorite('${r.id}'); renderFavoritesList();" title="Remove from favorites">
+                <i class="fa-solid fa-heart"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+  </script>
+</body>
+</html>

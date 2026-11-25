@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <meta name="color-scheme" content="light dark" />
+    <!-- Instant Anti-Flash Dark Mode Script -->
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('quickbite_theme');
+          var theme = null;
+          if (saved) {
+            try { theme = JSON.parse(saved); } catch(e) { theme = saved; }
+          }
+          if (!theme) {
+            theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+          }
+          document.documentElement.setAttribute('data-theme', theme);
+          document.documentElement.style.colorScheme = theme;
+          if (theme === 'dark') {
+            document.documentElement.style.backgroundColor = '#090D16';
+          } else {
+            document.documentElement.style.backgroundColor = '#F8FAFC';
+          }
+        } catch(e) {}
+      })();
+    </script>
+    <style>
+      :root { color-scheme: light dark; }
+      html { background-color: #F8FAFC; color: #0F172A; }
+      html[data-theme="dark"] { background-color: #090D16 !important; color: #F8FAFC !important; color-scheme: dark; }
+      html[data-theme="light"] { background-color: #F8FAFC !important; color: #0F172A !important; color-scheme: light; }
+      body { background-color: inherit; }
+      @view-transition { navigation: auto; }
+    </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restaurant Management & Approvals | QuickBite Super Admin</title>
+  
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍔</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/restaurant.css">
+  <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+
+  <div class="dash-layout">
+    
+    <!-- Admin Sidebar -->
+    <aside class="dash-sidebar" style="width: 280px;">
+      <div class="sidebar-brand-box">
+        <a href="dashboard.html" class="brand-logo" style="font-size: 1.35rem;">
+          <div class="logo-icon-wrap" style="width:36px; height:36px; font-size:1rem; background: linear-gradient(135deg, #17202A 0%, #2C3E50 100%);">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <div>Quick<span>Admin</span></div>
+        </a>
+        <span class="badge badge-primary" style="font-size:0.7rem; background:var(--color-navy); color:#FFFFFF;">SUPER ADMIN</span>
+      </div>
+
+      <!-- Admin Profile Box -->
+      <div class="sidebar-rest-card">
+        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80" alt="Admin Anita" class="sidebar-rest-thumb" onerror="handleImageError(this, 'avatar')">
+        <div style="min-width: 0;">
+          <div class="sidebar-rest-name">Anita Desai</div>
+          <div style="font-size: 0.75rem; color: var(--color-success); font-weight: 700;">
+            <i class="fa-solid fa-circle" style="font-size: 0.55rem;"></i> System Controller
+          </div>
+        </div>
+      </div>
+
+      <!-- Nav Links -->
+      <nav class="sidebar-nav-list">
+        <a href="dashboard.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-chart-pie"></i> Platform Overview
+        </a>
+        <a href="customers.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-users"></i> Customers
+          <span class="admin-badge-count" id="side-customers-badge">0</span>
+        </a>
+        <a href="restaurants.html" class="sidebar-nav-link active">
+          <i class="fa-solid fa-store"></i> Restaurants
+          <span class="admin-badge-count" id="side-restaurants-badge">0</span>
+        </a>
+        <a href="orders.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-receipt"></i> Orders & Dispatch
+          <span class="admin-badge-count" id="side-orders-badge">0</span>
+        </a>
+        <a href="delivery.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-motorcycle"></i> Delivery Fleet
+          <span class="admin-badge-count" id="side-fleet-badge">0</span>
+        </a>
+        <a href="analytics.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-chart-line"></i> Analytics & Charts
+        </a>
+
+        <div style="border-top: 1px solid var(--color-border-subtle); margin: 12px 0;"></div>
+
+        <div style="padding: 0 16px; font-size: 0.725rem; font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; margin-bottom: 6px;">
+          Jump To Module Portals:
+        </div>
+        <a href="../customer/restaurants.html" class="sidebar-nav-link" target="_blank">
+          <i class="fa-solid fa-utensils"></i> Customer Food Portal
+        </a>
+        <a href="../restaurant/dashboard.html" class="sidebar-nav-link" target="_blank">
+          <i class="fa-solid fa-shop"></i> Restaurant Kitchen Hub
+        </a>
+        <a href="../delivery/dashboard.html" class="sidebar-nav-link" target="_blank">
+          <i class="fa-solid fa-route"></i> Delivery Rider Fleet
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="btn btn-secondary btn-sm" style="width: 100%; color: var(--color-danger);" onclick="QuickBiteDB.logout(); window.location.href='../login.html';">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dash-main">
+      
+      <!-- Topbar -->
+      <header class="dash-topbar">
+        <div class="topbar-left" style="display:flex; align-items:center; gap:14px;">
+          <button class="admin-mobile-toggle" id="mobile-sidebar-toggle" aria-label="Toggle Navigation">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+          <div>
+            <h1 class="topbar-title">Restaurant Management & Onboarding</h1>
+            <p style="font-size:0.8rem; color:var(--color-text-muted); margin-top:2px;">
+              Verify kitchen hygiene, manage dining partners, approve new applicants, and monitor commission rates
+            </p>
+          </div>
+        </div>
+
+        <div class="topbar-right admin-topbar-actions">
+          <button class="btn btn-primary btn-sm" onclick="openAddRestaurantModal()">
+            <i class="fa-solid fa-plus"></i> Add New Restaurant
+          </button>
+
+          <button class="btn btn-secondary btn-sm" onclick="exportRestaurantsCSV()">
+            <i class="fa-solid fa-file-export"></i> Export CSV
+          </button>
+
+          <!-- Theme Switcher -->
+          <button class="btn-icon" id="theme-toggle-btn" title="Toggle Light/Dark Theme">
+            <i class="fa-solid fa-moon" id="theme-icon"></i>
+          </button>
+        </div>
+      </header>
+
+      <div class="dash-body">
+        
+        <!-- 5 KPI Metrics Cards -->
+        <div class="admin-metrics-5">
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-info">
+              <h4>Total Kitchens</h4>
+              <div class="admin-kpi-val" id="rest-total-val">0</div>
+              <div class="admin-kpi-sub up"><i class="fa-solid fa-store"></i> On platform</div>
+            </div>
+            <div class="admin-kpi-icon icon-purple">
+              <i class="fa-solid fa-utensils"></i>
+            </div>
+          </div>
+
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-info">
+              <h4>Approved & Active</h4>
+              <div class="admin-kpi-val" id="rest-active-val">0</div>
+              <div class="admin-kpi-sub up"><i class="fa-solid fa-circle-check"></i> Accepting orders</div>
+            </div>
+            <div class="admin-kpi-icon icon-green">
+              <i class="fa-solid fa-door-open"></i>
+            </div>
+          </div>
+
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-info">
+              <h4>Pending Approval</h4>
+              <div class="admin-kpi-val" id="rest-pending-val" style="color:var(--color-warning);">0</div>
+              <div class="admin-kpi-sub" style="color:var(--color-warning);"><i class="fa-solid fa-clock"></i> Action required</div>
+            </div>
+            <div class="admin-kpi-icon icon-amber">
+              <i class="fa-solid fa-stamp"></i>
+            </div>
+          </div>
+
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-info">
+              <h4>Closed / Suspended</h4>
+              <div class="admin-kpi-val" id="rest-closed-val">0</div>
+              <div class="admin-kpi-sub down"><i class="fa-solid fa-moon"></i> Off-duty</div>
+            </div>
+            <div class="admin-kpi-icon icon-orange">
+              <i class="fa-solid fa-door-closed"></i>
+            </div>
+          </div>
+
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-info">
+              <h4>Menu Dishes Listed</h4>
+              <div class="admin-kpi-val" id="rest-dishes-val">0</div>
+              <div class="admin-kpi-sub up"><i class="fa-solid fa-bowl-food"></i> Across kitchens</div>
+            </div>
+            <div class="admin-kpi-icon icon-blue">
+              <i class="fa-solid fa-burger"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter & Search Toolbar -->
+        <div class="admin-toolbar">
+          <div class="admin-toolbar-left">
+            <!-- Search -->
+            <div class="admin-search-wrap">
+              <input type="text" id="rest-search-input" class="admin-search-input" placeholder="Search by name, cuisine, city, or email...">
+              <i class="fa-solid fa-magnifying-glass admin-search-icon"></i>
+            </div>
+
+            <!-- Status Filter Pills -->
+            <div class="admin-pill-group">
+              <button class="admin-pill-btn active" data-filter="all" onclick="filterRestaurantStatus('all', this)">All</button>
+              <button class="admin-pill-btn" data-filter="pending" onclick="filterRestaurantStatus('pending', this)">
+                Pending Approvals <span class="badge badge-warning" id="tab-pending-badge" style="font-size:0.65rem; padding:1px 6px;">0</span>
+              </button>
+              <button class="admin-pill-btn" data-filter="approved" onclick="filterRestaurantStatus('approved', this)">Approved</button>
+              <button class="admin-pill-btn" data-filter="closed" onclick="filterRestaurantStatus('closed', this)">Closed</button>
+              <button class="admin-pill-btn" data-filter="pure-veg" onclick="filterRestaurantStatus('pure-veg', this)"><i class="fa-solid fa-leaf" style="color:#10B981;"></i> Pure Veg</button>
+            </div>
+          </div>
+
+          <div class="admin-toolbar-right">
+            <!-- Sort dropdown -->
+            <select id="rest-sort-select" class="admin-select" onchange="renderRestaurants()">
+              <option value="name-asc">Sort: Name (A - Z)</option>
+              <option value="rating-desc">Sort: Highest Rated</option>
+              <option value="price-asc">Sort: Price (Low to High)</option>
+              <option value="price-desc">Sort: Price (High to Low)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Restaurants Table Card -->
+        <div class="admin-table-card">
+          <div class="admin-table-header">
+            <div>
+              <h3 class="admin-table-title">Partner Restaurants Directory</h3>
+              <p class="admin-table-desc">Displaying <span id="rest-display-count">0</span> restaurants</p>
+            </div>
+          </div>
+
+          <div class="admin-table-responsive">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Restaurant & Owner</th>
+                  <th>Cuisines</th>
+                  <th>Rating</th>
+                  <th>Location & Delivery</th>
+                  <th>Kitchen Status</th>
+                  <th>Approval Status</th>
+                  <th>Featured</th>
+                  <th>Administrative Actions</th>
+                </tr>
+              </thead>
+              <tbody id="restaurants-table-tbody">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <!-- MODAL 1: Add New Restaurant -->
+  <div class="admin-modal-backdrop" id="modal-add-restaurant">
+    <div class="admin-modal-dialog" style="max-width: 680px;">
+      <div class="admin-modal-header">
+        <h3 class="admin-modal-title">Onboard New Restaurant</h3>
+        <button class="admin-modal-close" onclick="AdminUI.closeModal('modal-add-restaurant')">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <form id="form-add-restaurant" onsubmit="handleAddRestaurant(event)">
+        <div class="admin-modal-body">
+          <div class="form-group-row">
+            <div class="form-field">
+              <label>Restaurant Name *</label>
+              <input type="text" id="add-rest-name" class="form-input" placeholder="e.g. Saffron Mughal Kitchen" required>
+            </div>
+            <div class="form-field">
+              <label>Owner Contact Email *</label>
+              <input type="email" id="add-rest-email" class="form-input" placeholder="owner@saffronkitchen.com" required>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label>Tagline / Specialty</label>
+            <input type="text" id="add-rest-tagline" class="form-input" placeholder="e.g. Slow Dum Nawabi Biryanis & Tandoor Grills">
+          </div>
+
+          <div class="form-group-row">
+            <div class="form-field">
+              <label>Cuisines (Comma-separated) *</label>
+              <input type="text" id="add-rest-cuisines" class="form-input" placeholder="e.g. Mughlai, Biryani, North Indian" required>
+            </div>
+            <div class="form-field">
+              <label>Price for Two (₹) *</label>
+              <input type="number" id="add-rest-price" class="form-input" value="350" required>
+            </div>
+          </div>
+
+          <div class="form-group-row">
+            <div class="form-field">
+              <label>Avg Delivery Time</label>
+              <input type="text" id="add-rest-time" class="form-input" value="25-35 min">
+            </div>
+            <div class="form-field">
+              <label>Delivery Fee (₹)</label>
+              <input type="number" id="add-rest-fee" class="form-input" value="30">
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label>Kitchen Address *</label>
+            <input type="text" id="add-rest-address" class="form-input" placeholder="Street, Neighborhood, City" required>
+          </div>
+
+          <div class="form-group-row">
+            <div class="form-field">
+              <label>Thumbnail Photo URL</label>
+              <input type="url" id="add-rest-image" class="form-input" value="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80">
+            </div>
+            <div class="form-field">
+              <label>Banner Image URL</label>
+              <input type="url" id="add-rest-banner" class="form-input" value="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80">
+            </div>
+          </div>
+
+          <div class="form-group-row">
+            <div class="form-field">
+              <label>Dietary Category</label>
+              <select id="add-rest-veg" class="form-select">
+                <option value="false">Non-Veg & Veg Available</option>
+                <option value="true">100% Pure Vegetarian</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Initial Approval Status</label>
+              <select id="add-rest-approval" class="form-select">
+                <option value="approved">Approved (Launch Immediately)</option>
+                <option value="pending">Pending Admin Review</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="admin-modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="AdminUI.closeModal('modal-add-restaurant')">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-check"></i> Register Restaurant</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: Edit Restaurant -->
+  <div class="admin-modal-backdrop" id="modal-edit-restaurant">
+    <div class="admin-modal-dialog" style="max-width: 680px;">
+      <div class="admin-modal-header">
+        <h3 class="admin-modal-title">Edit Restaurant Profile</h3>
+        <button class="admin-modal-close" onclick="AdminUI.closeModal('modal-edit-restaurant')">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <form id="form-edit-restaurant" onsubmit="handleEditRestaurant(event)">
+        <input type="hidden" id="edit-rest-id">
+        <div class="admin-modal-body">
+          <div class="form-group-row">
+            <div class="form-field">
+              <label>Restaurant Name</label>
+              <input type="text" id="edit-rest-name" class="form-input" required>
+            </div>
+            <div class="form-field">
+              <label>Owner Email</label>
+              <input type="email" id="edit-rest-email" class="form-input" required>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label>Tagline</label>
+            <input type="text" id="edit-rest-tagline" class="form-input">
+          </div>
+
+          <div class="form-group-row">
+            <div class="form-field">
+              <label>Cuisines (Comma-separated)</label>
+              <input type="text" id="edit-rest-cuisines" class="form-input" required>
+            </div>
+            <div class="form-field">
+              <label>Price for Two (₹)</label>
+              <input type="number" id="edit-rest-price" class="form-input" required>
+            </div>
+          </div>
+
+          <div class="form-group-row">
+            <div class="form-field">
+              <label>Kitchen Status</label>
+              <select id="edit-rest-status" class="form-select">
+                <option value="open">Open (Accepting Orders)</option>
+                <option value="closed">Closed</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Approval Status</label>
+              <select id="edit-rest-approval" class="form-select">
+                <option value="approved">Approved & Verified</option>
+                <option value="pending">Pending Review</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label>Address</label>
+            <input type="text" id="edit-rest-address" class="form-input" required>
+          </div>
+        </div>
+        <div class="admin-modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="AdminUI.closeModal('modal-edit-restaurant')">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-save"></i> Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 3: View Restaurant Details & Menu -->
+  <div class="admin-modal-backdrop" id="modal-view-restaurant">
+    <div class="admin-modal-dialog" style="max-width: 680px;">
+      <div class="admin-modal-header">
+        <h3 class="admin-modal-title" id="view-rest-title">Restaurant Details</h3>
+        <button class="admin-modal-close" onclick="AdminUI.closeModal('modal-view-restaurant')">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="admin-modal-body" id="view-rest-body">
+        <!-- Injected via JS -->
+      </div>
+      <div class="admin-modal-footer">
+        <button class="btn btn-secondary btn-sm" onclick="AdminUI.closeModal('modal-view-restaurant')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="../js/storage.js"></script>
+  <script src="../js/admin.js"></script>
+  <script>
+    let activeStatusFilter = 'all';
+    let currentSearch = '';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check query param (e.g. ?filter=pending from dashboard banner)
+      const urlParams = new URLSearchParams(window.location.search);
+      const initialFilter = urlParams.get('filter');
+      if (initialFilter) {
+        activeStatusFilter = initialFilter;
+        document.querySelectorAll('.admin-pill-btn').forEach(b => {
+          if (b.dataset.filter === initialFilter) b.classList.add('active');
+          else b.classList.remove('active');
+        });
+      }
+
+      renderRestaurants();
+
+      document.getElementById('rest-search-input')?.addEventListener('input', (e) => {
+        currentSearch = e.target.value.trim().toLowerCase();
+        renderRestaurants();
+      });
+
+      window.addEventListener('quickbite:restaurants-updated', renderRestaurants);
+      window.addEventListener('quickbite:orders-updated', renderRestaurants);
+    });
+
+    function filterRestaurantStatus(filter, btn) {
+      activeStatusFilter = filter;
+      document.querySelectorAll('.admin-pill-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderRestaurants();
+    }
+
+    function renderRestaurants() {
+      let list = QuickBiteDB.getRestaurants();
+      const dishes = QuickBiteDB.getDishes();
+      const orders = QuickBiteDB.getOrders();
+
+      // Metrics calculation
+      const totalCount = list.length;
+      const activeCount = list.filter(r => (r.approvalStatus === 'approved' || !r.approvalStatus) && r.status !== 'closed').length;
+      const pendingCount = list.filter(r => r.approvalStatus === 'pending').length;
+      const closedCount = list.filter(r => r.status === 'closed' || r.approvalStatus === 'rejected').length;
+
+      document.getElementById('rest-total-val').textContent = totalCount;
+      document.getElementById('rest-active-val').textContent = activeCount;
+      document.getElementById('rest-pending-val').textContent = pendingCount;
+      document.getElementById('rest-closed-val').textContent = closedCount;
+      document.getElementById('rest-dishes-val').textContent = dishes.length;
+      document.getElementById('tab-pending-badge').textContent = pendingCount;
+
+      // Search filter
+      if (currentSearch) {
+        list = list.filter(r => 
+          (r.name || '').toLowerCase().includes(currentSearch) ||
+          (r.address || '').toLowerCase().includes(currentSearch) ||
+          (r.ownerEmail || '').toLowerCase().includes(currentSearch) ||
+          (r.cuisine || []).some(c => c.toLowerCase().includes(currentSearch))
+        );
+      }
+
+      // Tab filter
+      if (activeStatusFilter === 'pending') {
+        list = list.filter(r => r.approvalStatus === 'pending');
+      } else if (activeStatusFilter === 'approved') {
+        list = list.filter(r => r.approvalStatus === 'approved' || !r.approvalStatus);
+      } else if (activeStatusFilter === 'closed') {
+        list = list.filter(r => r.status === 'closed');
+      } else if (activeStatusFilter === 'pure-veg') {
+        list = list.filter(r => r.isPureVeg);
+      }
+
+      // Sort
+      const sortBy = document.getElementById('rest-sort-select')?.value || 'name-asc';
+      list.sort((a, b) => {
+        if (sortBy === 'rating-desc') return (b.rating || 0) - (a.rating || 0);
+        if (sortBy === 'price-asc') return (a.priceForTwo || 0) - (b.priceForTwo || 0);
+        if (sortBy === 'price-desc') return (b.priceForTwo || 0) - (a.priceForTwo || 0);
+        return (a.name || '').localeCompare(b.name || '');
+      });
+
+      document.getElementById('rest-display-count').textContent = list.length;
+      const tbody = document.getElementById('restaurants-table-tbody');
+
+      if (!list.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8">
+              <div class="admin-empty-state">
+                <i class="fa-solid fa-utensils admin-empty-icon"></i>
+                <h4 class="admin-empty-title">No restaurants matched criteria</h4>
+                <p class="admin-empty-desc">Try clearing the search text or changing the status filter tabs.</p>
+                <button class="btn btn-secondary btn-sm" onclick="clearFilters()">Reset Filters</button>
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = list.map(r => {
+        const isApproved = r.approvalStatus === 'approved' || !r.approvalStatus;
+        const isPending = r.approvalStatus === 'pending';
+        const isRejected = r.approvalStatus === 'rejected';
+        const isOpen = r.status !== 'closed';
+
+        return `
+          <tr>
+            <td>
+              <div class="user-cell">
+                <img src="${r.image}" onerror="handleImageError(this, 'restaurant')">
+                <div class="user-cell-info">
+                  <strong>${r.name}</strong>
+                  <span><i class="fa-solid fa-envelope" style="font-size:0.7rem;"></i> ${r.ownerEmail || 'partner@quickbite.com'}</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              ${(r.cuisine || []).slice(0, 3).map(c => `<span class="badge" style="background:var(--color-bg); font-size:0.72rem; margin:1px;">${c}</span>`).join('')}
+              ${r.isPureVeg ? '<br><span class="badge badge-success" style="font-size:0.65rem; margin-top:3px;"><i class="fa-solid fa-leaf"></i> Pure Veg</span>' : ''}
+            </td>
+            <td>
+              <span class="rating-pill" style="font-size:0.75rem; padding:3px 8px;">
+                <i class="fa-solid fa-star"></i> ${r.rating || 4.5}
+              </span>
+              <div style="font-size:0.72rem; color:var(--color-text-muted); margin-top:2px;">${r.ratingCount || 100}+ reviews</div>
+            </td>
+            <td>
+              <span style="font-size:0.825rem; font-weight:600;">₹${r.priceForTwo || 300} for two</span>
+              <div style="font-size:0.75rem; color:var(--color-text-muted); max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${r.address}">
+                <i class="fa-solid fa-location-dot" style="color:var(--color-primary); font-size:0.7rem;"></i> ${r.address}
+              </div>
+            </td>
+            <td>
+              <button class="badge ${isOpen ? 'badge-success' : 'badge-danger'}" style="cursor:pointer;" onclick="toggleStatus('${r.id}')" title="Click to toggle Open/Closed">
+                <i class="fa-solid ${isOpen ? 'fa-circle' : 'fa-circle-xmark'}" style="font-size:0.55rem;"></i> ${isOpen ? 'Open' : 'Closed'}
+              </button>
+            </td>
+            <td>
+              ${isPending ? `
+                <span class="badge badge-warning"><i class="fa-solid fa-clock"></i> Pending Review</span>
+              ` : (isRejected ? `
+                <span class="badge badge-danger"><i class="fa-solid fa-ban"></i> Rejected</span>
+              ` : `
+                <span class="badge badge-success"><i class="fa-solid fa-circle-check"></i> Approved</span>
+              `)}
+            </td>
+            <td>
+              <button class="action-btn-sm ${r.isFeatured ? 'btn-approve' : ''}" style="${r.isFeatured ? 'color:var(--color-warning);' : ''}" title="Toggle Featured badge" onclick="toggleFeatured('${r.id}')">
+                <i class="fa-solid fa-star"></i>
+              </button>
+            </td>
+            <td>
+              <div class="admin-action-btns">
+                ${isPending ? `
+                  <button class="action-btn-sm btn-approve" title="Approve Application" onclick="approveRestaurant('${r.id}')">
+                    <i class="fa-solid fa-check"></i>
+                  </button>
+                  <button class="action-btn-sm btn-reject" title="Reject Application" onclick="rejectRestaurant('${r.id}')">
+                    <i class="fa-solid fa-xmark"></i>
+                  </button>
+                ` : ''}
+                <button class="action-btn-sm btn-edit" title="View Details & Menu" onclick="viewRestaurant('${r.id}')">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
+                <button class="action-btn-sm" title="Edit Restaurant" onclick="editRestaurant('${r.id}')">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button class="action-btn-sm btn-delete" title="Delete Restaurant" onclick="deleteRestaurant('${r.id}')">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function clearFilters() {
+      document.getElementById('rest-search-input').value = '';
+      currentSearch = '';
+      activeStatusFilter = 'all';
+      document.querySelectorAll('.admin-pill-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('.admin-pill-btn[data-filter="all"]')?.classList.add('active');
+      renderRestaurants();
+    }
+
+    function approveRestaurant(id) {
+      QuickBiteDB.approveRestaurant(id);
+      renderRestaurants();
+    }
+
+    function rejectRestaurant(id) {
+      const reason = prompt("Enter administrative rejection reason:", "Verification check failed or incomplete hygiene license");
+      if (reason) {
+        QuickBiteDB.rejectRestaurant(id, reason);
+        renderRestaurants();
+      }
+    }
+
+    function toggleStatus(id) {
+      QuickBiteDB.toggleRestaurantStatus(id);
+      renderRestaurants();
+    }
+
+    function toggleFeatured(id) {
+      QuickBiteDB.toggleRestaurantFeatured(id);
+      renderRestaurants();
+    }
+
+    function deleteRestaurant(id) {
+      const rest = QuickBiteDB.getRestaurantById(id);
+      if (!rest) return;
+      if (confirm(`Are you sure you want to completely deregister "${rest.name}" from the QuickBite platform?`)) {
+        QuickBiteDB.deleteRestaurant(id);
+        renderRestaurants();
+      }
+    }
+
+    function openAddRestaurantModal() {
+      document.getElementById('form-add-restaurant').reset();
+      AdminUI.openModal('modal-add-restaurant');
+    }
+
+    function handleAddRestaurant(e) {
+      e.preventDefault();
+      const name = document.getElementById('add-rest-name').value.trim();
+      const ownerEmail = document.getElementById('add-rest-email').value.trim();
+      const tagline = document.getElementById('add-rest-tagline').value.trim();
+      const cuisines = document.getElementById('add-rest-cuisines').value.split(',').map(c => c.trim()).filter(Boolean);
+      const priceForTwo = parseInt(document.getElementById('add-rest-price').value) || 300;
+      const deliveryTime = document.getElementById('add-rest-time').value.trim() || '25-35 min';
+      const deliveryFee = parseInt(document.getElementById('add-rest-fee').value) || 30;
+      const address = document.getElementById('add-rest-address').value.trim();
+      const image = document.getElementById('add-rest-image').value.trim();
+      const banner = document.getElementById('add-rest-banner').value.trim();
+      const isPureVeg = document.getElementById('add-rest-veg').value === 'true';
+      const approvalStatus = document.getElementById('add-rest-approval').value;
+
+      const newRest = {
+        id: `rest-${Date.now()}`,
+        name,
+        tagline,
+        cuisine: cuisines,
+        rating: 4.8,
+        ratingCount: 1,
+        deliveryTime,
+        deliveryFee,
+        priceForTwo,
+        address,
+        image,
+        banner,
+        isFeatured: false,
+        isPureVeg,
+        badge: approvalStatus === 'approved' ? 'New Onboard' : 'Pending',
+        discount: 'Flat 20% OFF',
+        discountCode: 'WELCOME20',
+        status: approvalStatus === 'approved' ? 'open' : 'pending',
+        approvalStatus,
+        ownerEmail
+      };
+
+      QuickBiteDB.saveRestaurant(newRest);
+      QuickBiteDB.showToast(`Restaurant "${name}" added successfully!`, 'success');
+      AdminUI.closeModal('modal-add-restaurant');
+      renderRestaurants();
+    }
+
+    function editRestaurant(id) {
+      const rest = QuickBiteDB.getRestaurantById(id);
+      if (!rest) return;
+
+      document.getElementById('edit-rest-id').value = rest.id;
+      document.getElementById('edit-rest-name').value = rest.name || '';
+      document.getElementById('edit-rest-email').value = rest.ownerEmail || '';
+      document.getElementById('edit-rest-tagline').value = rest.tagline || '';
+      document.getElementById('edit-rest-cuisines').value = (rest.cuisine || []).join(', ');
+      document.getElementById('edit-rest-price').value = rest.priceForTwo || 300;
+      document.getElementById('edit-rest-status').value = rest.status || 'open';
+      document.getElementById('edit-rest-approval').value = rest.approvalStatus || 'approved';
+      document.getElementById('edit-rest-address').value = rest.address || '';
+
+      AdminUI.openModal('modal-edit-restaurant');
+    }
+
+    function handleEditRestaurant(e) {
+      e.preventDefault();
+      const id = document.getElementById('edit-rest-id').value;
+      const rest = QuickBiteDB.getRestaurantById(id);
+      if (!rest) return;
+
+      rest.name = document.getElementById('edit-rest-name').value.trim();
+      rest.ownerEmail = document.getElementById('edit-rest-email').value.trim();
+      rest.tagline = document.getElementById('edit-rest-tagline').value.trim();
+      rest.cuisine = document.getElementById('edit-rest-cuisines').value.split(',').map(c => c.trim()).filter(Boolean);
+      rest.priceForTwo = parseInt(document.getElementById('edit-rest-price').value) || 300;
+      rest.status = document.getElementById('edit-rest-status').value;
+      rest.approvalStatus = document.getElementById('edit-rest-approval').value;
+      rest.address = document.getElementById('edit-rest-address').value.trim();
+
+      QuickBiteDB.saveRestaurant(rest);
+      QuickBiteDB.showToast(`Updated "${rest.name}" details`, 'success');
+      AdminUI.closeModal('modal-edit-restaurant');
+      renderRestaurants();
+    }
+
+    function viewRestaurant(id) {
+      const rest = QuickBiteDB.getRestaurantById(id);
+      if (!rest) return;
+
+      const dishes = QuickBiteDB.getDishesByRestaurant(id);
+      const orders = QuickBiteDB.getOrders().filter(o => o.restaurantId === id);
+      const totalRev = orders.filter(o => o.status !== 'cancelled').reduce((acc, o) => acc + (o.grandTotal || 0), 0);
+
+      document.getElementById('view-rest-title').textContent = `${rest.name} - Kitchen Profile`;
+      const body = document.getElementById('view-rest-body');
+
+      const dishesList = dishes.length ? dishes.map(d => `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--color-border-subtle);">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <i class="fa-solid fa-circle" style="color:${d.isVeg ? '#10B981' : '#EF4444'}; font-size:0.6rem;"></i>
+            <span>${d.name} (${d.category || 'Food'})</span>
+          </div>
+          <strong>₹${d.discountPrice || d.price}</strong>
+        </div>
+      `).join('') : '<p style="color:var(--color-text-muted); font-size:0.85rem; padding:8px 0;">No dishes mapped to this kitchen yet.</p>';
+
+      body.innerHTML = `
+        <div style="position:relative; border-radius:var(--radius-sm); overflow:hidden; margin-bottom:16px;">
+          <img src="${rest.banner || rest.image}" style="width:100%; height:140px; object-fit:cover;" onerror="handleImageError(this, 'restaurant')">
+          <div style="position:absolute; bottom:12px; left:16px; background:rgba(0,0,0,0.65); padding:4px 12px; border-radius:var(--radius-sm); color:#FFF; font-size:0.8rem;">
+            ${rest.address}
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px;">
+          <div>
+            <h3 style="font-size:1.25rem; font-weight:700;">${rest.name}</h3>
+            <p style="color:var(--color-text-muted); font-size:0.85rem;">${rest.tagline || ''}</p>
+            <div style="display:flex; gap:6px; margin-top:8px;">
+              <span class="badge badge-info">${(rest.cuisine || []).join(', ')}</span>
+              <span class="badge ${rest.status === 'open' ? 'badge-success' : 'badge-danger'}">${rest.status.toUpperCase()}</span>
+              <span class="badge ${rest.approvalStatus === 'approved' ? 'badge-success' : 'badge-warning'}">${(rest.approvalStatus || 'approved').toUpperCase()}</span>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:1.4rem; font-weight:800; color:var(--color-primary);">₹${totalRev.toLocaleString()}</div>
+            <div style="font-size:0.75rem; color:var(--color-text-muted);">${orders.length} Orders Fulfilled</div>
+          </div>
+        </div>
+
+        <h4 style="font-size:0.95rem; font-weight:700; margin-bottom:10px;"><i class="fa-solid fa-utensils"></i> Active Menu Items (${dishes.length})</h4>
+        <div style="max-height:200px; overflow-y:auto; padding-right:6px;">
+          ${dishesList}
+        </div>
+      `;
+
+      AdminUI.openModal('modal-view-restaurant');
+    }
+
+    function exportRestaurantsCSV() {
+      const list = QuickBiteDB.getRestaurants();
+      const orders = QuickBiteDB.getOrders();
+
+      const rows = list.map(r => {
+        const restOrders = orders.filter(o => o.restaurantId === r.id);
+        const revenue = restOrders.filter(o => o.status !== 'cancelled').reduce((acc, o) => acc + (o.grandTotal || 0), 0);
+        return {
+          RestaurantID: r.id,
+          Name: r.name,
+          OwnerEmail: r.ownerEmail || '',
+          Cuisines: (r.cuisine || []).join('; '),
+          Rating: r.rating,
+          PriceForTwo: r.priceForTwo,
+          Status: r.status,
+          ApprovalStatus: r.approvalStatus || 'approved',
+          TotalOrdersFulfilled: restOrders.length,
+          TotalRevenueEarned: revenue,
+          Address: r.address
+        };
+      });
+
+      AdminUI.exportToCSV('quickbite_restaurants_catalog.csv', rows);
+    }
+  </script>
+</body>
+</html>

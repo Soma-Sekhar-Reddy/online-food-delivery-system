@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <meta name="color-scheme" content="light dark" />
+    <!-- Instant Anti-Flash Dark Mode Script -->
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('quickbite_theme');
+          var theme = null;
+          if (saved) {
+            try { theme = JSON.parse(saved); } catch(e) { theme = saved; }
+          }
+          if (!theme) {
+            theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+          }
+          document.documentElement.setAttribute('data-theme', theme);
+          document.documentElement.style.colorScheme = theme;
+          if (theme === 'dark') {
+            document.documentElement.style.backgroundColor = '#090D16';
+          } else {
+            document.documentElement.style.backgroundColor = '#F8FAFC';
+          }
+        } catch(e) {}
+      })();
+    </script>
+    <style>
+      :root { color-scheme: light dark; }
+      html { background-color: #F8FAFC; color: #0F172A; }
+      html[data-theme="dark"] { background-color: #090D16 !important; color: #F8FAFC !important; color-scheme: dark; }
+      html[data-theme="light"] { background-color: #F8FAFC !important; color: #0F172A !important; color-scheme: light; }
+      body { background-color: inherit; }
+      @view-transition { navigation: auto; }
+    </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restaurant Dashboard | QuickBite Partner</title>
+  
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍔</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <!-- Chart.js CDN -->
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/restaurant.css">
+</head>
+<body>
+
+  <div class="dash-layout">
+    
+    <!-- Sidebar -->
+    <aside class="dash-sidebar">
+      <div class="sidebar-brand-box">
+        <a href="dashboard.html" class="brand-logo" style="font-size: 1.35rem;">
+          <div class="logo-icon-wrap" style="width:36px; height:36px; font-size:1rem;">
+            <i class="fa-solid fa-burger"></i>
+          </div>
+          <div>Quick<span>Bite</span></div>
+        </a>
+        <span class="badge badge-primary" style="font-size:0.7rem;">PARTNER</span>
+      </div>
+
+      <!-- Restaurant Profile Box -->
+      <div class="sidebar-rest-card">
+        <img src="https://images.unsplash.com/photo-1589302168068-964664d93dc0?auto=format&fit=crop&w=120&q=80" alt="Restaurant Avatar" class="sidebar-rest-thumb" id="side-rest-img" onerror="handleImageError(this, 'restaurant')">
+        <div style="min-width: 0;">
+          <div class="sidebar-rest-name" id="side-rest-name">The Royal Biryani</div>
+          <div class="sidebar-rest-status" id="side-rest-status-tag">
+            <i class="fa-solid fa-circle" style="font-size: 0.55rem;"></i> Accepting Orders
+          </div>
+        </div>
+      </div>
+
+      <!-- Nav Links -->
+      <nav class="sidebar-nav-list">
+        <a href="dashboard.html" class="sidebar-nav-link active">
+          <i class="fa-solid fa-chart-pie"></i> Overview
+        </a>
+        <a href="orders.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-bell-concierge"></i> Incoming Orders
+          <span class="sidebar-badge-count" id="side-active-orders-count">0</span>
+        </a>
+        <a href="menu.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-utensils"></i> Menu Management
+          <span style="margin-left: auto; font-size: 0.775rem; color: var(--color-text-muted);" id="side-dishes-count">0</span>
+        </a>
+        <a href="analytics.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-chart-line"></i> Sales & Analytics
+        </a>
+
+        <div style="border-top: 1px solid var(--color-border-subtle); margin: 12px 0;"></div>
+
+        <!-- Switch Restaurant Demo Selector -->
+        <div style="padding: 0 8px; margin-bottom: 8px;">
+          <label style="display:block; font-size:0.725rem; font-weight:700; color:var(--color-text-muted); text-transform:uppercase; margin-bottom:6px;">
+            Switch Managed Restaurant:
+          </label>
+          <select id="switch-managed-restaurant" style="width: 100%; padding: 8px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-size: 0.8rem; background: var(--color-surface-card);">
+            <!-- Populated by JS -->
+          </select>
+        </div>
+
+        <a href="javascript:void(0)" class="sidebar-nav-link" id="view-public-menu-link" target="_blank">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i> View Public Menu
+        </a>
+      </nav>
+
+      <!-- Sidebar Footer -->
+      <div class="sidebar-footer">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-primary-light); color: var(--color-primary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;" id="side-owner-initials">
+              FA
+            </div>
+            <div>
+              <div style="font-weight: 700; font-size: 0.825rem;" id="side-owner-name">Farooq Ahmed</div>
+              <div style="font-size: 0.725rem; color: var(--color-text-muted);">Owner / Manager</div>
+            </div>
+          </div>
+          <button class="btn-icon" style="width: 32px; height: 32px;" title="Sign Out" onclick="QuickBiteDB.logout(); window.location.href='../login.html';">
+            <i class="fa-solid fa-arrow-right-from-bracket" style="font-size: 0.85rem; color: var(--color-danger);"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Container -->
+    <main class="dash-main">
+      
+      <!-- Topbar -->
+      <header class="dash-topbar">
+        <div class="topbar-left">
+          <h1 class="topbar-title">Kitchen Operations</h1>
+        </div>
+
+        <div class="topbar-right">
+          
+          <!-- Kitchen Status Switcher -->
+          <div class="rest-status-toggle-wrap">
+            <span id="kitchen-status-label" style="color: var(--color-success);">Kitchen Open</span>
+            <label class="switch">
+              <input type="checkbox" id="kitchen-status-toggle" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <!-- Sound alert notification toggle -->
+          <button class="btn-icon" id="sound-alert-btn" title="Simulate incoming order bell sound" onclick="simulateNewOrderSound()">
+            <i class="fa-solid fa-bell" style="color: var(--color-primary);"></i>
+          </button>
+
+          <!-- Theme Switcher -->
+          <button class="btn-icon" id="theme-toggle-btn" title="Toggle Theme">
+            <i class="fa-solid fa-moon" id="theme-icon"></i>
+          </button>
+
+          <!-- Customer Portal Link -->
+          <a href="../customer/restaurants.html" class="btn btn-secondary btn-sm" style="border-radius: var(--radius-full);">
+            <i class="fa-solid fa-utensils"></i> Customer View
+          </a>
+
+        </div>
+      </header>
+
+      <!-- Dashboard Body -->
+      <div class="dash-body">
+        
+        <!-- Live Kitchen Status Banner -->
+        <div style="padding: 14px 20px; border-radius: var(--radius-md); background: var(--color-success-bg); border: 1px solid var(--color-success); color: var(--color-success); font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;" id="kitchen-banner">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-circle-check" style="font-size: 1.2rem;"></i>
+            <span>Kitchen is actively accepting live orders. Customer tracking will update in real-time.</span>
+          </div>
+          <span class="badge badge-success">Online & Connected</span>
+        </div>
+
+        <!-- 4 Key Metrics -->
+        <div class="metrics-grid-4">
+          
+          <!-- Metric 1 -->
+          <div class="metric-card">
+            <div class="metric-info">
+              <h4>Today's Revenue</h4>
+              <div class="metric-val" id="metric-revenue">₹0</div>
+              <div class="metric-trend up">
+                <i class="fa-solid fa-arrow-trend-up"></i> +18.4% vs yesterday
+              </div>
+            </div>
+            <div class="metric-icon-box metric-icon-orange">
+              <i class="fa-solid fa-wallet"></i>
+            </div>
+          </div>
+
+          <!-- Metric 2 -->
+          <div class="metric-card">
+            <div class="metric-info">
+              <h4>Active Kitchen Orders</h4>
+              <div class="metric-val" id="metric-active-orders">0</div>
+              <div class="metric-trend up">
+                <i class="fa-solid fa-fire-burner"></i> Cooking & Packaging
+              </div>
+            </div>
+            <div class="metric-icon-box metric-icon-blue">
+              <i class="fa-solid fa-bell-concierge"></i>
+            </div>
+          </div>
+
+          <!-- Metric 3 -->
+          <div class="metric-card">
+            <div class="metric-info">
+              <h4>Completed Today</h4>
+              <div class="metric-val" id="metric-delivered-count">0</div>
+              <div class="metric-trend up">
+                <i class="fa-solid fa-check-double"></i> 100% fulfill rate
+              </div>
+            </div>
+            <div class="metric-icon-box metric-icon-green">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+          </div>
+
+          <!-- Metric 4 -->
+          <div class="metric-card">
+            <div class="metric-info">
+              <h4>Avg. Kitchen Prep Time</h4>
+              <div class="metric-val">22 <span style="font-size: 1.1rem; font-weight: 600;">min</span></div>
+              <div class="metric-trend up">
+                <i class="fa-solid fa-stopwatch"></i> Express turnaround
+              </div>
+            </div>
+            <div class="metric-icon-box metric-icon-purple">
+              <i class="fa-solid fa-clock"></i>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Middle Grid: Chart & Quick Live Orders -->
+        <div class="charts-double-grid">
+          
+          <!-- Hourly Revenue Chart -->
+          <div class="dash-card" style="margin-bottom: 0;">
+            <div class="dash-card-header">
+              <div>
+                <h3 style="font-size: 1.15rem; font-weight: 700;">Hourly Order Volume & Sales</h3>
+                <p style="font-size: 0.8rem; color: var(--color-text-muted);">Real-time peak rush analysis for today</p>
+              </div>
+              <span class="badge badge-primary"><i class="fa-solid fa-bolt"></i> Live Feed</span>
+            </div>
+            <div class="chart-container-box">
+              <canvas id="todaySalesChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Top Selling Dishes in this Restaurant -->
+          <div class="dash-card" style="margin-bottom: 0;">
+            <div class="dash-card-header">
+              <h3 style="font-size: 1.15rem; font-weight: 700;">Top Cravings Today</h3>
+              <a href="menu.html" style="font-size: 0.825rem; color: var(--color-primary); font-weight: 600;">Manage Menu</a>
+            </div>
+            <div id="top-dishes-list" style="display: flex; flex-direction: column; gap: 14px;">
+              <!-- Injected by JS -->
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Recent Incoming Orders Table -->
+        <div class="dash-card" style="margin-top: 30px;">
+          <div class="dash-card-header">
+            <div>
+              <h3 style="font-size: 1.25rem; font-weight: 700;">Live Incoming & Active Orders</h3>
+              <p style="font-size: 0.85rem; color: var(--color-text-muted);">Accept orders, update preparation stage, or mark food ready for rider pickup</p>
+            </div>
+            <a href="orders.html" class="btn btn-primary btn-sm">
+              <i class="fa-solid fa-expand"></i> Full Orders Kanban
+            </a>
+          </div>
+
+          <div class="dash-table-wrap">
+            <table class="dash-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Dishes Ordered</th>
+                  <th>Total Amount</th>
+                  <th>Current Status</th>
+                  <th>Quick Action</th>
+                </tr>
+              </thead>
+              <tbody id="recent-orders-tbody">
+                <!-- Injected by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="../js/storage.js"></script>
+  <script>
+    let currentRestId = 'rest-1';
+    let salesChartInstance = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      initRestaurantAuth();
+      renderRestaurantOverview();
+      initChart();
+
+      // Cross-tab real-time sync with customer ordering!
+      window.addEventListener('quickbite:orders-updated', () => {
+        renderRestaurantOverview();
+        updateChartData();
+      });
+    });
+
+    function initTheme() {
+      const themeBtn = document.getElementById('theme-toggle-btn');
+      const themeIcon = document.getElementById('theme-icon');
+      const saved = QuickBiteDB.getTheme();
+      document.documentElement.setAttribute('data-theme', saved);
+      if (themeIcon) themeIcon.className = saved === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+
+      themeBtn?.addEventListener('click', () => {
+        const next = QuickBiteDB.toggleTheme();
+        if (themeIcon) themeIcon.className = next === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+      });
+    }
+
+    function initRestaurantAuth() {
+      const user = QuickBiteDB.getCurrentUser();
+      if (user && user.restaurantId) {
+        currentRestId = user.restaurantId;
+      }
+
+      // Populate Switch Restaurant selector
+      const allRest = QuickBiteDB.getRestaurants();
+      const select = document.getElementById('switch-managed-restaurant');
+      select.innerHTML = allRest.map(r => `
+        <option value="${r.id}" ${r.id === currentRestId ? 'selected' : ''}>${r.name}</option>
+      `).join('');
+
+      select.addEventListener('change', (e) => {
+        currentRestId = e.target.value;
+        const rest = QuickBiteDB.getRestaurantById(currentRestId);
+        if (user) {
+          user.restaurantId = currentRestId;
+          QuickBiteDB.setCurrentUser(user);
+        }
+        QuickBiteDB.showToast(`Switched active kitchen to: ${rest.name}`, 'info');
+        renderRestaurantOverview();
+        updateChartData();
+      });
+
+      // Kitchen Open / Closed toggle
+      const statusToggle = document.getElementById('kitchen-status-toggle');
+      statusToggle.addEventListener('change', (e) => {
+        const isOpen = e.target.checked;
+        const rest = QuickBiteDB.getRestaurantById(currentRestId);
+        if (rest) {
+          rest.status = isOpen ? 'open' : 'closed';
+          QuickBiteDB.saveRestaurant(rest);
+          updateStatusBanner(isOpen);
+          QuickBiteDB.showToast(`Kitchen marked ${isOpen ? 'OPEN' : 'CLOSED'}`, isOpen ? 'success' : 'warning');
+        }
+      });
+    }
+
+    function updateStatusBanner(isOpen) {
+      const label = document.getElementById('kitchen-status-label');
+      const banner = document.getElementById('kitchen-banner');
+      const sideTag = document.getElementById('side-rest-status-tag');
+
+      if (isOpen) {
+        label.textContent = "Kitchen Open";
+        label.style.color = "var(--color-success)";
+        banner.className = "alert-banner-open";
+        banner.style.background = "var(--color-success-bg)";
+        banner.style.borderColor = "var(--color-success)";
+        banner.style.color = "var(--color-success)";
+        banner.innerHTML = `
+          <div style="display:flex; align-items:center; gap:10px;">
+            <i class="fa-solid fa-circle-check" style="font-size:1.2rem;"></i>
+            <span>Kitchen is actively accepting live orders. Customer tracking will update in real-time.</span>
+          </div>
+          <span class="badge badge-success">Online & Connected</span>
+        `;
+        sideTag.className = "sidebar-rest-status";
+        sideTag.innerHTML = `<i class="fa-solid fa-circle" style="font-size:0.55rem;"></i> Accepting Orders`;
+      } else {
+        label.textContent = "Kitchen Closed";
+        label.style.color = "var(--color-danger)";
+        banner.style.background = "var(--color-danger-bg)";
+        banner.style.borderColor = "var(--color-danger)";
+        banner.style.color = "var(--color-danger)";
+        banner.innerHTML = `
+          <div style="display:flex; align-items:center; gap:10px;">
+            <i class="fa-solid fa-triangle-exclamation" style="font-size:1.2rem;"></i>
+            <span>Kitchen is closed. New customer orders will be queued or paused.</span>
+          </div>
+          <span class="badge badge-danger">Offline</span>
+        `;
+        sideTag.className = "sidebar-rest-status offline";
+        sideTag.innerHTML = `<i class="fa-solid fa-circle" style="font-size:0.55rem;"></i> Kitchen Closed`;
+      }
+    }
+
+    function renderRestaurantOverview() {
+      const rest = QuickBiteDB.getRestaurantById(currentRestId);
+      if (!rest) return;
+
+      // Update sidebar
+      document.getElementById('side-rest-name').textContent = rest.name;
+      document.getElementById('side-rest-img').src = rest.image;
+      document.getElementById('view-public-menu-link').href = `../customer/menu.html?id=${rest.id}`;
+      document.getElementById('kitchen-status-toggle').checked = (rest.status !== 'closed');
+      updateStatusBanner(rest.status !== 'closed');
+
+      const dishes = QuickBiteDB.getDishesByRestaurant(rest.id);
+      document.getElementById('side-dishes-count').textContent = `${dishes.length} dishes`;
+
+      // Filter orders belonging to this restaurant
+      const allOrders = QuickBiteDB.getOrders();
+      const restOrders = allOrders.filter(o => o.restaurantId === rest.id);
+
+      const activeOrders = restOrders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled');
+      const deliveredOrders = restOrders.filter(o => o.status === 'delivered');
+      const totalRevenue = restOrders
+        .filter(o => o.status !== 'cancelled')
+        .reduce((sum, o) => sum + (o.grandTotal || 0), 0);
+
+      document.getElementById('metric-revenue').textContent = `₹${totalRevenue.toLocaleString()}`;
+      document.getElementById('metric-active-orders').textContent = activeOrders.length;
+      document.getElementById('side-active-orders-count').textContent = activeOrders.length;
+      document.getElementById('metric-delivered-count').textContent = deliveredOrders.length;
+
+      // Render Top Dishes List
+      const topDishesContainer = document.getElementById('top-dishes-list');
+      topDishesContainer.innerHTML = dishes.slice(0, 4).map(dish => `
+        <div style="display:flex; align-items:center; gap:12px; padding-bottom:10px; border-bottom:1px solid var(--color-border-subtle);">
+          <img src="${dish.image}" alt="${dish.name}" style="width:44px; height:44px; border-radius:var(--radius-sm); object-fit:cover;" onerror="handleImageError(this, 'food')">
+          <div style="flex:1; min-width:0;">
+            <div style="font-weight:700; font-size:0.875rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${dish.name}</div>
+            <div style="font-size:0.775rem; color:var(--color-text-muted);">₹${dish.price} • ${dish.isVeg ? 'Veg' : 'Non-Veg'}</div>
+          </div>
+          <span class="badge ${dish.available !== false ? 'badge-success' : 'badge-danger'}" style="font-size:0.7rem;">
+            ${dish.available !== false ? 'In Stock' : 'Sold Out'}
+          </span>
+        </div>
+      `).join('');
+
+      // Render Recent Orders Table
+      const tbody = document.getElementById('recent-orders-tbody');
+      if (restOrders.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align:center; padding:30px; color:var(--color-text-muted);">
+              No orders received yet for ${rest.name}. Place an order from the customer portal to test!
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      const statusMap = {
+        placed: '<span class="badge badge-warning">Incoming / Placed</span>',
+        accepted: '<span class="badge badge-info">Kitchen Accepted</span>',
+        preparing: '<span class="badge badge-primary"><i class="fa-solid fa-fire-burner"></i> Cooking</span>',
+        ready_for_pickup: '<span class="badge badge-success"><i class="fa-solid fa-box"></i> Ready for Pickup</span>',
+        out_for_delivery: '<span class="badge badge-primary"><i class="fa-solid fa-motorcycle"></i> With Rider</span>',
+        delivered: '<span class="badge badge-success"><i class="fa-solid fa-check"></i> Delivered</span>',
+        cancelled: '<span class="badge badge-danger">Cancelled</span>'
+      };
+
+      tbody.innerHTML = restOrders.slice(0, 6).map(order => {
+        let actionBtn = '';
+        if (order.status === 'placed') {
+          actionBtn = `
+            <div style="display:flex; gap:6px;">
+              <button class="btn btn-primary btn-sm" onclick="updateOrderStatusAction('${order.id}', 'accepted')">
+                <i class="fa-solid fa-check"></i> Accept
+              </button>
+              <button class="btn btn-secondary btn-sm" style="color:var(--color-danger);" onclick="updateOrderStatusAction('${order.id}', 'cancelled')">
+                Reject
+              </button>
+            </div>
+          `;
+        } else if (order.status === 'accepted') {
+          actionBtn = `
+            <button class="btn btn-primary btn-sm" onclick="updateOrderStatusAction('${order.id}', 'preparing')">
+              <i class="fa-solid fa-fire-burner"></i> Start Cooking
+            </button>
+          `;
+        } else if (order.status === 'preparing') {
+          actionBtn = `
+            <button class="btn btn-primary btn-sm" style="background:#10B981;" onclick="updateOrderStatusAction('${order.id}', 'ready_for_pickup')">
+              <i class="fa-solid fa-box-check"></i> Mark Ready
+            </button>
+          `;
+        } else if (order.status === 'ready_for_pickup') {
+          actionBtn = `<span style="font-size:0.8rem; color:var(--color-success); font-weight:600;"><i class="fa-solid fa-clock"></i> Awaiting Rider</span>`;
+        } else if (order.status === 'out_for_delivery') {
+          actionBtn = `<span style="font-size:0.8rem; color:var(--color-primary); font-weight:600;"><i class="fa-solid fa-motorcycle"></i> Rider en route</span>`;
+        } else {
+          actionBtn = `<span style="font-size:0.8rem; color:var(--color-text-subtle);">Complete</span>`;
+        }
+
+        const itemsPreview = order.items.map(i => `${i.name} × ${i.quantity}`).join(', ');
+
+        return `
+          <tr>
+            <td><strong>#${order.id}</strong></td>
+            <td>
+              <div style="font-weight:700;">${order.customerName}</div>
+              <div style="font-size:0.775rem; color:var(--color-text-muted);">${order.customerPhone}</div>
+            </td>
+            <td>
+              <div style="font-size:0.85rem; max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                ${itemsPreview}
+              </div>
+            </td>
+            <td><strong style="color:var(--color-primary);">₹${order.grandTotal}</strong></td>
+            <td>${statusMap[order.status] || order.status}</td>
+            <td>${actionBtn}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function updateOrderStatusAction(orderId, newStatus) {
+      QuickBiteDB.updateOrderStatus(orderId, newStatus);
+      QuickBiteDB.showToast(`Order #${orderId} marked as ${newStatus.toUpperCase()}`, 'success');
+      renderRestaurantOverview();
+    }
+
+    function simulateNewOrderSound() {
+      QuickBiteDB.showToast("🔔 [Chime] New Incoming Order received from Rahul Sharma!", "info");
+    }
+
+    // Chart.js Setup
+    function initChart() {
+      const ctx = document.getElementById('todaySalesChart')?.getContext('2d');
+      if (!ctx) return;
+
+      salesChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['11 AM', '12 PM', '1 PM', '2 PM', '3 PM', '4 PM', '5 PM', '6 PM', '7 PM', '8 PM', '9 PM'],
+          datasets: [
+            {
+              label: "Sales (₹)",
+              data: [850, 2400, 4800, 3100, 1200, 950, 2100, 5600, 6800, 4200, 2900],
+              borderColor: '#FF6B35',
+              backgroundColor: 'rgba(255, 107, 53, 0.1)',
+              tension: 0.4,
+              fill: true,
+              borderWidth: 3
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { callback: v => '₹' + v }
+            }
+          }
+        }
+      });
+    }
+
+    function updateChartData() {
+      if (salesChartInstance) {
+        salesChartInstance.update();
+      }
+    }
+  </script>
+</body>
+</html>

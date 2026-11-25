@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <meta name="color-scheme" content="light dark" />
+    <!-- Instant Anti-Flash Dark Mode Script -->
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('quickbite_theme');
+          var theme = null;
+          if (saved) {
+            try { theme = JSON.parse(saved); } catch(e) { theme = saved; }
+          }
+          if (!theme) {
+            theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+          }
+          document.documentElement.setAttribute('data-theme', theme);
+          document.documentElement.style.colorScheme = theme;
+          if (theme === 'dark') {
+            document.documentElement.style.backgroundColor = '#090D16';
+          } else {
+            document.documentElement.style.backgroundColor = '#F8FAFC';
+          }
+        } catch(e) {}
+      })();
+    </script>
+    <style>
+      :root { color-scheme: light dark; }
+      html { background-color: #F8FAFC; color: #0F172A; }
+      html[data-theme="dark"] { background-color: #090D16 !important; color: #F8FAFC !important; color-scheme: dark; }
+      html[data-theme="light"] { background-color: #F8FAFC !important; color: #0F172A !important; color-scheme: light; }
+      body { background-color: inherit; }
+      @view-transition { navigation: auto; }
+    </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Order Tracking | QuickBite</title>
+  
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍔</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/landing.css">
+  <link rel="stylesheet" href="../css/customer.css">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <header class="customer-nav">
+    <div class="container customer-nav-inner">
+      <a href="restaurants.html" class="brand-logo">
+        <div class="logo-icon-wrap">
+          <i class="fa-solid fa-burger"></i>
+        </div>
+        <div class="brand-text">Quick<span>Bite</span></div>
+      </a>
+
+      <nav class="customer-nav-links">
+        <a href="restaurants.html" class="c-nav-link">
+          <i class="fa-solid fa-utensils"></i> Restaurants
+        </a>
+        <a href="orders.html" class="c-nav-link">
+          <i class="fa-solid fa-clock-rotate-left"></i> My Orders
+        </a>
+        <a href="tracking.html" class="c-nav-link active">
+          <i class="fa-solid fa-route"></i> Live Track
+        </a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="btn-icon" id="theme-toggle-btn" title="Toggle Theme">
+          <i class="fa-solid fa-moon" id="theme-icon"></i>
+        </button>
+
+        <a href="cart.html" class="cart-btn" id="nav-cart-btn">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span>Cart</span>
+          <span class="cart-badge" id="nav-cart-badge" style="display: none;">0</span>
+        </a>
+
+        <a href="profile.html" class="btn-icon" title="Profile">
+          <i class="fa-regular fa-user"></i>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="section" style="padding-top: 36px; min-height: 80vh;">
+    <div class="container">
+      
+      <!-- Top Status Bar & Simulator Action -->
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <h1 style="font-size: 1.85rem; font-weight: 800;" id="order-title-display">Tracking Order #ORD-9281</h1>
+            <span class="badge badge-primary" id="order-status-badge">Out for Delivery</span>
+          </div>
+          <p style="color: var(--color-text-muted); font-size: 0.875rem;" id="order-subtitle">
+            Estimated arrival in <strong style="color: var(--color-primary);" id="eta-display">15 - 20 mins</strong>
+          </p>
+        </div>
+
+        <!-- Simulator Tools for testing multi-role progression -->
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <button class="btn btn-secondary btn-sm" id="simulate-step-btn" onclick="simulateNextStatus()">
+            <i class="fa-solid fa-forward-step"></i> Simulate Next Status
+          </button>
+          <button class="btn btn-outline-primary btn-sm" id="cancel-order-btn" onclick="cancelCurrentOrder()">
+            <i class="fa-solid fa-ban"></i> Cancel Order
+          </button>
+        </div>
+      </div>
+
+      <!-- Tracking Layout -->
+      <div class="tracking-grid">
+        
+        <!-- Left: Map & Live Timeline -->
+        <div>
+          <!-- Simulated Live GPS Route Map -->
+          <div class="tracking-map-mock">
+            <div class="map-bg-grid">
+              
+              <!-- Restaurant Pin -->
+              <div class="map-pin map-pin-restaurant" id="pin-rest">
+                <i class="fa-solid fa-store"></i>
+                <span style="background:var(--color-surface); padding:2px 6px; border-radius:4px; box-shadow:var(--shadow-sm); margin-top:2px;" id="pin-rest-name">Restaurant</span>
+              </div>
+
+              <!-- Rider Pin -->
+              <div class="map-pin map-pin-rider" id="pin-rider">
+                <div style="width:36px; height:36px; border-radius:50%; background:var(--color-primary); color:#FFFFFF; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(255,107,53,0.5);">
+                  <i class="fa-solid fa-motorcycle" style="font-size:1.1rem;"></i>
+                </div>
+                <span style="background:var(--color-navy); color:#FFFFFF; padding:2px 6px; border-radius:4px; margin-top:4px;">Vikram (Rider)</span>
+              </div>
+
+              <!-- Customer Home Pin -->
+              <div class="map-pin map-pin-customer" id="pin-customer">
+                <i class="fa-solid fa-house"></i>
+                <span style="background:var(--color-surface); padding:2px 6px; border-radius:4px; box-shadow:var(--shadow-sm); margin-top:2px;">Home</span>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Timeline Stepper Card -->
+          <div class="tracking-timeline-card">
+            <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 24px;">
+              <i class="fa-solid fa-timeline" style="color: var(--color-primary);"></i> Order Status Progress
+            </h3>
+
+            <div id="timeline-steps-container">
+              <!-- Steps rendered dynamically -->
+            </div>
+
+            <!-- Delivery Partner Card -->
+            <div class="driver-info-card" id="driver-card">
+              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80" alt="Rider Vikram" class="driver-avatar" onerror="handleImageError(this, 'avatar')">
+              <div style="flex: 1;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <h4 style="font-size: 1rem; font-weight: 700;" id="driver-name">Vikram Singh</h4>
+                  <span class="rating-pill" style="font-size: 0.75rem; padding: 2px 7px;">
+                    <i class="fa-solid fa-star"></i> 4.9
+                  </span>
+                </div>
+                <p style="font-size: 0.8rem; color: var(--color-text-muted);" id="driver-vehicle">Honda Activa 6G • TS 09 EQ 4022</p>
+                <span style="font-size: 0.775rem; color: var(--color-success); font-weight: 600;"><i class="fa-solid fa-shield-check"></i> Vaccinated & Sanitized Partner</span>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <button class="btn-icon" title="Call Rider" onclick="QuickBiteDB.showToast('Calling driver Vikram Singh at +91 91234 56789...', 'info')">
+                  <i class="fa-solid fa-phone" style="color: var(--color-success);"></i>
+                </button>
+                <button class="btn-icon" title="Chat with Rider" onclick="promptRiderChat()">
+                  <i class="fa-solid fa-message" style="color: var(--color-primary);"></i>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Right: Order & Restaurant Details -->
+        <div>
+          <!-- Restaurant Card -->
+          <div style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 24px; box-shadow: var(--shadow-sm);">
+            <h4 style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); font-weight: 700; margin-bottom: 8px;">
+              Restaurant Partner
+            </h4>
+            <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 4px;" id="order-rest-name">The Royal Biryani & Kebabs</h3>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 12px;" id="order-rest-address">Road No. 12, Banjara Hills, Hyderabad</p>
+            <div style="display: flex; gap: 10px;">
+              <button class="btn btn-secondary btn-sm" onclick="QuickBiteDB.showToast('Calling restaurant at +91 98490 11223...', 'info')">
+                <i class="fa-solid fa-phone"></i> Call Kitchen
+              </button>
+            </div>
+          </div>
+
+          <!-- Items Ordered Card -->
+          <div style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-sm);">
+            <h4 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 16px;">Items in this Order</h4>
+            
+            <div id="order-items-summary-list" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+              <!-- Items list injected -->
+            </div>
+
+            <div style="border-top: 1px solid var(--color-border-subtle); padding-top: 14px; font-size: 0.875rem;">
+              <div class="cart-bill-row">
+                <span>Payment Method</span>
+                <strong id="order-payment-method">Credit Card</strong>
+              </div>
+              <div class="cart-bill-row">
+                <span>Delivery Address</span>
+                <span id="order-address-text" style="max-width: 200px; text-align: right; color: var(--color-text-muted);">Jubilee Enclave</span>
+              </div>
+              <div class="cart-bill-row total">
+                <span>Total Amount Paid</span>
+                <strong style="color: var(--color-primary); font-size: 1.25rem;" id="order-grand-total">₹873</strong>
+              </div>
+            </div>
+
+            <a href="orders.html" class="btn btn-secondary btn-sm" style="width: 100%; margin-top: 20px;">
+              <i class="fa-solid fa-clock-rotate-left"></i> View All Order History
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="../js/storage.js"></script>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    let orderId = urlParams.get('orderId');
+    let currentOrder = null;
+
+    const STATUS_FLOW = [
+      { id: 'placed', label: 'Order Placed', desc: 'Received by QuickBite system', icon: 'fa-check' },
+      { id: 'accepted', label: 'Accepted by Kitchen', desc: 'Restaurant confirmed the order', icon: 'fa-receipt' },
+      { id: 'preparing', label: 'Preparing Food', desc: 'Chef is cooking your fresh dishes', icon: 'fa-fire-burner' },
+      { id: 'ready_for_pickup', label: 'Food Ready for Pickup', desc: 'Packed and waiting for rider', icon: 'fa-box' },
+      { id: 'out_for_delivery', label: 'Out for Delivery', desc: 'Rider is en route to your doorstep', icon: 'fa-motorcycle' },
+      { id: 'delivered', label: 'Delivered', desc: 'Delivered hot and savoured!', icon: 'fa-house-circle-check' }
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      loadOrderData();
+
+      // Listen for cross-module updates (e.g. from Restaurant or Driver modules in other tabs)
+      window.addEventListener('quickbite:orders-updated', () => {
+        loadOrderData();
+      });
+    });
+
+    function initTheme() {
+      const themeBtn = document.getElementById('theme-toggle-btn');
+      const themeIcon = document.getElementById('theme-icon');
+      const saved = QuickBiteDB.getTheme();
+      document.documentElement.setAttribute('data-theme', saved);
+      if (themeIcon) themeIcon.className = saved === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+
+      themeBtn?.addEventListener('click', () => {
+        const next = QuickBiteDB.toggleTheme();
+        if (themeIcon) themeIcon.className = next === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+      });
+    }
+
+    function loadOrderData() {
+      const allOrders = QuickBiteDB.getOrders();
+      if (orderId) {
+        currentOrder = allOrders.find(o => o.id === orderId);
+      }
+      if (!currentOrder && allOrders.length > 0) {
+        currentOrder = allOrders[0];
+        orderId = currentOrder.id;
+      }
+
+      if (!currentOrder) {
+        document.querySelector('.container').innerHTML = `
+          <div style="text-align:center; padding:60px 20px;">
+            <h3>No Orders Found</h3>
+            <p style="color:var(--color-text-muted); margin:10px 0 20px;">You haven't placed any orders yet.</p>
+            <a href="restaurants.html" class="btn btn-primary">Start Ordering</a>
+          </div>
+        `;
+        return;
+      }
+
+      renderOrderView();
+    }
+
+    function renderOrderView() {
+      const o = currentOrder;
+      document.getElementById('order-title-display').textContent = `Tracking Order #${o.id}`;
+      document.getElementById('order-rest-name').textContent = o.restaurantName;
+      document.getElementById('pin-rest-name').textContent = o.restaurantName;
+      document.getElementById('order-rest-address').textContent = o.restaurantAddress;
+      document.getElementById('order-payment-method').textContent = o.paymentMethod || 'Paid Online';
+      document.getElementById('order-address-text').textContent = o.customerAddress;
+      document.getElementById('order-grand-total').textContent = `₹${o.grandTotal}`;
+
+      // Status badge & ETA
+      const badge = document.getElementById('order-status-badge');
+      const statusIdx = STATUS_FLOW.findIndex(s => s.id === o.status);
+      
+      const statusLabels = {
+        placed: "Order Placed",
+        accepted: "Accepted",
+        preparing: "Preparing",
+        ready_for_pickup: "Ready for Pickup",
+        out_for_delivery: "Out for Delivery",
+        delivered: "Delivered",
+        cancelled: "Cancelled"
+      };
+
+      badge.textContent = statusLabels[o.status] || o.status;
+      badge.className = o.status === 'delivered' ? 'badge badge-success' : (o.status === 'cancelled' ? 'badge badge-danger' : 'badge badge-primary');
+
+      const etaEl = document.getElementById('eta-display');
+      if (o.status === 'delivered') {
+        etaEl.innerHTML = `<span style="color:var(--color-success);">Delivered at your door</span>`;
+      } else if (o.status === 'cancelled') {
+        etaEl.innerHTML = `<span style="color:var(--color-danger);">Order was cancelled</span>`;
+      } else if (o.status === 'out_for_delivery') {
+        etaEl.textContent = '10 - 15 mins';
+      } else {
+        etaEl.textContent = '25 - 35 mins';
+      }
+
+      // Render Timeline
+      const timelineContainer = document.getElementById('timeline-steps-container');
+      timelineContainer.innerHTML = STATUS_FLOW.map((step, idx) => {
+        let stateClass = '';
+        if (o.status === 'cancelled') {
+          stateClass = '';
+        } else if (idx < statusIdx) {
+          stateClass = 'completed';
+        } else if (idx === statusIdx) {
+          stateClass = 'current';
+        }
+
+        const timestamp = o.statusTimestamps?.[step.id] ? 
+          new Date(o.statusTimestamps[step.id]).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+
+        return `
+          <div class="timeline-step-row ${stateClass}">
+            <div class="timeline-step-icon">
+              <i class="fa-solid ${stateClass === 'completed' ? 'fa-check' : step.icon}"></i>
+            </div>
+            <div class="timeline-step-content" style="flex:1;">
+              <div style="display:flex; justify-content:space-between; align-items:baseline;">
+                <h4>${step.label}</h4>
+                ${timestamp ? `<span style="font-size:0.75rem; color:var(--color-text-subtle);">${timestamp}</span>` : ''}
+              </div>
+              <p>${step.desc}</p>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Rider Card display
+      const driverCard = document.getElementById('driver-card');
+      if (o.status === 'out_for_delivery' || o.status === 'delivered' || o.status === 'ready_for_pickup') {
+        driverCard.style.display = 'flex';
+      } else {
+        driverCard.style.display = 'none';
+      }
+
+      // Map pin positioning simulation
+      const riderPin = document.getElementById('pin-rider');
+      if (o.status === 'placed' || o.status === 'accepted' || o.status === 'preparing') {
+        riderPin.style.top = '35%';
+        riderPin.style.left = '30%';
+      } else if (o.status === 'out_for_delivery') {
+        riderPin.style.top = '50%';
+        riderPin.style.left = '50%';
+      } else if (o.status === 'delivered') {
+        riderPin.style.top = '65%';
+        riderPin.style.left = '75%';
+      }
+
+      // Items list
+      const itemsList = document.getElementById('order-items-summary-list');
+      itemsList.innerHTML = o.items.map(item => `
+        <div style="display:flex; justify-content:space-between; font-size:0.875rem;">
+          <div>
+            <span class="badge-diet ${item.isVeg ? 'veg' : 'non-veg'}" style="margin-right:6px;"></span>
+            <span>${item.name} × <strong>${item.quantity}</strong></span>
+          </div>
+          <strong>₹${item.price * item.quantity}</strong>
+        </div>
+      `).join('');
+
+      // Hide simulator button if delivered or cancelled
+      const simBtn = document.getElementById('simulate-step-btn');
+      const cancelBtn = document.getElementById('cancel-order-btn');
+      if (o.status === 'delivered' || o.status === 'cancelled') {
+        simBtn.style.display = 'none';
+        cancelBtn.style.display = 'none';
+      } else {
+        simBtn.style.display = 'inline-flex';
+        cancelBtn.style.display = (o.status === 'out_for_delivery') ? 'none' : 'inline-flex';
+      }
+    }
+
+    function simulateNextStatus() {
+      if (!currentOrder) return;
+      const statusKeys = ['placed', 'accepted', 'preparing', 'ready_for_pickup', 'out_for_delivery', 'delivered'];
+      const currentIndex = statusKeys.indexOf(currentOrder.status);
+      if (currentIndex < statusKeys.length - 1) {
+        const nextStatus = statusKeys[currentIndex + 1];
+        const updated = QuickBiteDB.updateOrderStatus(currentOrder.id, nextStatus);
+        currentOrder = updated;
+        QuickBiteDB.showToast(`Order status updated to: ${nextStatus.replace('_', ' ').toUpperCase()}`, 'info');
+        renderOrderView();
+      } else {
+        QuickBiteDB.showToast("Order is already delivered!", "success");
+      }
+    }
+
+    function cancelCurrentOrder() {
+      if (!currentOrder) return;
+      if (confirm(`Are you sure you want to cancel order #${currentOrder.id}?`)) {
+        QuickBiteDB.cancelOrder(currentOrder.id);
+        currentOrder = QuickBiteDB.getOrderById(currentOrder.id);
+        renderOrderView();
+      }
+    }
+
+    function promptRiderChat() {
+      const msg = prompt("Send a message to your delivery partner Vikram:", "Please call when you reach the gate.");
+      if (msg) {
+        QuickBiteDB.showToast(`Message sent to rider: "${msg}"`, 'success');
+      }
+    }
+  </script>
+</body>
+</html>

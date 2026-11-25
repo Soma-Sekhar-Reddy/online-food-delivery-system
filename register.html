@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <meta name="color-scheme" content="light dark" />
+    <!-- Instant Anti-Flash Dark Mode Script -->
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('quickbite_theme');
+          var theme = null;
+          if (saved) {
+            try { theme = JSON.parse(saved); } catch(e) { theme = saved; }
+          }
+          if (!theme) {
+            theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+          }
+          document.documentElement.setAttribute('data-theme', theme);
+          document.documentElement.style.colorScheme = theme;
+          if (theme === 'dark') {
+            document.documentElement.style.backgroundColor = '#090D16';
+          } else {
+            document.documentElement.style.backgroundColor = '#F8FAFC';
+          }
+        } catch(e) {}
+      })();
+    </script>
+    <style>
+      :root { color-scheme: light dark; }
+      html { background-color: #F8FAFC; color: #0F172A; }
+      html[data-theme="dark"] { background-color: #090D16 !important; color: #F8FAFC !important; color-scheme: dark; }
+      html[data-theme="light"] { background-color: #F8FAFC !important; color: #0F172A !important; color-scheme: light; }
+      body { background-color: inherit; }
+      @view-transition { navigation: auto; }
+    </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create an Account | QuickBite Food Delivery</title>
+  
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍔</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/global.css">
+
+  <style>
+    .auth-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      background: radial-gradient(circle at 10% 20%, rgba(255, 107, 53, 0.08) 0%, transparent 40%),
+                  radial-gradient(circle at 90% 80%, rgba(23, 32, 42, 0.05) 0%, transparent 40%),
+                  var(--color-bg);
+    }
+    .auth-wrapper {
+      width: 100%;
+      max-width: 980px;
+      background: var(--color-surface);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-xl);
+      border: 1px solid var(--color-border);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+    }
+    .auth-side-banner {
+      background: linear-gradient(135deg, rgba(23, 32, 42, 0.88) 0%, rgba(36, 51, 66, 0.92) 100%),
+                  url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80') center/cover;
+      color: #FFFFFF;
+      padding: 50px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .auth-side-banner h2 {
+      color: #FFFFFF;
+      font-size: 2.2rem;
+      font-weight: 800;
+      line-height: 1.25;
+      margin-top: 20px;
+    }
+    .auth-side-banner p {
+      color: #CBD5E1;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-top: 14px;
+    }
+    .auth-form-side {
+      padding: 44px 44px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .auth-header {
+      margin-bottom: 24px;
+    }
+    .auth-header h1 {
+      font-size: 1.85rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+    }
+    .auth-header p {
+      color: var(--color-text-muted);
+      font-size: 0.9rem;
+    }
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--color-text-main);
+    }
+    .input-field-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .input-field-wrap i.field-icon {
+      position: absolute;
+      left: 14px;
+      color: var(--color-text-subtle);
+      font-size: 0.95rem;
+    }
+    .input-field-wrap input, .input-field-wrap select {
+      width: 100%;
+      padding: 11px 14px 11px 40px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-surface-card);
+      font-size: 0.9rem;
+      color: var(--color-text-main);
+      transition: all var(--transition-fast);
+    }
+    .input-field-wrap input:focus, .input-field-wrap select:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px var(--color-primary-glow);
+    }
+    .role-pills-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .role-pill-select {
+      flex: 1;
+      text-align: center;
+      padding: 9px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--color-border);
+      cursor: pointer;
+      font-size: 0.825rem;
+      font-weight: 600;
+      transition: all var(--transition-fast);
+      background: var(--color-surface-card);
+    }
+    .role-pill-select.active {
+      border-color: var(--color-primary);
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+    }
+    [data-theme="dark"] .role-pill-select.active {
+      background: rgba(255, 107, 53, 0.2);
+    }
+    @media (max-width: 860px) {
+      .auth-wrapper {
+        grid-template-columns: 1fr;
+        max-width: 520px;
+      }
+      .auth-side-banner {
+        display: none;
+      }
+      .auth-form-side {
+        padding: 36px 24px;
+      }
+      .form-grid-2 {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top bar -->
+  <div style="position: absolute; top: 20px; left: 24px; right: 24px; display: flex; justify-content: space-between; align-items: center; z-index: 10;">
+    <a href="index.html" class="btn btn-secondary btn-sm" style="border-radius: var(--radius-full);">
+      <i class="fa-solid fa-arrow-left"></i> Back to Home
+    </a>
+    <button class="btn-icon" id="theme-toggle-btn" title="Toggle Theme">
+      <i class="fa-solid fa-moon" id="theme-icon"></i>
+    </button>
+  </div>
+
+  <div class="auth-page">
+    <div class="auth-wrapper">
+      
+      <!-- Side Banner -->
+      <div class="auth-side-banner">
+        <div>
+          <a href="index.html" class="brand-logo" style="color: #FFFFFF;">
+            <div class="logo-icon-wrap">
+              <i class="fa-solid fa-burger"></i>
+            </div>
+            <div>Quick<span style="color:var(--color-primary);">Bite</span></div>
+          </a>
+          <h2>Join the Gourmet Delivery Revolution.</h2>
+          <p>Sign up now to explore 10+ culinary masterpieces, instant coupons, and frictionless order tracking across all 4 modules.</p>
+          
+          <div style="margin-top: 30px; display: flex; flex-direction: column; gap: 14px;">
+            <div style="display:flex; align-items:center; gap:10px; font-size:0.9rem;">
+              <i class="fa-solid fa-gift" style="color:var(--color-primary); font-size:1.1rem;"></i>
+              <span>Flat 50% Welcome Voucher automatically credited</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px; font-size:0.9rem;">
+              <i class="fa-solid fa-shield-halved" style="color:var(--color-primary); font-size:1.1rem;"></i>
+              <span>Safe, hygienic, tamper-proof packaging guarantee</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="font-size: 0.8rem; color: #94A3B8;">
+          Already have an account? <a href="login.html" style="color: #FFFFFF; font-weight: 700; text-decoration: underline;">Sign In here</a>
+        </div>
+      </div>
+
+      <!-- Right Register Form -->
+      <div class="auth-form-side">
+        <div class="auth-header">
+          <h1>Create Your Account</h1>
+          <p>Fill out the details below to start ordering in seconds</p>
+        </div>
+
+        <!-- Role Selector -->
+        <label class="form-label">I want to join as a:</label>
+        <div class="role-pills-row">
+          <div class="role-pill-select active" data-role="customer">
+            <i class="fa-solid fa-user"></i> Customer
+          </div>
+          <div class="role-pill-select" data-role="restaurant">
+            <i class="fa-solid fa-store"></i> Restaurant
+          </div>
+          <div class="role-pill-select" data-role="delivery">
+            <i class="fa-solid fa-motorcycle"></i> Partner
+          </div>
+        </div>
+
+        <form id="register-form">
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Full Name</label>
+              <div class="input-field-wrap">
+                <i class="fa-solid fa-user field-icon"></i>
+                <input type="text" id="reg-name" placeholder="John Doe" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Phone Number</label>
+              <div class="input-field-wrap">
+                <i class="fa-solid fa-phone field-icon"></i>
+                <input type="tel" id="reg-phone" placeholder="+91 98765 43210" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <div class="input-field-wrap">
+              <i class="fa-solid fa-envelope field-icon"></i>
+              <input type="email" id="reg-email" placeholder="john@example.com" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Default Delivery Street Address</label>
+            <div class="input-field-wrap">
+              <i class="fa-solid fa-location-dot field-icon"></i>
+              <input type="text" id="reg-address" placeholder="Flat 402, Sunshine Heights, Jubilee Enclave" required>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Password</label>
+              <div class="input-field-wrap">
+                <i class="fa-solid fa-lock field-icon"></i>
+                <input type="password" id="reg-pass" placeholder="Min. 6 chars" required minlength="6">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Confirm Password</label>
+              <div class="input-field-wrap">
+                <i class="fa-solid fa-shield-check field-icon"></i>
+                <input type="password" id="reg-confirm-pass" placeholder="Re-enter password" required minlength="6">
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-lg" style="width: 100%; margin-top: 10px;">
+            Create QuickBite Account
+          </button>
+        </form>
+
+        <p style="text-align: center; margin-top: 20px; font-size: 0.9rem; color: var(--color-text-muted);">
+          Already have an account? 
+          <a href="login.html" style="color: var(--color-primary); font-weight: 700;">Sign In</a>
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="js/storage.js"></script>
+  <script>
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-toggle-btn');
+    const themeIcon = document.getElementById('theme-icon');
+    const saved = QuickBiteDB.getTheme();
+    document.documentElement.setAttribute('data-theme', saved);
+    if (themeIcon) themeIcon.className = saved === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+
+    themeBtn?.addEventListener('click', () => {
+      const next = QuickBiteDB.toggleTheme();
+      if (themeIcon) themeIcon.className = next === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+    });
+
+    // Role selection
+    let selectedRole = 'customer';
+    document.querySelectorAll('.role-pill-select').forEach(pill => {
+      pill.addEventListener('click', () => {
+        document.querySelectorAll('.role-pill-select').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        selectedRole = pill.dataset.role;
+      });
+    });
+
+    // Register submit
+    document.getElementById('register-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('reg-name').value.trim();
+      const phone = document.getElementById('reg-phone').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const street = document.getElementById('reg-address').value.trim();
+      const pass = document.getElementById('reg-pass').value;
+      const confirmPass = document.getElementById('reg-confirm-pass').value;
+
+      if (pass !== confirmPass) {
+        QuickBiteDB.showToast("Passwords do not match!", "error");
+        return;
+      }
+
+      const newUser = QuickBiteDB.register({
+        name,
+        email,
+        phone,
+        password: pass,
+        role: selectedRole,
+        addresses: [
+          { id: `addr-${Date.now()}`, tag: "Home", street, city: "Hyderabad", pincode: "500081", isDefault: true }
+        ]
+      });
+
+      if (newUser) {
+        setTimeout(() => {
+          if (selectedRole === 'customer') {
+            window.location.href = 'customer/restaurants.html';
+          } else if (selectedRole === 'restaurant') {
+            window.location.href = 'restaurant/dashboard.html';
+          } else if (selectedRole === 'delivery') {
+            window.location.href = 'delivery/dashboard.html';
+          } else {
+            window.location.href = 'index.html';
+          }
+        }, 700);
+      }
+    });
+  </script>
+</body>
+</html>

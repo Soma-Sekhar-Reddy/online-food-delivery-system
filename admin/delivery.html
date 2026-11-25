@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <meta name="color-scheme" content="light dark" />
+    <!-- Instant Anti-Flash Dark Mode Script -->
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('quickbite_theme');
+          var theme = null;
+          if (saved) {
+            try { theme = JSON.parse(saved); } catch(e) { theme = saved; }
+          }
+          if (!theme) {
+            theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+          }
+          document.documentElement.setAttribute('data-theme', theme);
+          document.documentElement.style.colorScheme = theme;
+          if (theme === 'dark') {
+            document.documentElement.style.backgroundColor = '#090D16';
+          } else {
+            document.documentElement.style.backgroundColor = '#F8FAFC';
+          }
+        } catch(e) {}
+      })();
+    </script>
+    <style>
+      :root { color-scheme: light dark; }
+      html { background-color: #F8FAFC; color: #0F172A; }
+      html[data-theme="dark"] { background-color: #090D16 !important; color: #F8FAFC !important; color-scheme: dark; }
+      html[data-theme="light"] { background-color: #F8FAFC !important; color: #0F172A !important; color-scheme: light; }
+      body { background-color: inherit; }
+      @view-transition { navigation: auto; }
+    </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Delivery Partner Fleet Management | QuickBite Super Admin</title>
+  
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍔</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/restaurant.css">
+  <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+
+  <div class="dash-layout">
+    
+    <!-- Admin Sidebar -->
+    <aside class="dash-sidebar" style="width: 280px;">
+      <div class="sidebar-brand-box">
+        <a href="dashboard.html" class="brand-logo" style="font-size: 1.35rem;">
+          <div class="logo-icon-wrap" style="width:36px; height:36px; font-size:1rem; background: linear-gradient(135deg, #17202A 0%, #2C3E50 100%);">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <div>Quick<span>Admin</span></div>
+        </a>
+        <span class="badge badge-primary" style="font-size:0.7rem; background:var(--color-navy); color:#FFFFFF;">SUPER ADMIN</span>
+      </div>
+
+      <!-- Admin Profile Box -->
+      <div class="sidebar-rest-card">
+        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80" alt="Admin Anita" class="sidebar-rest-thumb" onerror="handleImageError(this, 'avatar')">
+        <div style="min-width: 0;">
+          <div class="sidebar-rest-name">Anita Desai</div>
+          <div style="font-size: 0.75rem; color: var(--color-success); font-weight: 700;">
+            <i class="fa-solid fa-circle" style="font-size: 0.55rem;"></i> System Controller
+          </div>
+        </div>
+      </div>
+
+      <!-- Nav Links -->
+      <nav class="sidebar-nav-list">
+        <a href="dashboard.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-chart-pie"></i> Platform Overview
+        </a>
+        <a href="customers.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-users"></i> Customers
+          <span class="admin-badge-count" id="side-customers-badge">0</span>
+        </a>
+        <a href="restaurants.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-store"></i> Restaurants
+          <span class="admin-badge-count" id="side-restaurants-badge">0</span>
+        </a>
+        <a href="orders.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-receipt"></i> Orders & Dispatch
+          <span class="admin-badge-count" id="side-orders-badge">0</span>
+        </a>
+        <a href="delivery.html" class="sidebar-nav-link active">
+          <i class="fa-solid fa-motorcycle"></i> Delivery Fleet
+          <span class="admin-badge-count" id="side-fleet-badge">0</span>
+        </a>
+        <a href="analytics.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-chart-line"></i> Analytics & Charts
+        </a>
+
+        <div style="border-top: 1px solid var(--color-border-subtle); margin: 12px 0;"></div>
+
+        <div style="padding: 0 16px; font-size: 0.725rem; font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; margin-bottom: 6px;">
+          Jump To Module Portals:
+        </div>
+        <a href="../customer/restaurants.html" class="sidebar-nav-link" target="_blank">
+          <i class="fa-solid fa-utensils"></i> Customer Food Portal
+        </a>
+        <a href="../restaurant/dashboard.html" class="sidebar-nav-link" target="_blank">
+          <i class="fa-solid fa-shop"></i> Restaurant Kitchen Hub
+        </a>
+        <a href="../delivery/dashboard.html" class="sidebar-nav-link" target="_blank">
+          <i class="fa-solid fa-route"></i> Delivery Rider Fleet
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="btn btn-secondary btn-sm" style="width: 100%; color: var(--color-danger);" onclick="QuickBiteDB.logout(); window.location.href='../login.html';">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dash-main">
+      
+      <!-- Topbar -->
+      <header class="dash-topbar">
+        <div class="topbar-left" style="display:flex; align-items:center; gap:14px;">
+          <button class="admin-mobile-toggle" id="mobile-sidebar-toggle" aria-label="Toggle Navigation">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+          <div>
+            <h1 class="topbar-title">Delivery Fleet Operations</h1>
+            <p style="font-size:0.8rem; color:var(--color-text-muted); margin-top:2px;">
+              Manage active riders, track trip completions, monitor vehicle registries, and audit driver payouts
+            </p>
+          </div>
+        </div>
+
+        <div class="topbar-right admin-topbar-actions">
+          <button class="btn btn-primary btn-sm" onclick="openAddDriverModal()">
+            <i class="fa-solid fa-user-plus"></i> Onboard Delivery Rider
+          </button>
+
+          <button class="btn btn-secondary btn-sm" onclick="exportFleetCSV()">
+            <i class="fa-solid fa-file-export"></i> Export CSV
+          </button>
+
+          <!-- Theme Switcher -->
+          <button class="btn-icon" id="theme-toggle-btn" title="Toggle Light/Dark Theme">
+            <i class="fa-solid fa-moon" id="theme-icon"></i>
+          </button>
+        </div>
+      </header>
+
+      <div class="dash-body">
+        
+        <!-- 5 KPI Metrics Cards -->
+        <div class="admin-metrics-5">
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-info">
+              <h4>Total Fleet Riders</h4>
+              <div class="admin-kpi-val" id="fleet-total-val">0</div>
+              <div class="admin-kpi-sub up"><i class="fa-solid fa-users"></i> Registered fleet</div>
+            </div>
+            <div class="admin-kpi-icon icon-purple">
+              <i class="fa-solid fa-person-biking"></i>
+            </div>
+          </div>
+
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-info">
+              <h4>Active On-Duty</h4>
+              <div class="admin-kpi-val" id="fleet-active-val">0</div>
+              <div class="admin-kpi-sub up"><i class="fa-solid fa-circle-check"></i> Available for trips</div>
+            </div>
+            <div class="admin-kpi-icon icon-green">
+              <i class="fa-solid fa-signal"></i>
+            </div>
+          </div>
+
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-info">
+              <h4>In Transit / Busy</h4>
+              <div class="admin-kpi-val" id="fleet-busy-val" style="color:var(--color-primary);">0</div>
+              <div class="admin-kpi-sub up"><i class="fa-solid fa-motorcycle"></i> Carrying orders</div>
+            </div>
+            <div class="admin-kpi-icon icon-orange">
+              <i class="fa-solid fa-route"></i>
+            </div>
+          </div>
+
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-info">
+              <h4>Completed Trips</h4>
+              <div class="admin-kpi-val" id="fleet-trips-val">0</div>
+              <div class="admin-kpi-sub up"><i class="fa-solid fa-box-check"></i> Across fleet</div>
+            </div>
+            <div class="admin-kpi-icon icon-blue">
+              <i class="fa-solid fa-bag-shopping"></i>
+            </div>
+          </div>
+
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-info">
+              <h4>Total Fleet Payouts</h4>
+              <div class="admin-kpi-val" id="fleet-earnings-val">₹0</div>
+              <div class="admin-kpi-sub up"><i class="fa-solid fa-wallet"></i> Driver earnings</div>
+            </div>
+            <div class="admin-kpi-icon icon-amber">
+              <i class="fa-solid fa-hand-holding-dollar"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter & Search Toolbar -->
+        <div class="admin-toolbar">
+          <div class="admin-toolbar-left">
+            <!-- Search -->
+            <div class="admin-search-wrap">
+              <input type="text" id="fleet-search-input" class="admin-search-input" placeholder="Search rider name, vehicle plate, phone...">
+              <i class="fa-solid fa-magnifying-glass admin-search-icon"></i>
+            </div>
+
+            <!-- Status Filter Pills -->
+            <div class="admin-pill-group">
+              <button class="admin-pill-btn active" data-status="all" onclick="filterFleetStatus('all', this)">All Riders</button>
+              <button class="admin-pill-btn" data-status="active" onclick="filterFleetStatus('active', this)">On Duty</button>
+              <button class="admin-pill-btn" data-status="busy" onclick="filterFleetStatus('busy', this)">In Transit</button>
+              <button class="admin-pill-btn" data-status="offline" onclick="filterFleetStatus('offline', this)">Offline</button>
+            </div>
+          </div>
+
+          <div class="admin-toolbar-right">
+            <!-- Sort dropdown -->
+            <select id="fleet-sort-select" class="admin-select" onchange="renderFleet()">
+              <option value="trips-desc">Sort: Most Deliveries</option>
+              <option value="rating-desc">Sort: Highest Rating</option>
+              <option value="earnings-desc">Sort: Highest Earnings</option>
+              <option value="name-asc">Sort: Name (A - Z)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Fleet Table Card -->
+        <div class="admin-table-card">
+          <div class="admin-table-header">
+            <div>
+              <h3 class="admin-table-title">Delivery Fleet Directory</h3>
+              <p class="admin-table-desc">Displaying <span id="fleet-display-count">0</span> delivery partners</p>
+            </div>
+          </div>
+
+          <div class="admin-table-responsive">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Rider Profile</th>
+                  <th>Contact Email</th>
+                  <th>Phone Number</th>
+                  <th>Vehicle Registration</th>
+                  <th>Rating</th>
+                  <th>Completed Trips</th>
+                  <th>Cumulative Payout</th>
+                  <th>Duty Status</th>
+                  <th>Administrative Actions</th>
+                </tr>
+              </thead>
+              <tbody id="fleet-table-tbody">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <!-- MODAL 1: Onboard New Delivery Partner -->
+  <div class="admin-modal-backdrop" id="modal-add-driver">
+    <div class="admin-modal-dialog">
+      <div class="admin-modal-header">
+        <h3 class="admin-modal-title">Onboard Delivery Partner</h3>
+        <button class="admin-modal-close" onclick="AdminUI.closeModal('modal-add-driver')">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <form id="form-add-driver" onsubmit="handleAddDriver(event)">
+        <div class="admin-modal-body">
+          <div class="form-group-row">
+            <div class="form-field">
+              <label>Full Name *</label>
+              <input type="text" id="add-drv-name" class="form-input" placeholder="e.g. Ramesh Chandra" required>
+            </div>
+            <div class="form-field">
+              <label>Contact Email *</label>
+              <input type="email" id="add-drv-email" class="form-input" placeholder="ramesh.rider@quickbite.com" required>
+            </div>
+          </div>
+
+          <div class="form-group-row">
+            <div class="form-field">
+              <label>Mobile Number *</label>
+              <input type="text" id="add-drv-phone" class="form-input" placeholder="+91 98123 45678" required>
+            </div>
+            <div class="form-field">
+              <label>Default Password</label>
+              <input type="password" id="add-drv-pass" class="form-input" value="password123">
+            </div>
+          </div>
+
+          <div class="form-group-row">
+            <div class="form-field">
+              <label>Vehicle Make & Model *</label>
+              <input type="text" id="add-drv-vehicle" class="form-input" placeholder="e.g. TVS Jupiter 125" required>
+            </div>
+            <div class="form-field">
+              <label>Vehicle Number Plate *</label>
+              <input type="text" id="add-drv-plate" class="form-input" placeholder="e.g. TS 09 AB 1234" required>
+            </div>
+          </div>
+
+          <div class="form-group-row">
+            <div class="form-field">
+              <label>Initial Duty Status</label>
+              <select id="add-drv-status" class="form-select">
+                <option value="active">Active (On Duty & Ready)</option>
+                <option value="offline">Offline</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Starting Rating</label>
+              <input type="number" id="add-drv-rating" class="form-input" step="0.1" min="1" max="5" value="4.8">
+            </div>
+          </div>
+        </div>
+        <div class="admin-modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="AdminUI.closeModal('modal-add-driver')">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-check"></i> Register Fleet Rider</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: Edit Delivery Partner -->
+  <div class="admin-modal-backdrop" id="modal-edit-driver">
+    <div class="admin-modal-dialog">
+      <div class="admin-modal-header">
+        <h3 class="admin-modal-title">Edit Delivery Partner Profile</h3>
+        <button class="admin-modal-close" onclick="AdminUI.closeModal('modal-edit-driver')">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <form id="form-edit-driver" onsubmit="handleEditDriver(event)">
+        <input type="hidden" id="edit-drv-id">
+        <div class="admin-modal-body">
+          <div class="form-group-row">
+            <div class="form-field">
+              <label>Rider Name</label>
+              <input type="text" id="edit-drv-name" class="form-input" required>
+            </div>
+            <div class="form-field">
+              <label>Phone Number</label>
+              <input type="text" id="edit-drv-phone" class="form-input" required>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label>Vehicle Registration Details</label>
+            <input type="text" id="edit-drv-vehicle" class="form-input" required>
+          </div>
+
+          <div class="form-group-row">
+            <div class="form-field">
+              <label>Duty Status</label>
+              <select id="edit-drv-status" class="form-select">
+                <option value="active">Active On Duty</option>
+                <option value="busy">Busy / In Transit</option>
+                <option value="offline">Offline / Off Duty</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Driver Rating</label>
+              <input type="number" id="edit-drv-rating" class="form-input" step="0.05" min="1" max="5">
+            </div>
+          </div>
+        </div>
+        <div class="admin-modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="AdminUI.closeModal('modal-edit-driver')">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-save"></i> Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 3: View Delivery Partner Details & Trips -->
+  <div class="admin-modal-backdrop" id="modal-view-driver">
+    <div class="admin-modal-dialog" style="max-width: 680px;">
+      <div class="admin-modal-header">
+        <h3 class="admin-modal-title" id="view-drv-title">Driver Profile</h3>
+        <button class="admin-modal-close" onclick="AdminUI.closeModal('modal-view-driver')">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="admin-modal-body" id="view-drv-body">
+        <!-- Injected via JS -->
+      </div>
+      <div class="admin-modal-footer">
+        <button class="btn btn-secondary btn-sm" onclick="AdminUI.closeModal('modal-view-driver')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="../js/storage.js"></script>
+  <script src="../js/admin.js"></script>
+  <script>
+    let activeFleetFilter = 'all';
+    let currentSearch = '';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderFleet();
+
+      document.getElementById('fleet-search-input')?.addEventListener('input', (e) => {
+        currentSearch = e.target.value.trim().toLowerCase();
+        renderFleet();
+      });
+
+      window.addEventListener('quickbite:users-updated', renderFleet);
+      window.addEventListener('quickbite:orders-updated', renderFleet);
+    });
+
+    function filterFleetStatus(status, btn) {
+      activeFleetFilter = status;
+      document.querySelectorAll('.admin-pill-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderFleet();
+    }
+
+    function renderFleet() {
+      let drivers = QuickBiteDB.getDeliveryPartners();
+      const orders = QuickBiteDB.getOrders();
+
+      // Metrics calculation
+      const totalDrivers = drivers.length;
+      const activeDrivers = drivers.filter(d => d.status === 'active').length;
+      const busyDrivers = drivers.filter(d => d.status === 'busy').length;
+      const totalTrips = drivers.reduce((sum, d) => sum + (d.totalDeliveries || 0), 0);
+      const totalEarnings = drivers.reduce((sum, d) => sum + (d.earnings || 0), 0);
+
+      document.getElementById('fleet-total-val').textContent = totalDrivers;
+      document.getElementById('fleet-active-val').textContent = activeDrivers;
+      document.getElementById('fleet-busy-val').textContent = busyDrivers;
+      document.getElementById('fleet-trips-val').textContent = totalTrips;
+      document.getElementById('fleet-earnings-val').textContent = `₹${totalEarnings.toLocaleString()}`;
+
+      // Search filter
+      if (currentSearch) {
+        drivers = drivers.filter(d => 
+          (d.name || '').toLowerCase().includes(currentSearch) ||
+          (d.phone || '').toLowerCase().includes(currentSearch) ||
+          (d.email || '').toLowerCase().includes(currentSearch) ||
+          (d.vehicle || '').toLowerCase().includes(currentSearch)
+        );
+      }
+
+      // Status Filter
+      if (activeFleetFilter !== 'all') {
+        drivers = drivers.filter(d => d.status === activeFleetFilter);
+      }
+
+      // Sort
+      const sortBy = document.getElementById('fleet-sort-select')?.value || 'trips-desc';
+      drivers.sort((a, b) => {
+        if (sortBy === 'trips-desc') return (b.totalDeliveries || 0) - (a.totalDeliveries || 0);
+        if (sortBy === 'rating-desc') return (b.rating || 0) - (a.rating || 0);
+        if (sortBy === 'earnings-desc') return (b.earnings || 0) - (a.earnings || 0);
+        return (a.name || '').localeCompare(b.name || '');
+      });
+
+      document.getElementById('fleet-display-count').textContent = drivers.length;
+      const tbody = document.getElementById('fleet-table-tbody');
+
+      if (!drivers.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="9">
+              <div class="admin-empty-state">
+                <i class="fa-solid fa-motorcycle admin-empty-icon"></i>
+                <h4 class="admin-empty-title">No delivery riders matched</h4>
+                <p class="admin-empty-desc">Try clearing your search query or switching your status filter.</p>
+                <button class="btn btn-secondary btn-sm" onclick="clearFilters()">Reset Filters</button>
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = drivers.map(d => {
+        const isOnline = d.status === 'active';
+        const isBusy = d.status === 'busy';
+
+        return `
+          <tr>
+            <td>
+              <div class="user-cell">
+                <img src="${d.avatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80'}" onerror="handleImageError(this, 'avatar')">
+                <div class="user-cell-info">
+                  <strong>${d.name}</strong>
+                  <span>Joined: ${d.joinedAt ? new Date(d.joinedAt).toLocaleDateString() : 'Verified Rider'}</span>
+                </div>
+              </div>
+            </td>
+            <td><a href="mailto:${d.email}" style="color:var(--color-info);">${d.email || 'rider@quickbite.com'}</a></td>
+            <td>${d.phone || '+91 91234 56789'}</td>
+            <td>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <i class="fa-solid fa-motorcycle" style="color:var(--color-primary); font-size:0.85rem;"></i>
+                <span style="font-weight:600;">${d.vehicle || 'Bike (TS 09 EQ 4022)'}</span>
+              </div>
+            </td>
+            <td>
+              <span class="rating-pill" style="font-size:0.75rem; padding:3px 8px;">
+                <i class="fa-solid fa-star"></i> ${d.rating || 4.9}
+              </span>
+            </td>
+            <td><strong>${d.totalDeliveries || 0} trips</strong></td>
+            <td><strong style="color:var(--color-success);">₹${(d.earnings || 0).toLocaleString()}</strong></td>
+            <td>
+              <span class="badge ${isOnline ? 'badge-success' : (isBusy ? 'badge-primary' : 'badge-danger')}">
+                <i class="fa-solid fa-circle" style="font-size:0.55rem;"></i>
+                ${isOnline ? 'On Duty' : (isBusy ? 'In Transit' : 'Offline')}
+              </span>
+            </td>
+            <td>
+              <div class="admin-action-btns">
+                <button class="action-btn-sm btn-edit" title="View Rider Profile & Trips" onclick="viewDriver('${d.id}')">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
+                <button class="action-btn-sm" title="Edit Rider" onclick="editDriver('${d.id}')">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button class="action-btn-sm ${isOnline ? 'btn-reject' : 'btn-approve'}" title="Toggle Online / Offline" onclick="toggleDriverDuty('${d.id}')">
+                  <i class="fa-solid ${isOnline ? 'fa-power-off' : 'fa-play'}"></i>
+                </button>
+                <button class="action-btn-sm btn-delete" title="Offboard Rider" onclick="deleteDriverConfirm('${d.id}')">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function clearFilters() {
+      document.getElementById('fleet-search-input').value = '';
+      currentSearch = '';
+      activeFleetFilter = 'all';
+      document.querySelectorAll('.admin-pill-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('.admin-pill-btn[data-status="all"]')?.classList.add('active');
+      renderFleet();
+    }
+
+    function toggleDriverDuty(id) {
+      const user = QuickBiteDB.getUserById(id);
+      if (!user) return;
+      user.status = user.status === 'offline' ? 'active' : 'offline';
+      QuickBiteDB.saveUser(user);
+      QuickBiteDB.showToast(`Rider ${user.name} is now ${user.status.toUpperCase()}`, 'info');
+      renderFleet();
+    }
+
+    function deleteDriverConfirm(id) {
+      const user = QuickBiteDB.getUserById(id);
+      if (!user) return;
+      if (confirm(`Remove rider "${user.name}" from active fleet records?`)) {
+        QuickBiteDB.deleteUser(id);
+        renderFleet();
+      }
+    }
+
+    function openAddDriverModal() {
+      document.getElementById('form-add-driver').reset();
+      AdminUI.openModal('modal-add-driver');
+    }
+
+    function handleAddDriver(e) {
+      e.preventDefault();
+      const name = document.getElementById('add-drv-name').value.trim();
+      const email = document.getElementById('add-drv-email').value.trim();
+      const phone = document.getElementById('add-drv-phone').value.trim();
+      const password = document.getElementById('add-drv-pass').value.trim() || 'password123';
+      const vehicle = document.getElementById('add-drv-vehicle').value.trim();
+      const plate = document.getElementById('add-drv-plate').value.trim();
+      const status = document.getElementById('add-drv-status').value;
+      const rating = parseFloat(document.getElementById('add-drv-rating').value) || 4.8;
+
+      const newDriver = {
+        role: 'delivery',
+        name,
+        email,
+        phone,
+        password,
+        vehicle: `${vehicle} (${plate})`,
+        status,
+        rating,
+        totalDeliveries: 0,
+        earnings: 0,
+        joinedAt: new Date().toISOString()
+      };
+
+      QuickBiteDB.saveDeliveryPartner(newDriver);
+      AdminUI.closeModal('modal-add-driver');
+      renderFleet();
+    }
+
+    function editDriver(id) {
+      const user = QuickBiteDB.getUserById(id);
+      if (!user) return;
+
+      document.getElementById('edit-drv-id').value = user.id;
+      document.getElementById('edit-drv-name').value = user.name || '';
+      document.getElementById('edit-drv-phone').value = user.phone || '';
+      document.getElementById('edit-drv-vehicle').value = user.vehicle || '';
+      document.getElementById('edit-drv-status').value = user.status || 'active';
+      document.getElementById('edit-drv-rating').value = user.rating || 4.8;
+
+      AdminUI.openModal('modal-edit-driver');
+    }
+
+    function handleEditDriver(e) {
+      e.preventDefault();
+      const id = document.getElementById('edit-drv-id').value;
+      const user = QuickBiteDB.getUserById(id);
+      if (!user) return;
+
+      user.name = document.getElementById('edit-drv-name').value.trim();
+      user.phone = document.getElementById('edit-drv-phone').value.trim();
+      user.vehicle = document.getElementById('edit-drv-vehicle').value.trim();
+      user.status = document.getElementById('edit-drv-status').value;
+      user.rating = parseFloat(document.getElementById('edit-drv-rating').value) || 4.8;
+
+      QuickBiteDB.saveUser(user);
+      AdminUI.closeModal('modal-edit-driver');
+      renderFleet();
+    }
+
+    function viewDriver(id) {
+      const user = QuickBiteDB.getUserById(id);
+      if (!user) return;
+
+      const orders = QuickBiteDB.getOrders().filter(o => o.deliveryPartnerId === id);
+      const activeDelivery = orders.find(o => o.status === 'out_for_delivery' || o.status === 'ready_for_pickup');
+
+      document.getElementById('view-drv-title').textContent = `${user.name} - Fleet Profile`;
+      const body = document.getElementById('view-drv-body');
+
+      const recentTripsList = orders.length ? orders.map(o => `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--color-border-subtle);">
+          <div>
+            <strong>#${o.id}</strong> - <span>${o.restaurantName}</span>
+            <div style="font-size:0.775rem; color:var(--color-text-muted);">To: ${o.customerName} &bull; ${new Date(o.createdAt).toLocaleDateString()}</div>
+          </div>
+          <div style="text-align:right;">
+            <strong style="color:var(--color-success);">+₹${o.deliveryFee || 30} Payout</strong>
+            <div><span class="badge ${o.status === 'delivered' ? 'badge-success' : 'badge-primary'}">${o.status}</span></div>
+          </div>
+        </div>
+      `).join('') : '<p style="color:var(--color-text-muted); font-size:0.85rem; padding:8px 0;">No past delivery runs on record.</p>';
+
+      body.innerHTML = `
+        <div style="display:flex; align-items:center; gap:16px; margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid var(--color-border);">
+          <img src="${user.avatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80'}" style="width:64px; height:64px; border-radius:50%; object-fit:cover; border:2px solid var(--color-primary);" onerror="handleImageError(this, 'avatar')">
+          <div>
+            <h3 style="font-size:1.2rem; font-weight:700;">${user.name}</h3>
+            <p style="color:var(--color-text-muted); font-size:0.85rem;">${user.email || 'rider@quickbite.com'} &bull; ${user.phone}</p>
+            <div style="margin-top:6px; display:flex; gap:8px;">
+              <span class="badge ${user.status === 'active' ? 'badge-success' : 'badge-danger'}">${user.status.toUpperCase()}</span>
+              <span class="rating-pill" style="font-size:0.75rem; padding:2px 8px;"><i class="fa-solid fa-star"></i> ${user.rating || 4.9}</span>
+              <span class="badge badge-info">${user.totalDeliveries || 0} Trips</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:var(--color-bg); padding:14px; border-radius:var(--radius-sm); margin-bottom:18px;">
+          <h4 style="font-size:0.85rem; font-weight:700; text-transform:uppercase; color:var(--color-text-muted); margin-bottom:8px;">Vehicle Registry</h4>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span><i class="fa-solid fa-motorcycle" style="color:var(--color-primary); margin-right:6px;"></i> ${user.vehicle || 'Standard Delivery Motorcycle'}</span>
+            <span class="badge badge-success"><i class="fa-solid fa-shield-check"></i> Insured & Verified</span>
+          </div>
+        </div>
+
+        ${activeDelivery ? `
+          <div style="background:#EFF6FF; border:1px solid #93C5FD; padding:14px; border-radius:var(--radius-sm); margin-bottom:18px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <strong style="color:#1D4ED8;"><i class="fa-solid fa-circle-dot" style="color:#3B82F6;"></i> Current Active Trip: #${activeDelivery.id}</strong>
+              <span class="badge badge-primary">${activeDelivery.status}</span>
+            </div>
+            <p style="font-size:0.85rem; color:#1E40AF; margin-top:6px;">
+              Picking up from <strong>${activeDelivery.restaurantName}</strong> to deliver to <strong>${activeDelivery.customerName}</strong>.
+            </p>
+          </div>
+        ` : ''}
+
+        <h4 style="font-size:0.95rem; font-weight:700; margin-bottom:10px;"><i class="fa-solid fa-clock-rotate-left"></i> Recent Delivery Runs</h4>
+        <div style="max-height:200px; overflow-y:auto;">
+          ${recentTripsList}
+        </div>
+      `;
+
+      AdminUI.openModal('modal-view-driver');
+    }
+
+    function exportFleetCSV() {
+      const drivers = QuickBiteDB.getDeliveryPartners();
+      const rows = drivers.map(d => ({
+        RiderID: d.id,
+        Name: d.name,
+        Email: d.email || '',
+        Phone: d.phone,
+        Vehicle: d.vehicle || 'Bike',
+        Rating: d.rating || 4.8,
+        TotalTrips: d.totalDeliveries || 0,
+        TotalEarnings: d.earnings || 0,
+        DutyStatus: d.status
+      }));
+      AdminUI.exportToCSV('quickbite_delivery_fleet.csv', rows);
+    }
+  </script>
+</body>
+</html>

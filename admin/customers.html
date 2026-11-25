@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <meta name="color-scheme" content="light dark" />
+    <!-- Instant Anti-Flash Dark Mode Script -->
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('quickbite_theme');
+          var theme = null;
+          if (saved) {
+            try { theme = JSON.parse(saved); } catch(e) { theme = saved; }
+          }
+          if (!theme) {
+            theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+          }
+          document.documentElement.setAttribute('data-theme', theme);
+          document.documentElement.style.colorScheme = theme;
+          if (theme === 'dark') {
+            document.documentElement.style.backgroundColor = '#090D16';
+          } else {
+            document.documentElement.style.backgroundColor = '#F8FAFC';
+          }
+        } catch(e) {}
+      })();
+    </script>
+    <style>
+      :root { color-scheme: light dark; }
+      html { background-color: #F8FAFC; color: #0F172A; }
+      html[data-theme="dark"] { background-color: #090D16 !important; color: #F8FAFC !important; color-scheme: dark; }
+      html[data-theme="light"] { background-color: #F8FAFC !important; color: #0F172A !important; color-scheme: light; }
+      body { background-color: inherit; }
+      @view-transition { navigation: auto; }
+    </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Management | QuickBite Super Admin</title>
+  
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍔</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/restaurant.css">
+  <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+
+  <div class="dash-layout">
+    
+    <!-- Admin Sidebar -->
+    <aside class="dash-sidebar" style="width: 280px;">
+      <div class="sidebar-brand-box">
+        <a href="dashboard.html" class="brand-logo" style="font-size: 1.35rem;">
+          <div class="logo-icon-wrap" style="width:36px; height:36px; font-size:1rem; background: linear-gradient(135deg, #17202A 0%, #2C3E50 100%);">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <div>Quick<span>Admin</span></div>
+        </a>
+        <span class="badge badge-primary" style="font-size:0.7rem; background:var(--color-navy); color:#FFFFFF;">SUPER ADMIN</span>
+      </div>
+
+      <!-- Admin Profile Box -->
+      <div class="sidebar-rest-card">
+        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80" alt="Admin Anita" class="sidebar-rest-thumb" onerror="handleImageError(this, 'avatar')">
+        <div style="min-width: 0;">
+          <div class="sidebar-rest-name">Anita Desai</div>
+          <div style="font-size: 0.75rem; color: var(--color-success); font-weight: 700;">
+            <i class="fa-solid fa-circle" style="font-size: 0.55rem;"></i> System Controller
+          </div>
+        </div>
+      </div>
+
+      <!-- Nav Links -->
+      <nav class="sidebar-nav-list">
+        <a href="dashboard.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-chart-pie"></i> Platform Overview
+        </a>
+        <a href="customers.html" class="sidebar-nav-link active">
+          <i class="fa-solid fa-users"></i> Customers
+          <span class="admin-badge-count" id="side-customers-badge">0</span>
+        </a>
+        <a href="restaurants.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-store"></i> Restaurants
+          <span class="admin-badge-count" id="side-restaurants-badge">0</span>
+        </a>
+        <a href="orders.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-receipt"></i> Orders & Dispatch
+          <span class="admin-badge-count" id="side-orders-badge">0</span>
+        </a>
+        <a href="delivery.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-motorcycle"></i> Delivery Fleet
+          <span class="admin-badge-count" id="side-fleet-badge">0</span>
+        </a>
+        <a href="analytics.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-chart-line"></i> Analytics & Charts
+        </a>
+
+        <div style="border-top: 1px solid var(--color-border-subtle); margin: 12px 0;"></div>
+
+        <div style="padding: 0 16px; font-size: 0.725rem; font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; margin-bottom: 6px;">
+          Jump To Module Portals:
+        </div>
+        <a href="../customer/restaurants.html" class="sidebar-nav-link" target="_blank">
+          <i class="fa-solid fa-utensils"></i> Customer Food Portal
+        </a>
+        <a href="../restaurant/dashboard.html" class="sidebar-nav-link" target="_blank">
+          <i class="fa-solid fa-shop"></i> Restaurant Kitchen Hub
+        </a>
+        <a href="../delivery/dashboard.html" class="sidebar-nav-link" target="_blank">
+          <i class="fa-solid fa-route"></i> Delivery Rider Fleet
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="btn btn-secondary btn-sm" style="width: 100%; color: var(--color-danger);" onclick="QuickBiteDB.logout(); window.location.href='../login.html';">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dash-main">
+      
+      <!-- Topbar -->
+      <header class="dash-topbar">
+        <div class="topbar-left" style="display:flex; align-items:center; gap:14px;">
+          <button class="admin-mobile-toggle" id="mobile-sidebar-toggle" aria-label="Toggle Navigation">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+          <div>
+            <h1 class="topbar-title">Customer Accounts Directory</h1>
+            <p style="font-size:0.8rem; color:var(--color-text-muted); margin-top:2px;">
+              Manage registered users, review addresses, monitor spend, and control access permissions
+            </p>
+          </div>
+        </div>
+
+        <div class="topbar-right admin-topbar-actions">
+          <button class="btn btn-primary btn-sm" onclick="openAddCustomerModal()">
+            <i class="fa-solid fa-user-plus"></i> Add New Customer
+          </button>
+
+          <button class="btn btn-secondary btn-sm" onclick="exportCustomersCSV()">
+            <i class="fa-solid fa-file-export"></i> Export CSV
+          </button>
+
+          <!-- Theme Switcher -->
+          <button class="btn-icon" id="theme-toggle-btn" title="Toggle Light/Dark Theme">
+            <i class="fa-solid fa-moon" id="theme-icon"></i>
+          </button>
+        </div>
+      </header>
+
+      <div class="dash-body">
+        
+        <!-- 4 KPI Metrics Cards -->
+        <div class="admin-metrics-4">
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-info">
+              <h4>Total Registered Customers</h4>
+              <div class="admin-kpi-val" id="cust-total-count">0</div>
+              <div class="admin-kpi-sub up"><i class="fa-solid fa-user-check"></i> Real-time synced</div>
+            </div>
+            <div class="admin-kpi-icon icon-blue">
+              <i class="fa-solid fa-users"></i>
+            </div>
+          </div>
+
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-info">
+              <h4>Active Accounts</h4>
+              <div class="admin-kpi-val" id="cust-active-count">0</div>
+              <div class="admin-kpi-sub up"><i class="fa-solid fa-circle-check"></i> Full ordering privileges</div>
+            </div>
+            <div class="admin-kpi-icon icon-green">
+              <i class="fa-solid fa-user-shield"></i>
+            </div>
+          </div>
+
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-info">
+              <h4>Blocked / Suspended</h4>
+              <div class="admin-kpi-val" id="cust-blocked-count">0</div>
+              <div class="admin-kpi-sub down"><i class="fa-solid fa-user-slash"></i> Restricted access</div>
+            </div>
+            <div class="admin-kpi-icon icon-orange">
+              <i class="fa-solid fa-ban"></i>
+            </div>
+          </div>
+
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-info">
+              <h4>Cumulative Customer Spend</h4>
+              <div class="admin-kpi-val" id="cust-total-spend">₹0</div>
+              <div class="admin-kpi-sub up"><i class="fa-solid fa-wallet"></i> Gross customer transactions</div>
+            </div>
+            <div class="admin-kpi-icon icon-purple">
+              <i class="fa-solid fa-bag-shopping"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter & Search Toolbar -->
+        <div class="admin-toolbar">
+          <div class="admin-toolbar-left">
+            <!-- Search -->
+            <div class="admin-search-wrap">
+              <input type="text" id="cust-search-input" class="admin-search-input" placeholder="Search customer by name, email, phone...">
+              <i class="fa-solid fa-magnifying-glass admin-search-icon"></i>
+            </div>
+
+            <!-- Status Filter Pills -->
+            <div class="admin-pill-group">
+              <button class="admin-pill-btn active" data-filter="all" onclick="filterCustomerStatus('all', this)">All</button>
+              <button class="admin-pill-btn" data-filter="active" onclick="filterCustomerStatus('active', this)">Active</button>
+              <button class="admin-pill-btn" data-filter="blocked" onclick="filterCustomerStatus('blocked', this)">Blocked</button>
+            </div>
+          </div>
+
+          <div class="admin-toolbar-right">
+            <!-- Sort dropdown -->
+            <select id="cust-sort-select" class="admin-select" onchange="applyFiltersAndSort()">
+              <option value="recent">Sort: Recently Joined</option>
+              <option value="orders-desc">Sort: Orders (High to Low)</option>
+              <option value="spend-desc">Sort: Spend (High to Low)</option>
+              <option value="name-asc">Sort: Name (A - Z)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Customers Table Card -->
+        <div class="admin-table-card">
+          <div class="admin-table-header">
+            <div>
+              <h3 class="admin-table-title">Customer Database</h3>
+              <p class="admin-table-desc">Showing <span id="cust-display-count">0</span> accounts</p>
+            </div>
+          </div>
+
+          <div class="admin-table-responsive">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Customer Profile</th>
+                  <th>Contact Email</th>
+                  <th>Phone Number</th>
+                  <th>Primary Saved Address</th>
+                  <th>Orders Placed</th>
+                  <th>Lifetime Spend</th>
+                  <th>Account Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="customers-table-tbody">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <!-- MODAL 1: Add Customer Modal -->
+  <div class="admin-modal-backdrop" id="modal-add-customer">
+    <div class="admin-modal-dialog">
+      <div class="admin-modal-header">
+        <h3 class="admin-modal-title">Create Customer Account</h3>
+        <button class="admin-modal-close" onclick="AdminUI.closeModal('modal-add-customer')">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <form id="form-add-customer" onsubmit="handleAddCustomer(event)">
+        <div class="admin-modal-body">
+          <div class="form-group-row">
+            <div class="form-field">
+              <label>Full Name *</label>
+              <input type="text" id="add-cust-name" class="form-input" placeholder="e.g. Meera Nambiar" required>
+            </div>
+            <div class="form-field">
+              <label>Email Address *</label>
+              <input type="email" id="add-cust-email" class="form-input" placeholder="meera@example.com" required>
+            </div>
+          </div>
+
+          <div class="form-group-row">
+            <div class="form-field">
+              <label>Phone Number *</label>
+              <input type="text" id="add-cust-phone" class="form-input" placeholder="+91 98765 43210" required>
+            </div>
+            <div class="form-field">
+              <label>Default Password</label>
+              <input type="password" id="add-cust-pass" class="form-input" value="password123">
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label>Primary Street Address</label>
+            <input type="text" id="add-cust-street" class="form-input" placeholder="e.g. Flat 302, Green Glen Layout, Bellandur">
+          </div>
+
+          <div class="form-group-row">
+            <div class="form-field">
+              <label>City</label>
+              <input type="text" id="add-cust-city" class="form-input" value="Bangalore">
+            </div>
+            <div class="form-field">
+              <label>Postal Pincode</label>
+              <input type="text" id="add-cust-pincode" class="form-input" value="560103">
+            </div>
+          </div>
+        </div>
+        <div class="admin-modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="AdminUI.closeModal('modal-add-customer')">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-check"></i> Create Account</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: Edit Customer Modal -->
+  <div class="admin-modal-backdrop" id="modal-edit-customer">
+    <div class="admin-modal-dialog">
+      <div class="admin-modal-header">
+        <h3 class="admin-modal-title">Edit Customer Account</h3>
+        <button class="admin-modal-close" onclick="AdminUI.closeModal('modal-edit-customer')">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <form id="form-edit-customer" onsubmit="handleEditCustomer(event)">
+        <input type="hidden" id="edit-cust-id">
+        <div class="admin-modal-body">
+          <div class="form-group-row">
+            <div class="form-field">
+              <label>Full Name</label>
+              <input type="text" id="edit-cust-name" class="form-input" required>
+            </div>
+            <div class="form-field">
+              <label>Email Address</label>
+              <input type="email" id="edit-cust-email" class="form-input" required>
+            </div>
+          </div>
+
+          <div class="form-group-row">
+            <div class="form-field">
+              <label>Phone Number</label>
+              <input type="text" id="edit-cust-phone" class="form-input" required>
+            </div>
+            <div class="form-field">
+              <label>Account Status</label>
+              <select id="edit-cust-status" class="form-select">
+                <option value="active">Active (Access Granted)</option>
+                <option value="blocked">Blocked (Suspended)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="admin-modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="AdminUI.closeModal('modal-edit-customer')">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-save"></i> Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 3: View Customer Profile & Orders History -->
+  <div class="admin-modal-backdrop" id="modal-view-customer">
+    <div class="admin-modal-dialog" style="max-width: 680px;">
+      <div class="admin-modal-header">
+        <h3 class="admin-modal-title" id="view-cust-title">Customer Profile</h3>
+        <button class="admin-modal-close" onclick="AdminUI.closeModal('modal-view-customer')">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="admin-modal-body" id="view-cust-body">
+        <!-- Injected via JS -->
+      </div>
+      <div class="admin-modal-footer">
+        <button class="btn btn-secondary btn-sm" onclick="AdminUI.closeModal('modal-view-customer')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="../js/storage.js"></script>
+  <script src="../js/admin.js"></script>
+  <script>
+    let activeStatusFilter = 'all';
+    let currentSearch = '';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderCustomers();
+
+      document.getElementById('cust-search-input')?.addEventListener('input', (e) => {
+        currentSearch = e.target.value.trim().toLowerCase();
+        renderCustomers();
+      });
+
+      window.addEventListener('quickbite:users-updated', renderCustomers);
+      window.addEventListener('quickbite:orders-updated', renderCustomers);
+    });
+
+    function filterCustomerStatus(status, btn) {
+      activeStatusFilter = status;
+      document.querySelectorAll('.admin-pill-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderCustomers();
+    }
+
+    function applyFiltersAndSort() {
+      renderCustomers();
+    }
+
+    function renderCustomers() {
+      const users = QuickBiteDB.getUsers();
+      const orders = QuickBiteDB.getOrders();
+      let customers = users.filter(u => u.role === 'customer');
+
+      // Update KPI metrics
+      const totalCust = customers.length;
+      const activeCust = customers.filter(c => c.status !== 'blocked').length;
+      const blockedCust = customers.filter(c => c.status === 'blocked').length;
+
+      const customerOrders = orders.filter(o => o.status !== 'cancelled');
+      const totalSpend = customerOrders.reduce((acc, o) => acc + (o.grandTotal || 0), 0);
+
+      document.getElementById('cust-total-count').textContent = totalCust;
+      document.getElementById('cust-active-count').textContent = activeCust;
+      document.getElementById('cust-blocked-count').textContent = blockedCust;
+      document.getElementById('cust-total-spend').textContent = `₹${totalSpend.toLocaleString()}`;
+
+      // Search
+      if (currentSearch) {
+        customers = customers.filter(c => 
+          (c.name || '').toLowerCase().includes(currentSearch) ||
+          (c.email || '').toLowerCase().includes(currentSearch) ||
+          (c.phone || '').toLowerCase().includes(currentSearch) ||
+          (c.addresses || []).some(a => (a.street || '').toLowerCase().includes(currentSearch))
+        );
+      }
+
+      // Status Filter
+      if (activeStatusFilter === 'active') {
+        customers = customers.filter(c => c.status !== 'blocked');
+      } else if (activeStatusFilter === 'blocked') {
+        customers = customers.filter(c => c.status === 'blocked');
+      }
+
+      // Sort
+      const sortBy = document.getElementById('cust-sort-select')?.value || 'recent';
+      customers.sort((a, b) => {
+        const aOrders = orders.filter(o => o.customerId === a.id);
+        const bOrders = orders.filter(o => o.customerId === b.id);
+        const aSpend = aOrders.reduce((sum, o) => sum + (o.grandTotal || 0), 0);
+        const bSpend = bOrders.reduce((sum, o) => sum + (o.grandTotal || 0), 0);
+
+        if (sortBy === 'orders-desc') return bOrders.length - aOrders.length;
+        if (sortBy === 'spend-desc') return bSpend - aSpend;
+        if (sortBy === 'name-asc') return (a.name || '').localeCompare(b.name || '');
+        // default recent
+        return new Date(b.joinedAt || 0) - new Date(a.joinedAt || 0);
+      });
+
+      document.getElementById('cust-display-count').textContent = customers.length;
+      const tbody = document.getElementById('customers-table-tbody');
+
+      if (!customers.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8">
+              <div class="admin-empty-state">
+                <i class="fa-solid fa-user-xmark admin-empty-icon"></i>
+                <h4 class="admin-empty-title">No customers found</h4>
+                <p class="admin-empty-desc">No registered customer accounts matched your search or status filters.</p>
+                <button class="btn btn-secondary btn-sm" onclick="clearFilters()">Reset Filters</button>
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = customers.map(c => {
+        const userOrders = orders.filter(o => o.customerId === c.id && o.status !== 'cancelled');
+        const spent = userOrders.reduce((sum, o) => sum + (o.grandTotal || 0), 0);
+        const primaryAddr = c.addresses?.[0] ? `${c.addresses[0].street}, ${c.addresses[0].city}` : 'No saved address';
+        const isBlocked = c.status === 'blocked';
+
+        return `
+          <tr>
+            <td>
+              <div class="user-cell">
+                <img src="${c.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80'}" onerror="handleImageError(this, 'avatar')">
+                <div class="user-cell-info">
+                  <strong>${c.name}</strong>
+                  <span>Joined: ${c.joinedAt ? new Date(c.joinedAt).toLocaleDateString() : 'Active Member'}</span>
+                </div>
+              </div>
+            </td>
+            <td><a href="mailto:${c.email}" style="color:var(--color-info);">${c.email}</a></td>
+            <td>${c.phone || '+91 98765 43210'}</td>
+            <td style="max-width:220px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${primaryAddr}">
+              <i class="fa-solid fa-location-dot" style="color:var(--color-primary); font-size:0.75rem; margin-right:4px;"></i>
+              ${primaryAddr}
+            </td>
+            <td><strong>${userOrders.length} orders</strong></td>
+            <td><strong style="color:var(--color-primary);">₹${spent.toLocaleString()}</strong></td>
+            <td>
+              <span class="badge ${isBlocked ? 'badge-danger' : 'badge-success'}">
+                <i class="fa-solid ${isBlocked ? 'fa-lock' : 'fa-circle-check'}"></i>
+                ${isBlocked ? 'Blocked' : 'Active'}
+              </span>
+            </td>
+            <td>
+              <div class="admin-action-btns">
+                <button class="action-btn-sm btn-edit" title="View Customer Details & Orders" onclick="openViewCustomerModal('${c.id}')">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
+                <button class="action-btn-sm" title="Edit Customer Profile" onclick="openEditCustomerModal('${c.id}')">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button class="action-btn-sm ${isBlocked ? 'btn-approve' : 'btn-reject'}" title="${isBlocked ? 'Unblock Customer' : 'Block Customer'}" onclick="toggleCustomerStatus('${c.id}')">
+                  <i class="fa-solid ${isBlocked ? 'fa-lock-open' : 'fa-ban'}"></i>
+                </button>
+                <button class="action-btn-sm btn-delete" title="Delete Customer Account" onclick="deleteCustomerConfirm('${c.id}')">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function clearFilters() {
+      document.getElementById('cust-search-input').value = '';
+      currentSearch = '';
+      activeStatusFilter = 'all';
+      document.querySelectorAll('.admin-pill-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('.admin-pill-btn[data-filter="all"]')?.classList.add('active');
+      renderCustomers();
+    }
+
+    function toggleCustomerStatus(id) {
+      QuickBiteDB.toggleUserStatus(id);
+      renderCustomers();
+    }
+
+    function deleteCustomerConfirm(id) {
+      const user = QuickBiteDB.getUserById(id);
+      if (!user) return;
+      if (confirm(`Are you sure you want to permanently delete customer account for "${user.name}"?`)) {
+        QuickBiteDB.deleteUser(id);
+        renderCustomers();
+      }
+    }
+
+    function openAddCustomerModal() {
+      document.getElementById('form-add-customer').reset();
+      AdminUI.openModal('modal-add-customer');
+    }
+
+    function handleAddCustomer(e) {
+      e.preventDefault();
+      const name = document.getElementById('add-cust-name').value.trim();
+      const email = document.getElementById('add-cust-email').value.trim();
+      const phone = document.getElementById('add-cust-phone').value.trim();
+      const password = document.getElementById('add-cust-pass').value.trim() || 'password123';
+      const street = document.getElementById('add-cust-street').value.trim();
+      const city = document.getElementById('add-cust-city').value.trim();
+      const pincode = document.getElementById('add-cust-pincode').value.trim();
+
+      const newCustomer = {
+        role: 'customer',
+        name,
+        email,
+        phone,
+        password,
+        status: 'active',
+        joinedAt: new Date().toISOString(),
+        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80',
+        addresses: street ? [{ id: `addr-${Date.now()}`, tag: 'Home', street, city, pincode, isDefault: true }] : [],
+        favorites: []
+      };
+
+      QuickBiteDB.saveUser(newCustomer);
+      AdminUI.closeModal('modal-add-customer');
+      renderCustomers();
+    }
+
+    function openEditCustomerModal(id) {
+      const user = QuickBiteDB.getUserById(id);
+      if (!user) return;
+
+      document.getElementById('edit-cust-id').value = user.id;
+      document.getElementById('edit-cust-name').value = user.name || '';
+      document.getElementById('edit-cust-email').value = user.email || '';
+      document.getElementById('edit-cust-phone').value = user.phone || '';
+      document.getElementById('edit-cust-status').value = user.status || 'active';
+
+      AdminUI.openModal('modal-edit-customer');
+    }
+
+    function handleEditCustomer(e) {
+      e.preventDefault();
+      const id = document.getElementById('edit-cust-id').value;
+      const user = QuickBiteDB.getUserById(id);
+      if (!user) return;
+
+      user.name = document.getElementById('edit-cust-name').value.trim();
+      user.email = document.getElementById('edit-cust-email').value.trim();
+      user.phone = document.getElementById('edit-cust-phone').value.trim();
+      user.status = document.getElementById('edit-cust-status').value;
+
+      QuickBiteDB.saveUser(user);
+      AdminUI.closeModal('modal-edit-customer');
+      renderCustomers();
+    }
+
+    function openViewCustomerModal(id) {
+      const user = QuickBiteDB.getUserById(id);
+      if (!user) return;
+
+      const orders = QuickBiteDB.getOrders().filter(o => o.customerId === id);
+      const totalSpent = orders.filter(o => o.status !== 'cancelled').reduce((acc, o) => acc + (o.grandTotal || 0), 0);
+
+      document.getElementById('view-cust-title').textContent = `${user.name} - Account Overview`;
+      const body = document.getElementById('view-cust-body');
+
+      const addressesList = (user.addresses && user.addresses.length) ? user.addresses.map(a => `
+        <div style="background:var(--color-bg); padding:10px 14px; border-radius:var(--radius-sm); margin-bottom:8px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong><i class="fa-solid fa-location-dot" style="color:var(--color-primary);"></i> ${a.tag || 'Address'}</strong>
+            ${a.isDefault ? '<span class="badge badge-primary" style="font-size:0.65rem;">DEFAULT</span>' : ''}
+          </div>
+          <p style="font-size:0.85rem; color:var(--color-text-muted); margin-top:4px;">${a.street}, ${a.city} - ${a.pincode}</p>
+        </div>
+      `).join('') : '<p style="color:var(--color-text-muted); font-size:0.85rem;">No saved delivery addresses on file.</p>';
+
+      const ordersList = orders.length ? orders.map(o => `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--color-border-subtle);">
+          <div>
+            <strong>#${o.id}</strong> - <span>${o.restaurantName}</span>
+            <div style="font-size:0.775rem; color:var(--color-text-muted);">${new Date(o.createdAt).toLocaleDateString()} &bull; ${o.items.length} dishes</div>
+          </div>
+          <div style="text-align:right;">
+            <strong style="color:var(--color-primary);">₹${o.grandTotal}</strong>
+            <div style="font-size:0.75rem;"><span class="badge ${o.status === 'delivered' ? 'badge-success' : 'badge-warning'}">${o.status}</span></div>
+          </div>
+        </div>
+      `).join('') : '<p style="color:var(--color-text-muted); font-size:0.85rem; padding:10px 0;">No past orders recorded yet.</p>';
+
+      body.innerHTML = `
+        <div style="display:flex; align-items:center; gap:16px; margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid var(--color-border);">
+          <img src="${user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80'}" style="width:64px; height:64px; border-radius:50%; object-fit:cover; border:2px solid var(--color-primary);" onerror="handleImageError(this, 'avatar')">
+          <div>
+            <h3 style="font-size:1.2rem; font-weight:700;">${user.name}</h3>
+            <p style="color:var(--color-text-muted); font-size:0.85rem;">${user.email} &bull; ${user.phone}</p>
+            <div style="margin-top:6px; display:flex; gap:8px;">
+              <span class="badge ${user.status === 'blocked' ? 'badge-danger' : 'badge-success'}">${user.status === 'blocked' ? 'Suspended' : 'Active'}</span>
+              <span class="badge badge-info">${orders.length} Total Orders</span>
+              <span class="badge badge-primary">₹${totalSpent.toLocaleString()} Spent</span>
+            </div>
+          </div>
+        </div>
+
+        <h4 style="font-size:0.95rem; font-weight:700; margin-bottom:10px;"><i class="fa-solid fa-map-location-dot"></i> Saved Addresses</h4>
+        <div style="margin-bottom:20px;">
+          ${addressesList}
+        </div>
+
+        <h4 style="font-size:0.95rem; font-weight:700; margin-bottom:10px;"><i class="fa-solid fa-receipt"></i> Recent Orders History</h4>
+        <div style="max-height:220px; overflow-y:auto;">
+          ${ordersList}
+        </div>
+      `;
+
+      AdminUI.openModal('modal-view-customer');
+    }
+
+    function exportCustomersCSV() {
+      const users = QuickBiteDB.getUsers().filter(u => u.role === 'customer');
+      const orders = QuickBiteDB.getOrders();
+
+      const rows = users.map(u => {
+        const userOrders = orders.filter(o => o.customerId === u.id);
+        const spent = userOrders.filter(o => o.status !== 'cancelled').reduce((sum, o) => sum + (o.grandTotal || 0), 0);
+        return {
+          CustomerID: u.id,
+          Name: u.name,
+          Email: u.email,
+          Phone: u.phone,
+          Status: u.status || 'active',
+          OrdersPlaced: userOrders.length,
+          TotalSpent: spent,
+          JoinedAt: u.joinedAt || '2026-08-01'
+        };
+      });
+
+      AdminUI.exportToCSV('quickbite_customers_list.csv', rows);
+    }
+  </script>
+</body>
+</html>

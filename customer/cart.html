@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <meta name="color-scheme" content="light dark" />
+    <!-- Instant Anti-Flash Dark Mode Script -->
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('quickbite_theme');
+          var theme = null;
+          if (saved) {
+            try { theme = JSON.parse(saved); } catch(e) { theme = saved; }
+          }
+          if (!theme) {
+            theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+          }
+          document.documentElement.setAttribute('data-theme', theme);
+          document.documentElement.style.colorScheme = theme;
+          if (theme === 'dark') {
+            document.documentElement.style.backgroundColor = '#090D16';
+          } else {
+            document.documentElement.style.backgroundColor = '#F8FAFC';
+          }
+        } catch(e) {}
+      })();
+    </script>
+    <style>
+      :root { color-scheme: light dark; }
+      html { background-color: #F8FAFC; color: #0F172A; }
+      html[data-theme="dark"] { background-color: #090D16 !important; color: #F8FAFC !important; color-scheme: dark; }
+      html[data-theme="light"] { background-color: #F8FAFC !important; color: #0F172A !important; color-scheme: light; }
+      body { background-color: inherit; }
+      @view-transition { navigation: auto; }
+    </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Shopping Cart | QuickBite</title>
+  
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍔</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/landing.css">
+  <link rel="stylesheet" href="../css/customer.css">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <header class="customer-nav">
+    <div class="container customer-nav-inner">
+      <a href="restaurants.html" class="brand-logo">
+        <div class="logo-icon-wrap">
+          <i class="fa-solid fa-burger"></i>
+        </div>
+        <div class="brand-text">Quick<span>Bite</span></div>
+      </a>
+
+      <nav class="customer-nav-links">
+        <a href="restaurants.html" class="c-nav-link">
+          <i class="fa-solid fa-utensils"></i> Restaurants
+        </a>
+        <a href="orders.html" class="c-nav-link">
+          <i class="fa-solid fa-clock-rotate-left"></i> My Orders
+        </a>
+        <a href="tracking.html" class="c-nav-link">
+          <i class="fa-solid fa-route"></i> Live Track
+        </a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="btn-icon" id="theme-toggle-btn" title="Toggle Theme">
+          <i class="fa-solid fa-moon" id="theme-icon"></i>
+        </button>
+
+        <a href="profile.html" class="btn-icon" title="Profile">
+          <i class="fa-regular fa-user"></i>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="section" style="padding-top: 36px; min-height: 75vh;">
+    <div class="container">
+      
+      <div style="margin-bottom: 24px;">
+        <h1 style="font-size: 1.85rem; font-weight: 800;">Review Your Cart</h1>
+        <p style="color: var(--color-text-muted); font-size: 0.925rem;">Verify dishes, apply discount vouchers, and proceed to checkout</p>
+      </div>
+
+      <!-- Empty State -->
+      <div id="cart-empty-view" style="display: none; text-align: center; padding: 70px 20px; background: var(--color-surface); border-radius: var(--radius-xl); border: 1px solid var(--color-border); max-width: 600px; margin: 0 auto;">
+        <i class="fa-solid fa-cart-shopping" style="font-size: 4rem; color: var(--color-text-subtle); margin-bottom: 16px;"></i>
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 8px;">Your Cart is Empty</h2>
+        <p style="color: var(--color-text-muted); font-size: 0.95rem; margin-bottom: 24px;">Looks like you haven't added anything to your cart yet. Discover dishes from the city's finest restaurants!</p>
+        <a href="restaurants.html" class="btn btn-primary btn-lg">
+          <i class="fa-solid fa-utensils"></i> Browse Top Restaurants
+        </a>
+      </div>
+
+      <!-- Active Cart Grid -->
+      <div class="cart-page-grid" id="cart-active-view">
+        
+        <!-- Left: Cart Items & Instructions -->
+        <div>
+          <!-- Restaurant Details Card -->
+          <div style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 20px 24px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;" id="cart-rest-banner">
+            <div>
+              <span class="badge badge-primary" style="margin-bottom: 6px;">Ordering from:</span>
+              <h3 style="font-size: 1.25rem; font-weight: 700;" id="cart-restaurant-name">The Royal Biryani & Kebabs</h3>
+              <p style="font-size: 0.85rem; color: var(--color-text-muted);" id="cart-restaurant-address">Road No. 12, Banjara Hills, Hyderabad</p>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="QuickBiteDB.clearCart(); renderCartPage();">
+              <i class="fa-regular fa-trash-can"></i> Clear Cart
+            </button>
+          </div>
+
+          <!-- Items Container -->
+          <div style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 24px;">
+            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 20px;">Order Items</h3>
+            <div id="cart-items-container" style="display: flex; flex-direction: column; gap: 16px;">
+              <!-- Injected by JavaScript -->
+            </div>
+          </div>
+
+          <!-- Special Instructions -->
+          <div style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 20px 24px; margin-bottom: 24px;">
+            <label style="display: block; font-weight: 700; font-size: 0.95rem; margin-bottom: 8px;">
+              <i class="fa-regular fa-note-sticky" style="color: var(--color-primary);"></i> Cooking or Delivery Instructions (Optional)
+            </label>
+            <input type="text" id="special-instructions" placeholder="e.g. Please make it mild spicy, don't ring doorbell, leave at door..." style="width: 100%; padding: 12px 16px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface-card); font-size: 0.9rem;">
+          </div>
+
+          <!-- Available Coupons to One-Click Apply -->
+          <div style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 20px 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+              <h4 style="font-size: 1rem; font-weight: 700; margin: 0;">
+                <i class="fa-solid fa-tag" style="color: var(--color-primary);"></i> Available Vouchers for You
+              </h4>
+              <span id="vouchers-status-badge" style="display: none; font-size: 0.8rem; color: var(--color-success); font-weight: 700; align-items: center; gap: 6px;">
+                <i class="fa-solid fa-circle-check"></i> <span id="vouchers-status-text">Coupon Applied</span>
+              </span>
+            </div>
+
+            <!-- Small Search / Unlisted Coupon Input -->
+            <div style="margin-bottom: 16px;">
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <div style="position: relative; flex: 1;">
+                  <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--color-text-muted); font-size: 0.85rem;"></i>
+                  <input
+                    type="text"
+                    id="voucher-search-input"
+                    placeholder="Search voucher or enter unlisted code (e.g. WELCOME20, FESTIVE)..."
+                    oninput="handleVoucherSearch(this.value)"
+                    onkeydown="if(event.key==='Enter'){event.preventDefault(); applySearchedCoupon();}"
+                    style="width: 100%; padding: 9px 34px 9px 36px; font-size: 0.85rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface-card); color: var(--color-text-main); text-transform: uppercase;"
+                  >
+                  <button
+                    type="button"
+                    id="voucher-search-clear-btn"
+                    onclick="clearVoucherSearch()"
+                    style="display: none; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--color-text-muted); cursor: pointer; font-size: 0.85rem;"
+                    title="Clear search"
+                  >
+                    <i class="fa-solid fa-xmark"></i>
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  class="btn btn-primary btn-sm"
+                  id="voucher-search-apply-btn"
+                  onclick="applySearchedCoupon()"
+                  style="white-space: nowrap; padding: 9px 16px; font-size: 0.85rem; font-weight: 700;"
+                >
+                  <i class="fa-solid fa-bolt"></i> Apply
+                </button>
+              </div>
+              <div style="font-size: 0.75rem; color: var(--color-text-muted); margin-top: 6px; display: flex; align-items: center; gap: 6px;">
+                <i class="fa-solid fa-circle-info" style="color: var(--color-primary);"></i>
+                <span>Search listed vouchers or enter any unlisted promo code to apply instantly.</span>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;" id="available-coupons-grid">
+              <!-- Injected by JavaScript -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Bill Summary Card -->
+        <div>
+          <div style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 28px; box-shadow: var(--shadow-sm); position: sticky; top: 100px;">
+            
+            <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 20px;">Bill Summary</h3>
+
+            <!-- Coupon Input -->
+            <div style="display: flex; gap: 8px; margin-bottom: 20px;">
+              <input type="text" id="coupon-code-input" placeholder="Enter coupon code" style="flex: 1; padding: 11px 14px; border: 1px solid var(--color-border); border-radius: var(--radius-md); font-size: 0.875rem; text-transform: uppercase;">
+              <button class="btn btn-secondary btn-sm" id="apply-coupon-btn" onclick="applyCouponManual()">
+                Apply
+              </button>
+            </div>
+
+            <!-- Active Coupon Pill -->
+            <div id="applied-coupon-pill" style="display: none; align-items: center; justify-content: space-between; padding: 8px 14px; background: var(--color-success-bg); border: 1px solid var(--color-success); border-radius: var(--radius-md); margin-bottom: 20px;">
+              <div style="display: flex; align-items: center; gap: 8px; color: var(--color-success); font-weight: 700; font-size: 0.85rem;">
+                <i class="fa-solid fa-circle-check"></i>
+                <span id="applied-coupon-name">QUICK50 Applied</span>
+              </div>
+              <button onclick="removeCouponManual()" style="color: var(--color-danger); font-size: 0.85rem; font-weight: 700;">Remove</button>
+            </div>
+
+            <!-- Breakdown Lines -->
+            <div class="cart-bill-row">
+              <span>Item Subtotal</span>
+              <strong id="bill-subtotal">₹0</strong>
+            </div>
+
+            <div class="cart-bill-row">
+              <span>Delivery Fee (Standard 30 min)</span>
+              <strong id="bill-delivery">₹30</strong>
+            </div>
+
+            <div class="cart-bill-row">
+              <span>Restaurant Packaging & Bags</span>
+              <strong>₹15</strong>
+            </div>
+
+            <div class="cart-bill-row">
+              <span>Taxes & GST (5%)</span>
+              <strong id="bill-taxes">₹0</strong>
+            </div>
+
+            <div class="cart-bill-row discount" id="bill-discount-row" style="display: none;">
+              <span>Promo Voucher Savings</span>
+              <strong id="bill-discount-amt">-₹0</strong>
+            </div>
+
+            <div class="cart-bill-row total">
+              <span>To Pay</span>
+              <strong id="bill-grand-total" style="color: var(--color-primary); font-size: 1.35rem;">₹0</strong>
+            </div>
+
+            <a href="checkout.html" class="btn btn-primary btn-lg" style="width: 100%; margin-top: 24px; border-radius: var(--radius-full);">
+              Proceed to Checkout <i class="fa-solid fa-arrow-right"></i>
+            </a>
+
+            <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 14px; font-size: 0.8rem; color: var(--color-text-subtle);">
+              <i class="fa-solid fa-shield-halved"></i> 100% Safe & Secure Checkout
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="../js/storage.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      renderCartPage();
+      renderAvailableCoupons();
+    });
+
+    function initTheme() {
+      const themeBtn = document.getElementById('theme-toggle-btn');
+      const themeIcon = document.getElementById('theme-icon');
+      const saved = QuickBiteDB.getTheme();
+      document.documentElement.setAttribute('data-theme', saved);
+      if (themeIcon) themeIcon.className = saved === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+
+      themeBtn?.addEventListener('click', () => {
+        const next = QuickBiteDB.toggleTheme();
+        if (themeIcon) themeIcon.className = next === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+      });
+
+      window.addEventListener('quickbite:cart-updated', () => {
+        renderCartPage();
+      });
+    }
+
+    function renderCartPage() {
+      const cart = QuickBiteDB.getCart();
+      const emptyView = document.getElementById('cart-empty-view');
+      const activeView = document.getElementById('cart-active-view');
+
+      if (!cart || cart.items.length === 0) {
+        if (emptyView) emptyView.style.display = 'block';
+        if (activeView) activeView.style.display = 'none';
+        return;
+      }
+
+      if (emptyView) emptyView.style.display = 'none';
+      if (activeView) activeView.style.display = 'grid';
+
+      // Restaurant Info
+      const rest = QuickBiteDB.getRestaurantById(cart.items[0]?.restaurantId) || {
+        name: "The Royal Biryani & Kebabs",
+        address: "Banjara Hills, Hyderabad"
+      };
+      document.getElementById('cart-restaurant-name').textContent = rest.name;
+      document.getElementById('cart-restaurant-address').textContent = rest.address;
+
+      // Items
+      const container = document.getElementById('cart-items-container');
+      container.innerHTML = cart.items.map(item => `
+        <div style="display:flex; align-items:center; gap:16px; padding-bottom:16px; border-bottom:1px solid var(--color-border-subtle);">
+          <img src="${item.image}" alt="${item.name}" style="width:70px; height:70px; border-radius:var(--radius-sm); object-fit:cover;" onerror="handleImageError(this, 'food')">
+          <div style="flex:1;">
+            <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">
+              <span class="badge-diet ${item.isVeg ? 'veg' : 'non-veg'}"></span>
+              <h4 style="font-size:1rem; font-weight:700;">${item.name}</h4>
+            </div>
+            <div style="color:var(--color-primary); font-weight:700; font-size:0.95rem;">₹${item.price} each</div>
+          </div>
+          <div class="cart-item-controls">
+            <button class="qty-btn" onclick="modifyQty('${item.dishId}', ${item.quantity - 1})">-</button>
+            <span class="qty-display">${item.quantity}</span>
+            <button class="qty-btn" onclick="modifyQty('${item.dishId}', ${item.quantity + 1})">+</button>
+          </div>
+          <div style="font-weight:800; font-size:1.05rem; min-width:70px; text-align:right;">
+            ₹${item.price * item.quantity}
+          </div>
+        </div>
+      `).join('');
+
+      // Bill calculation
+      const summary = QuickBiteDB.getCartSummary();
+      const packagingFee = 15;
+      const finalGrandTotal = Math.max(0, summary.total + packagingFee);
+
+      document.getElementById('bill-subtotal').textContent = `₹${summary.subtotal}`;
+      document.getElementById('bill-delivery').textContent = summary.deliveryFee === 0 ? 'FREE' : `₹${summary.deliveryFee}`;
+      document.getElementById('bill-taxes').textContent = `₹${summary.taxes}`;
+
+      const discRow = document.getElementById('bill-discount-row');
+      const discAmt = document.getElementById('bill-discount-amt');
+      const couponPill = document.getElementById('applied-coupon-pill');
+      const couponName = document.getElementById('applied-coupon-name');
+
+      if (summary.discount > 0) {
+        discRow.style.display = 'flex';
+        discAmt.textContent = `-₹${summary.discount}`;
+        couponPill.style.display = 'flex';
+        couponName.textContent = `${cart.coupon.code} applied (Savings: ₹${summary.discount})`;
+      } else {
+        discRow.style.display = 'none';
+        couponPill.style.display = 'none';
+      }
+
+      document.getElementById('bill-grand-total').textContent = `₹${finalGrandTotal}`;
+      renderAvailableCoupons();
+    }
+
+    let currentVoucherSearch = '';
+
+    function handleVoucherSearch(val) {
+      currentVoucherSearch = (val || '').trim();
+      const clearBtn = document.getElementById('voucher-search-clear-btn');
+      if (clearBtn) clearBtn.style.display = currentVoucherSearch ? 'block' : 'none';
+      renderAvailableCoupons();
+    }
+
+    function clearVoucherSearch() {
+      const input = document.getElementById('voucher-search-input');
+      if (input) input.value = '';
+      currentVoucherSearch = '';
+      const clearBtn = document.getElementById('voucher-search-clear-btn');
+      if (clearBtn) clearBtn.style.display = 'none';
+      renderAvailableCoupons();
+    }
+
+    function applySearchedCoupon() {
+      const val = (currentVoucherSearch || document.getElementById('voucher-search-input')?.value || '').trim();
+      if (!val) {
+        QuickBiteDB.showToast("Please enter a voucher code", "warning");
+        return;
+      }
+      QuickBiteDB.applyCoupon(val);
+      renderCartPage();
+    }
+
+    function modifyQty(dishId, newQty) {
+      QuickBiteDB.updateCartQuantity(dishId, newQty);
+      renderCartPage();
+    }
+
+    function applyCouponManual() {
+      const code = document.getElementById('coupon-code-input').value.trim();
+      if (!code) {
+        QuickBiteDB.showToast("Please enter a voucher code", "warning");
+        return;
+      }
+      QuickBiteDB.applyCoupon(code);
+      renderCartPage();
+    }
+
+    function removeCouponManual() {
+      QuickBiteDB.removeCoupon();
+      renderCartPage();
+    }
+
+    function renderAvailableCoupons() {
+      const container = document.getElementById('available-coupons-grid');
+      if (!container) return;
+      const coupons = QuickBiteDB.getCoupons();
+      const cart = QuickBiteDB.getCart();
+      const appliedCode = cart?.coupon?.code ? cart.coupon.code.toUpperCase() : null;
+
+      const statusBadge = document.getElementById('vouchers-status-badge');
+      const statusText = document.getElementById('vouchers-status-text');
+      if (statusBadge && statusText) {
+        if (appliedCode) {
+          statusBadge.style.display = 'inline-flex';
+          statusText.textContent = `${appliedCode} applied`;
+        } else {
+          statusBadge.style.display = 'none';
+        }
+      }
+
+      const q = currentVoucherSearch.toLowerCase();
+      const filtered = coupons.filter(c => {
+        if (!q) return true;
+        return c.code.toLowerCase().includes(q) || (c.description || '').toLowerCase().includes(q);
+      });
+
+      const hasExactMatch = coupons.some(c => c.code.toUpperCase() === currentVoucherSearch.toUpperCase());
+
+      let html = filtered.map(c => {
+        const isApplied = appliedCode && c.code.toUpperCase() === appliedCode;
+        if (isApplied) {
+          return `
+            <div style="border: 1.5px solid var(--color-success); border-radius: var(--radius-md); padding: 14px; background: var(--color-success-bg, rgba(16,185,129,0.08)); box-shadow: 0 2px 8px rgba(16,185,129,0.18); display: flex; flex-direction: column; justify-content: space-between; gap: 10px;">
+              <div>
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 4px;">
+                  <strong style="color: var(--color-success); font-size: 0.95rem; letter-spacing: 0.5px;">${c.code}</strong>
+                  <span style="background: var(--color-success); color: #fff; font-size: 0.7rem; font-weight: 800; padding: 2px 7px; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px;">
+                    <i class="fa-solid fa-check"></i> APPLIED
+                  </span>
+                </div>
+                <p style="font-size: 0.775rem; color: var(--color-text-muted); margin: 0 0 6px;">${c.description}</p>
+                <div style="font-size: 0.75rem; color: var(--color-success); font-weight: 700;">
+                  <i class="fa-solid fa-circle-check"></i> Applied to basket
+                </div>
+              </div>
+              <button class="btn btn-sm" style="font-size: 0.78rem; padding: 5px 12px; color: var(--color-danger); border: 1px solid var(--color-danger); background: rgba(239,68,68,0.08); font-weight: 700; cursor: pointer; border-radius: var(--radius-sm);" onclick="removeCouponManual()">
+                <i class="fa-solid fa-xmark"></i> Remove
+              </button>
+            </div>
+          `;
+        } else {
+          return `
+            <div style="border: 1px dashed var(--color-primary); border-radius: var(--radius-md); padding: 14px; background: var(--color-surface-card); display: flex; flex-direction: column; justify-content: space-between; gap: 10px;">
+              <div>
+                <strong style="color: var(--color-primary); font-size: 0.95rem; letter-spacing: 0.5px;">${c.code}</strong>
+                <p style="font-size: 0.775rem; color: var(--color-text-muted); margin: 4px 0 0;">${c.description}</p>
+              </div>
+              <button class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 5px 12px; font-weight: 700;" onclick="QuickBiteDB.applyCoupon('${c.code}'); renderCartPage();">
+                Apply Code
+              </button>
+            </div>
+          `;
+        }
+      }).join('');
+
+      // If user typed an unlisted coupon not in listed coupons
+      if (currentVoucherSearch && !hasExactMatch) {
+        const isUnlistedApplied = appliedCode && appliedCode === currentVoucherSearch.toUpperCase();
+        html += `
+          <div style="grid-column: 1 / -1; border: ${isUnlistedApplied ? '1.5px solid var(--color-success)' : '1.5px dashed var(--color-primary)'}; border-radius: var(--radius-md); padding: 14px 16px; background: ${isUnlistedApplied ? 'var(--color-success-bg, rgba(16,185,129,0.08))' : 'var(--color-surface-card)'}; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 0.7rem; font-weight: 800; background: rgba(255,107,0,0.12); color: var(--color-primary); padding: 2px 7px; border-radius: 4px;">UNLISTED VOUCHER</span>
+                <strong style="font-size: 0.95rem; color: ${isUnlistedApplied ? 'var(--color-success)' : 'var(--color-text-main)'};">${currentVoucherSearch.toUpperCase()}</strong>
+                ${isUnlistedApplied ? '<span style="background: var(--color-success); color: #fff; font-size: 0.7rem; font-weight: 800; padding: 2px 6px; border-radius: 4px;"><i class="fa-solid fa-check"></i> APPLIED</span>' : ''}
+              </div>
+              <p style="font-size: 0.775rem; color: var(--color-text-muted); margin: 4px 0 0;">
+                ${isUnlistedApplied ? 'Unlisted promotional code applied!' : `Click apply to test and redeem "${currentVoucherSearch.toUpperCase()}"`}
+              </p>
+            </div>
+            ${isUnlistedApplied ? `
+              <button class="btn btn-sm" style="font-size: 0.78rem; padding: 6px 14px; color: var(--color-danger); border: 1px solid var(--color-danger); background: rgba(239,68,68,0.08); font-weight: 700; cursor: pointer; border-radius: var(--radius-sm);" onclick="removeCouponManual()">
+                <i class="fa-solid fa-xmark"></i> Remove
+              </button>
+            ` : `
+              <button class="btn btn-primary btn-sm" style="font-size: 0.8rem; padding: 6px 16px; font-weight: 700;" onclick="QuickBiteDB.applyCoupon('${currentVoucherSearch.toUpperCase()}'); renderCartPage();">
+                <i class="fa-solid fa-bolt"></i> Apply Code
+              </button>
+            `}
+          </div>
+        `;
+      }
+
+      if (filtered.length === 0 && !currentVoucherSearch) {
+        html = `<div style="grid-column: 1 / -1; text-align: center; color: var(--color-text-muted); padding: 16px; font-size: 0.85rem;">No vouchers available right now.</div>`;
+      }
+
+      container.innerHTML = html;
+    }
+  </script>
+</body>
+</html>

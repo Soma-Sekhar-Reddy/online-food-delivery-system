@@ -1,0 +1,208 @@
+/* ==========================================================================
+   QUICKBITE - Delivery Partner Dashboard Stylesheet
+   Styles for: dashboard, live task stepper, delivery map, earnings
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Active Delivery Stepper Card
+   -------------------------------------------------------------------------- */
+.delivery-active-hero-card {
+  background: linear-gradient(135deg, var(--color-navy) 0%, #1F2C3A 100%);
+  color: #FFFFFF;
+  border-radius: var(--radius-xl);
+  padding: 30px;
+  box-shadow: var(--shadow-lg);
+  margin-bottom: 30px;
+  position: relative;
+  overflow: hidden;
+}
+
+.delivery-active-hero-card::after {
+  content: '';
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  background: rgba(255, 107, 53, 0.15);
+  filter: blur(40px);
+}
+
+.delivery-route-flow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  margin: 24px 0 30px;
+}
+
+.delivery-route-flow::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: 30px;
+  right: 30px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.2);
+  z-index: 1;
+}
+
+.route-step-node {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+}
+
+.route-step-bubble {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: #FFFFFF;
+  transition: all var(--transition-fast);
+}
+
+.route-step-node.completed .route-step-bubble {
+  background: var(--color-success);
+  border-color: var(--color-success);
+}
+
+.route-step-node.active .route-step-bubble {
+  background: var(--color-primary);
+  border-color: #FFFFFF;
+  box-shadow: 0 0 0 6px rgba(255, 107, 53, 0.4);
+  animation: pulseGlow 2s infinite;
+}
+
+.route-step-node span {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #CBD5E1;
+}
+
+.route-step-node.active span {
+  color: #FFFFFF;
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   2. Available Delivery Request Cards
+   -------------------------------------------------------------------------- */
+.requests-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.request-card {
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: all var(--transition-normal);
+  position: relative;
+}
+
+.request-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-primary);
+}
+
+.request-card.urgent {
+  border-color: var(--color-primary);
+  background: radial-gradient(circle at 95% 10%, rgba(255, 107, 53, 0.08) 0%, transparent 60%), var(--color-surface);
+}
+
+.payout-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-success-bg);
+  color: var(--color-success);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-weight: 800;
+  font-size: 0.85rem;
+}
+
+.req-point-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  font-size: 0.875rem;
+}
+
+.req-point-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.req-point-dot.pickup { background: var(--color-navy); }
+.req-point-dot.drop   { background: var(--color-success); }
+
+[data-theme="dark"] .req-point-dot.pickup { background: #FFFFFF; }
+
+/* --------------------------------------------------------------------------
+   3. Fleet Partner Sidebar & Layout
+   -------------------------------------------------------------------------- */
+.partner-profile-pill {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: var(--color-surface-card);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.partner-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--color-primary);
+}
+
+.radar-pulse-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-success);
+  display: inline-block;
+  box-shadow: 0 0 0 rgba(16, 185, 129, 0.4);
+  animation: pulseGreen 2s infinite;
+}
+
+@keyframes pulseGreen {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .delivery-route-flow {
+    flex-direction: column;
+    gap: 20px;
+  }
+  .delivery-route-flow::before {
+    display: none;
+  }
+}

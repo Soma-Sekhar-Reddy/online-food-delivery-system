@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <meta name="color-scheme" content="light dark" />
+    <!-- Instant Anti-Flash Dark Mode Script -->
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('quickbite_theme');
+          var theme = null;
+          if (saved) {
+            try { theme = JSON.parse(saved); } catch(e) { theme = saved; }
+          }
+          if (!theme) {
+            theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+          }
+          document.documentElement.setAttribute('data-theme', theme);
+          document.documentElement.style.colorScheme = theme;
+          if (theme === 'dark') {
+            document.documentElement.style.backgroundColor = '#090D16';
+          } else {
+            document.documentElement.style.backgroundColor = '#F8FAFC';
+          }
+        } catch(e) {}
+      })();
+    </script>
+    <style>
+      :root { color-scheme: light dark; }
+      html { background-color: #F8FAFC; color: #0F172A; }
+      html[data-theme="dark"] { background-color: #090D16 !important; color: #F8FAFC !important; color-scheme: dark; }
+      html[data-theme="light"] { background-color: #F8FAFC !important; color: #0F172A !important; color-scheme: light; }
+      body { background-color: inherit; }
+      @view-transition { navigation: auto; }
+    </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Earnings & Delivery History | QuickBite Fleet</title>
+  
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍔</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <!-- Chart.js CDN -->
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/restaurant.css">
+  <link rel="stylesheet" href="../css/delivery.css">
+</head>
+<body>
+
+  <div class="dash-layout">
+    
+    <!-- Sidebar -->
+    <aside class="dash-sidebar">
+      <div class="sidebar-brand-box">
+        <a href="dashboard.html" class="brand-logo" style="font-size: 1.35rem;">
+          <div class="logo-icon-wrap" style="width:36px; height:36px; font-size:1rem; background: linear-gradient(135deg, #10B981 0%, #059669 100%);">
+            <i class="fa-solid fa-motorcycle"></i>
+          </div>
+          <div>Quick<span>Fleet</span></div>
+        </a>
+        <span class="badge badge-success" style="font-size:0.7rem;">RIDER</span>
+      </div>
+
+      <div class="partner-profile-pill">
+        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80" alt="Vikram Singh" class="partner-avatar" onerror="handleImageError(this, 'avatar')">
+        <div style="min-width: 0;">
+          <div style="font-weight: 700; font-size: 0.925rem;">Vikram Singh</div>
+          <div style="font-size: 0.775rem; color: var(--color-text-muted);">Active Fleet Rider</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav-list">
+        <a href="dashboard.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-gauge-high"></i> Rider Overview
+        </a>
+        <a href="deliveries.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-route"></i> Live Deliveries
+        </a>
+        <a href="history.html" class="sidebar-nav-link active">
+          <i class="fa-solid fa-wallet"></i> Earnings & History
+        </a>
+        <div style="border-top: 1px solid var(--color-border-subtle); margin: 12px 0;"></div>
+        <a href="../customer/restaurants.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-utensils"></i> Customer View
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dash-main">
+      
+      <header class="dash-topbar">
+        <div class="topbar-left">
+          <h1 class="topbar-title">Earnings & Completed Trips</h1>
+        </div>
+
+        <div class="topbar-right">
+          <button class="btn btn-primary btn-sm" onclick="withdrawPrompt()">
+            <i class="fa-solid fa-building-columns"></i> Withdraw Earnings
+          </button>
+
+          <!-- Theme Toggle -->
+          <button class="btn-icon" id="theme-toggle-btn" title="Toggle Theme">
+            <i class="fa-solid fa-moon" id="theme-icon"></i>
+          </button>
+        </div>
+      </header>
+
+      <div class="dash-body">
+        
+        <!-- Metrics -->
+        <div class="metrics-grid-4">
+          <div class="metric-card">
+            <div class="metric-info">
+              <h4>Withdrawable Balance</h4>
+              <div class="metric-val" id="hist-wallet-val">₹14,250</div>
+              <div class="metric-trend up"><i class="fa-solid fa-shield-check"></i> Verified Bank TS-9821</div>
+            </div>
+            <div class="metric-icon-box metric-icon-green">
+              <i class="fa-solid fa-wallet"></i>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-info">
+              <h4>Total Trips Delivered</h4>
+              <div class="metric-val" id="hist-total-trips">342</div>
+              <div class="metric-trend up"><i class="fa-solid fa-motorcycle"></i> Safe delivery record</div>
+            </div>
+            <div class="metric-icon-box metric-icon-orange">
+              <i class="fa-solid fa-route"></i>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-info">
+              <h4>Customer Tips Earned</h4>
+              <div class="metric-val">₹2,840</div>
+              <div class="metric-trend up"><i class="fa-solid fa-heart"></i> 100% kept by rider</div>
+            </div>
+            <div class="metric-icon-box metric-icon-purple">
+              <i class="fa-solid fa-hand-holding-dollar"></i>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-info">
+              <h4>Fleet Incentives</h4>
+              <div class="metric-val">₹1,500</div>
+              <div class="metric-trend up"><i class="fa-solid fa-gift"></i> Weekend peak bonus</div>
+            </div>
+            <div class="metric-icon-box metric-icon-blue">
+              <i class="fa-solid fa-award"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Weekly Earnings Chart -->
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <div>
+              <h3 style="font-size: 1.25rem; font-weight: 700;">Weekly Payout Trends (₹)</h3>
+              <p style="font-size: 0.85rem; color: var(--color-text-muted);">Trip delivery fees and customer bonuses</p>
+            </div>
+            <span class="badge badge-success"><i class="fa-solid fa-circle-check"></i> Highest: Sunday ₹2,400</span>
+          </div>
+
+          <div class="chart-container-box">
+            <canvas id="weeklyEarningsChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Completed Deliveries Table -->
+        <div class="dash-card" style="margin-top: 30px;">
+          <div class="dash-card-header">
+            <div>
+              <h3 style="font-size: 1.25rem; font-weight: 700;">Trip Log & Handover History</h3>
+              <p style="font-size: 0.85rem; color: var(--color-text-muted);">Detailed records of all delivered food parcels</p>
+            </div>
+
+            <div style="position: relative; width: 280px;">
+              <input type="text" id="trip-search-input" placeholder="Search order ID or restaurant..." style="width: 100%; padding: 8px 12px 8px 34px; border: 1px solid var(--color-border); border-radius: var(--radius-full); font-size: 0.85rem; background: var(--color-surface);">
+              <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 12px; top: 10px; color: var(--color-text-subtle); font-size: 0.85rem;"></i>
+            </div>
+          </div>
+
+          <div class="dash-table-wrap">
+            <table class="dash-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Delivered At</th>
+                  <th>Restaurant</th>
+                  <th>Customer Drop</th>
+                  <th>Trip Distance</th>
+                  <th>Trip Payout</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="trips-tbody">
+                <!-- Injected by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="../js/storage.js"></script>
+  <script>
+    let chartInstance = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      renderEarningsData();
+      initChart();
+
+      window.addEventListener('quickbite:orders-updated', renderEarningsData);
+    });
+
+    function initTheme() {
+      const themeBtn = document.getElementById('theme-toggle-btn');
+      const themeIcon = document.getElementById('theme-icon');
+      const saved = QuickBiteDB.getTheme();
+      document.documentElement.setAttribute('data-theme', saved);
+      if (themeIcon) themeIcon.className = saved === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+
+      themeBtn?.addEventListener('click', () => {
+        const next = QuickBiteDB.toggleTheme();
+        if (themeIcon) themeIcon.className = next === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+      });
+
+      document.getElementById('trip-search-input')?.addEventListener('input', () => {
+        renderEarningsData();
+      });
+    }
+
+    function renderEarningsData() {
+      const user = QuickBiteDB.getCurrentUser() || { id: "usr-driver-1", earnings: 14250, totalDeliveries: 342 };
+      const allOrders = QuickBiteDB.getOrders();
+      const delivered = allOrders.filter(o => o.status === 'delivered');
+
+      document.getElementById('hist-wallet-val').textContent = `₹${(user.earnings || 14250).toLocaleString()}`;
+      document.getElementById('hist-total-trips').textContent = (user.totalDeliveries || 342);
+
+      const q = document.getElementById('trip-search-input')?.value.trim().toLowerCase() || '';
+
+      let trips = [...delivered];
+      if (q) {
+        trips = trips.filter(t => 
+          t.id.toLowerCase().includes(q) ||
+          t.restaurantName.toLowerCase().includes(q) ||
+          t.customerName.toLowerCase().includes(q)
+        );
+      }
+
+      const tbody = document.getElementById('trips-tbody');
+      if (trips.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:var(--color-text-muted);">No completed trips match your filter.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = trips.map(t => {
+        const dateStr = new Date(t.statusTimestamps?.delivered || t.createdAt).toLocaleDateString([], {
+          month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+
+        return `
+          <tr>
+            <td><strong>#${t.id}</strong></td>
+            <td><span style="font-size:0.85rem; color:var(--color-text-muted);">${dateStr}</span></td>
+            <td><strong>${t.restaurantName}</strong></td>
+            <td>${t.customerName}</td>
+            <td>~2.5 km</td>
+            <td><strong style="color:var(--color-success); font-size:1rem;">+₹${t.estimatedPayout || 65}</strong></td>
+            <td><span class="badge badge-success"><i class="fa-solid fa-check"></i> Delivered</span></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function initChart() {
+      const ctx = document.getElementById('weeklyEarningsChart')?.getContext('2d');
+      if (!ctx) return;
+
+      chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          datasets: [
+            {
+              label: 'Base Trip Earnings (₹)',
+              data: [980, 1340, 1120, 1680, 2150, 2600, 2400],
+              backgroundColor: '#10B981',
+              borderRadius: 6
+            },
+            {
+              label: 'Tips & Incentives (₹)',
+              data: [150, 220, 180, 310, 450, 520, 480],
+              backgroundColor: '#FF6B35',
+              borderRadius: 6
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: { stacked: true },
+            y: {
+              stacked: true,
+              beginAtZero: true,
+              ticks: { callback: v => '₹' + v }
+            }
+          }
+        }
+      });
+    }
+
+    function withdrawPrompt() {
+      const amt = prompt("Enter amount to withdraw to registered HDFC Bank account:", "2000");
+      if (amt && !isNaN(amt)) {
+        QuickBiteDB.showToast(`Withdrawal of ₹${amt} initiated! Funds will credit within 15 minutes.`, 'success');
+      }
+    }
+  </script>
+</body>
+</html>

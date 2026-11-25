@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <meta name="color-scheme" content="light dark" />
+    <!-- Instant Anti-Flash Dark Mode Script -->
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('quickbite_theme');
+          var theme = null;
+          if (saved) {
+            try { theme = JSON.parse(saved); } catch(e) { theme = saved; }
+          }
+          if (!theme) {
+            theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+          }
+          document.documentElement.setAttribute('data-theme', theme);
+          document.documentElement.style.colorScheme = theme;
+          if (theme === 'dark') {
+            document.documentElement.style.backgroundColor = '#090D16';
+          } else {
+            document.documentElement.style.backgroundColor = '#F8FAFC';
+          }
+        } catch(e) {}
+      })();
+    </script>
+    <style>
+      :root { color-scheme: light dark; }
+      html { background-color: #F8FAFC; color: #0F172A; }
+      html[data-theme="dark"] { background-color: #090D16 !important; color: #F8FAFC !important; color-scheme: dark; }
+      html[data-theme="light"] { background-color: #F8FAFC !important; color: #0F172A !important; color-scheme: light; }
+      body { background-color: inherit; }
+      @view-transition { navigation: auto; }
+    </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sales & Revenue Analytics | QuickBite Partner</title>
+  
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍔</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <!-- Chart.js CDN -->
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/restaurant.css">
+</head>
+<body>
+
+  <div class="dash-layout">
+    
+    <!-- Sidebar -->
+    <aside class="dash-sidebar">
+      <div class="sidebar-brand-box">
+        <a href="dashboard.html" class="brand-logo" style="font-size: 1.35rem;">
+          <div class="logo-icon-wrap" style="width:36px; height:36px; font-size:1rem;">
+            <i class="fa-solid fa-burger"></i>
+          </div>
+          <div>Quick<span>Bite</span></div>
+        </a>
+        <span class="badge badge-primary" style="font-size:0.7rem;">PARTNER</span>
+      </div>
+
+      <div class="sidebar-rest-card">
+        <img src="https://images.unsplash.com/photo-1589302168068-964664d93dc0?auto=format&fit=crop&w=120&q=80" alt="Restaurant Avatar" class="sidebar-rest-thumb" id="side-rest-img" onerror="handleImageError(this, 'restaurant')">
+        <div style="min-width: 0;">
+          <div class="sidebar-rest-name" id="side-rest-name">The Royal Biryani</div>
+          <div class="sidebar-rest-status"><i class="fa-solid fa-circle" style="font-size: 0.55rem;"></i> Financial Reports</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav-list">
+        <a href="dashboard.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-chart-pie"></i> Overview
+        </a>
+        <a href="orders.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-bell-concierge"></i> Incoming Orders
+        </a>
+        <a href="menu.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-utensils"></i> Menu Management
+        </a>
+        <a href="analytics.html" class="sidebar-nav-link active">
+          <i class="fa-solid fa-chart-line"></i> Sales & Analytics
+        </a>
+        <div style="border-top: 1px solid var(--color-border-subtle); margin: 12px 0;"></div>
+        <a href="../customer/restaurants.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-utensils"></i> Customer View
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dash-main">
+      
+      <header class="dash-topbar">
+        <div class="topbar-left">
+          <h1 class="topbar-title">Financial & Order Analytics</h1>
+        </div>
+
+        <div class="topbar-right">
+          <button class="btn btn-secondary btn-sm" onclick="window.print()">
+            <i class="fa-solid fa-download"></i> Export Report
+          </button>
+
+          <!-- Theme Toggle -->
+          <button class="btn-icon" id="theme-toggle-btn" title="Toggle Theme">
+            <i class="fa-solid fa-moon" id="theme-icon"></i>
+          </button>
+        </div>
+      </header>
+
+      <div class="dash-body">
+        
+        <!-- Time Range Selector -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 24px;">
+          <div style="display: flex; gap: 8px;">
+            <button class="c-filter-pill active" onclick="switchRange(this, '7d')">Last 7 Days</button>
+            <button class="c-filter-pill" onclick="switchRange(this, '30d')">Last 30 Days</button>
+            <button class="c-filter-pill" onclick="switchRange(this, 'month')">This Month</button>
+            <button class="c-filter-pill" onclick="switchRange(this, 'all')">All Time</button>
+          </div>
+          <span style="font-size: 0.85rem; color: var(--color-text-muted);">
+            Data updated in real-time from shared LocalStorage
+          </span>
+        </div>
+
+        <!-- Metric Cards -->
+        <div class="metrics-grid-4">
+          
+          <div class="metric-card">
+            <div class="metric-info">
+              <h4>Total Sales Revenue</h4>
+              <div class="metric-val" id="analytics-total-rev">₹0</div>
+              <div class="metric-trend up"><i class="fa-solid fa-arrow-trend-up"></i> +24.8% growth</div>
+            </div>
+            <div class="metric-icon-box metric-icon-orange">
+              <i class="fa-solid fa-indian-rupee-sign"></i>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-info">
+              <h4>Total Orders Fulfilled</h4>
+              <div class="metric-val" id="analytics-total-orders">0</div>
+              <div class="metric-trend up"><i class="fa-solid fa-circle-check"></i> 99.2% success rate</div>
+            </div>
+            <div class="metric-icon-box metric-icon-green">
+              <i class="fa-solid fa-bag-shopping"></i>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-info">
+              <h4>Avg. Order Value (AOV)</h4>
+              <div class="metric-val" id="analytics-aov">₹0</div>
+              <div class="metric-trend up"><i class="fa-solid fa-arrow-trend-up"></i> +₹45 vs avg</div>
+            </div>
+            <div class="metric-icon-box metric-icon-blue">
+              <i class="fa-solid fa-calculator"></i>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-info">
+              <h4>Customer Kitchen Rating</h4>
+              <div class="metric-val">4.8 <span style="font-size: 1.1rem; color: #F59E0B;">★</span></div>
+              <div class="metric-trend up"><i class="fa-solid fa-star"></i> 1,420+ ratings</div>
+            </div>
+            <div class="metric-icon-box metric-icon-purple">
+              <i class="fa-solid fa-heart"></i>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 2 Chart Cards: Line & Donut -->
+        <div class="charts-double-grid">
+          
+          <!-- Revenue Line Chart -->
+          <div class="dash-card" style="margin-bottom: 0;">
+            <div class="dash-card-header">
+              <div>
+                <h3 style="font-size: 1.15rem; font-weight: 700;">Revenue Trend (₹)</h3>
+                <p style="font-size: 0.8rem; color: var(--color-text-muted);">Daily financial performance</p>
+              </div>
+              <span class="badge badge-success"><i class="fa-solid fa-arrow-up"></i> Upward</span>
+            </div>
+            <div class="chart-container-box">
+              <canvas id="revenueTrendChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Category Donut Chart -->
+          <div class="dash-card" style="margin-bottom: 0;">
+            <div class="dash-card-header">
+              <div>
+                <h3 style="font-size: 1.15rem; font-weight: 700;">Sales by Cuisine Category</h3>
+                <p style="font-size: 0.8rem; color: var(--color-text-muted);">Share of item quantities sold</p>
+              </div>
+            </div>
+            <div class="chart-container-box">
+              <canvas id="categoryDonutChart"></canvas>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Second Row of Charts: Peak Hours Bar Chart -->
+        <div class="dash-card" style="margin-top: 30px;">
+          <div class="dash-card-header">
+            <div>
+              <h3 style="font-size: 1.25rem; font-weight: 700;">Rush Hours & Demand Volume</h3>
+              <p style="font-size: 0.85rem; color: var(--color-text-muted);">Order frequency by time slot to optimize kitchen prep scheduling</p>
+            </div>
+            <span class="badge badge-primary"><i class="fa-solid fa-fire"></i> Peak: 8:00 PM</span>
+          </div>
+          <div class="chart-container-box" style="height: 280px;">
+            <canvas id="peakHoursChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Top Selling Dishes Performance Table -->
+        <div class="dash-card" style="margin-top: 30px;">
+          <div class="dash-card-header">
+            <div>
+              <h3 style="font-size: 1.25rem; font-weight: 700;">Top Performing Dishes</h3>
+              <p style="font-size: 0.85rem; color: var(--color-text-muted);">Item revenue contributions and customer reception</p>
+            </div>
+          </div>
+
+          <div class="dash-table-wrap">
+            <table class="dash-table">
+              <thead>
+                <tr>
+                  <th>Dish Name</th>
+                  <th>Category</th>
+                  <th>Price</th>
+                  <th>Orders Count</th>
+                  <th>Total Generated</th>
+                  <th>Rating</th>
+                </tr>
+              </thead>
+              <tbody id="top-selling-table-tbody">
+                <!-- Injected by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="../js/storage.js"></script>
+  <script>
+    let currentRestId = 'rest-1';
+    let revChart = null;
+    let catChart = null;
+    let peakChart = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      initRestaurantData();
+      renderAnalyticsData();
+      initAllCharts();
+
+      window.addEventListener('quickbite:orders-updated', () => {
+        renderAnalyticsData();
+      });
+    });
+
+    function initTheme() {
+      const themeBtn = document.getElementById('theme-toggle-btn');
+      const themeIcon = document.getElementById('theme-icon');
+      const saved = QuickBiteDB.getTheme();
+      document.documentElement.setAttribute('data-theme', saved);
+      if (themeIcon) themeIcon.className = saved === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+
+      themeBtn?.addEventListener('click', () => {
+        const next = QuickBiteDB.toggleTheme();
+        if (themeIcon) themeIcon.className = next === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+      });
+    }
+
+    function initRestaurantData() {
+      const user = QuickBiteDB.getCurrentUser();
+      if (user && user.restaurantId) {
+        currentRestId = user.restaurantId;
+      }
+      const rest = QuickBiteDB.getRestaurantById(currentRestId);
+      if (rest) {
+        document.getElementById('side-rest-name').textContent = rest.name;
+        document.getElementById('side-rest-img').src = rest.image;
+      }
+    }
+
+    function renderAnalyticsData() {
+      const allOrders = QuickBiteDB.getOrders();
+      const restOrders = allOrders.filter(o => o.restaurantId === currentRestId && o.status !== 'cancelled');
+      
+      const totalRev = restOrders.reduce((sum, o) => sum + (o.grandTotal || 0), 0);
+      const totalOrdersCount = restOrders.length;
+      const aov = totalOrdersCount > 0 ? Math.round(totalRev / totalOrdersCount) : 0;
+
+      document.getElementById('analytics-total-rev').textContent = `₹${(totalRev || 24850).toLocaleString()}`;
+      document.getElementById('analytics-total-orders').textContent = totalOrdersCount || 38;
+      document.getElementById('analytics-aov').textContent = `₹${aov || 654}`;
+
+      // Top Selling Dishes table
+      const dishes = QuickBiteDB.getDishesByRestaurant(currentRestId);
+      const tbody = document.getElementById('top-selling-table-tbody');
+      tbody.innerHTML = dishes.slice(0, 6).map((d, idx) => {
+        const simulatedOrders = 140 - (idx * 24);
+        const itemRev = simulatedOrders * (d.discountPrice || d.price);
+
+        return `
+          <tr>
+            <td>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span class="badge-diet ${d.isVeg ? 'veg' : 'non-veg'}"></span>
+                <span style="font-weight:700;">${d.name}</span>
+              </div>
+            </td>
+            <td><span class="badge badge-primary">${d.category}</span></td>
+            <td><strong>₹${d.discountPrice || d.price}</strong></td>
+            <td>${simulatedOrders} orders</td>
+            <td><strong style="color:var(--color-primary);">₹${itemRev.toLocaleString()}</strong></td>
+            <td>
+              <span class="rating-pill" style="font-size:0.75rem; padding:2px 8px;">
+                <i class="fa-solid fa-star"></i> ${d.rating}
+              </span>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function switchRange(btn, range) {
+      document.querySelectorAll('.c-filter-pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      QuickBiteDB.showToast(`Analytics filtered for ${btn.textContent}`, 'info', 1500);
+    }
+
+    function initAllCharts() {
+      // 1. Revenue Line Chart
+      const revCtx = document.getElementById('revenueTrendChart')?.getContext('2d');
+      if (revCtx) {
+        revChart = new Chart(revCtx, {
+          type: 'line',
+          data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+              label: 'Daily Revenue (₹)',
+              data: [14200, 18400, 16900, 21500, 29800, 36400, 31200],
+              borderColor: '#FF6B35',
+              backgroundColor: 'rgba(255, 107, 53, 0.12)',
+              borderWidth: 3,
+              fill: true,
+              tension: 0.35,
+              pointBackgroundColor: '#FF6B35',
+              pointRadius: 5
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: { callback: v => '₹' + (v / 1000) + 'k' }
+              }
+            }
+          }
+        });
+      }
+
+      // 2. Category Donut Chart
+      const catCtx = document.getElementById('categoryDonutChart')?.getContext('2d');
+      if (catCtx) {
+        catChart = new Chart(catCtx, {
+          type: 'doughnut',
+          data: {
+            labels: ['Dum Biryanis', 'Tandoor Kebabs', 'Curries & Dal', 'Breads & Rice', 'Desserts'],
+            datasets: [{
+              data: [45, 25, 15, 10, 5],
+              backgroundColor: ['#FF6B35', '#17202A', '#10B981', '#3B82F6', '#F59E0B'],
+              borderWidth: 2
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom', labels: { boxWidth: 12, padding: 14 } }
+            }
+          }
+        });
+      }
+
+      // 3. Peak Hours Bar Chart
+      const peakCtx = document.getElementById('peakHoursChart')?.getContext('2d');
+      if (peakCtx) {
+        peakChart = new Chart(peakCtx, {
+          type: 'bar',
+          data: {
+            labels: ['11 AM - 1 PM (Lunch)', '1 PM - 3 PM (Afternoon)', '3 PM - 6 PM (Evening)', '6 PM - 9 PM (Dinner Rush)', '9 PM - 11 PM (Late Night)'],
+            datasets: [{
+              label: 'Orders Count',
+              data: [42, 68, 24, 115, 58],
+              backgroundColor: 'rgba(255, 107, 53, 0.85)',
+              borderRadius: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true } }
+          }
+        });
+      }
+    }
+  </script>
+</body>
+</html>

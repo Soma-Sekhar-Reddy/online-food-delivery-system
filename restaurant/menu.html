@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <meta name="color-scheme" content="light dark" />
+    <!-- Instant Anti-Flash Dark Mode Script -->
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('quickbite_theme');
+          var theme = null;
+          if (saved) {
+            try { theme = JSON.parse(saved); } catch(e) { theme = saved; }
+          }
+          if (!theme) {
+            theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+          }
+          document.documentElement.setAttribute('data-theme', theme);
+          document.documentElement.style.colorScheme = theme;
+          if (theme === 'dark') {
+            document.documentElement.style.backgroundColor = '#090D16';
+          } else {
+            document.documentElement.style.backgroundColor = '#F8FAFC';
+          }
+        } catch(e) {}
+      })();
+    </script>
+    <style>
+      :root { color-scheme: light dark; }
+      html { background-color: #F8FAFC; color: #0F172A; }
+      html[data-theme="dark"] { background-color: #090D16 !important; color: #F8FAFC !important; color-scheme: dark; }
+      html[data-theme="light"] { background-color: #F8FAFC !important; color: #0F172A !important; color-scheme: light; }
+      body { background-color: inherit; }
+      @view-transition { navigation: auto; }
+    </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menu Management | QuickBite Partner</title>
+  
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍔</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/restaurant.css">
+</head>
+<body>
+
+  <div class="dash-layout">
+    
+    <!-- Sidebar -->
+    <aside class="dash-sidebar">
+      <div class="sidebar-brand-box">
+        <a href="dashboard.html" class="brand-logo" style="font-size: 1.35rem;">
+          <div class="logo-icon-wrap" style="width:36px; height:36px; font-size:1rem;">
+            <i class="fa-solid fa-burger"></i>
+          </div>
+          <div>Quick<span>Bite</span></div>
+        </a>
+        <span class="badge badge-primary" style="font-size:0.7rem;">PARTNER</span>
+      </div>
+
+      <div class="sidebar-rest-card">
+        <img src="https://images.unsplash.com/photo-1589302168068-964664d93dc0?auto=format&fit=crop&w=120&q=80" alt="Restaurant Avatar" class="sidebar-rest-thumb" id="side-rest-img" onerror="handleImageError(this, 'restaurant')">
+        <div style="min-width: 0;">
+          <div class="sidebar-rest-name" id="side-rest-name">The Royal Biryani</div>
+          <div class="sidebar-rest-status"><i class="fa-solid fa-circle" style="font-size: 0.55rem;"></i> Active Menu</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav-list">
+        <a href="dashboard.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-chart-pie"></i> Overview
+        </a>
+        <a href="orders.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-bell-concierge"></i> Incoming Orders
+        </a>
+        <a href="menu.html" class="sidebar-nav-link active">
+          <i class="fa-solid fa-utensils"></i> Menu Management
+        </a>
+        <a href="analytics.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-chart-line"></i> Sales & Analytics
+        </a>
+        <div style="border-top: 1px solid var(--color-border-subtle); margin: 12px 0;"></div>
+        <a href="../customer/restaurants.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-utensils"></i> Customer View
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dash-main">
+      
+      <header class="dash-topbar">
+        <div class="topbar-left">
+          <h1 class="topbar-title">Food Menu Catalog</h1>
+        </div>
+
+        <div class="topbar-right">
+          <button class="btn btn-primary btn-sm" onclick="openAddDishModal()">
+            <i class="fa-solid fa-plus"></i> Add New Dish
+          </button>
+
+          <!-- Theme Toggle -->
+          <button class="btn-icon" id="theme-toggle-btn" title="Toggle Theme">
+            <i class="fa-solid fa-moon" id="theme-icon"></i>
+          </button>
+        </div>
+      </header>
+
+      <div class="dash-body">
+        
+        <!-- Controls Bar: Category Filter & Search -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="menu-cat-filter-pills">
+            <!-- Populated by JS -->
+          </div>
+
+          <div style="position: relative; width: 280px;">
+            <input type="text" id="dish-search-input" placeholder="Search dish by name..." style="width: 100%; padding: 9px 14px 9px 36px; border: 1px solid var(--color-border); border-radius: var(--radius-full); font-size: 0.85rem; background: var(--color-surface);">
+            <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 14px; top: 11px; color: var(--color-text-subtle); font-size: 0.85rem;"></i>
+          </div>
+        </div>
+
+        <!-- Dishes Grid -->
+        <div class="menu-grid-cards" id="menu-cards-container">
+          <!-- Populated by JavaScript -->
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Add / Edit Dish Modal -->
+  <div class="modal-overlay" id="dish-modal">
+    <div class="modal-card" style="max-width: 580px;">
+      <div class="modal-header">
+        <h3 class="modal-title" id="dish-modal-title">Add New Dish</h3>
+        <button class="toast-close" onclick="closeDishModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      
+      <form id="dish-modal-form">
+        <input type="hidden" id="dish-edit-id">
+        
+        <div class="modal-body" style="display: flex; flex-direction: column; gap: 16px;">
+          
+          <div>
+            <label class="form-label">Dish Name</label>
+            <input type="text" id="form-dish-name" placeholder="e.g. Special Zafrani Mutton Biryani" required style="width: 100%; padding: 11px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-card);">
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div>
+              <label class="form-label">Category</label>
+              <input type="text" id="form-dish-category" placeholder="Biryani, Kebabs, Desserts..." required style="width: 100%; padding: 11px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-card);">
+            </div>
+            <div>
+              <label class="form-label">Prep Time</label>
+              <input type="text" id="form-dish-preptime" placeholder="20 mins" value="20 mins" required style="width: 100%; padding: 11px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-card);">
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div>
+              <label class="form-label">Regular Price (₹)</label>
+              <input type="number" id="form-dish-price" placeholder="320" required min="1" style="width: 100%; padding: 11px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-card);">
+            </div>
+            <div>
+              <label class="form-label">Discount Price (₹) (Optional)</label>
+              <input type="number" id="form-dish-discount-price" placeholder="279" min="1" style="width: 100%; padding: 11px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-card);">
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 20px; align-items: center;">
+            <label style="font-size: 0.85rem; font-weight: 600;">Diet Type:</label>
+            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.85rem;">
+              <input type="radio" name="diet-type" id="diet-veg" value="veg">
+              <span class="badge-diet veg"></span> Vegetarian
+            </label>
+            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.85rem;">
+              <input type="radio" name="diet-type" id="diet-nonveg" value="nonveg" checked>
+              <span class="badge-diet non-veg"></span> Non-Vegetarian
+            </label>
+            <label style="margin-left: auto; display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.85rem;">
+              <input type="checkbox" id="form-dish-bestseller">
+              <span>Bestseller</span>
+            </label>
+          </div>
+
+          <div>
+            <label class="form-label">Food Photograph URL</label>
+            <input type="url" id="form-dish-image" placeholder="https://images.unsplash.com/..." value="https://images.unsplash.com/photo-1589302168068-964664d93dc0?auto=format&fit=crop&w=600&q=80" required style="width: 100%; padding: 11px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-card);">
+            <p style="font-size: 0.75rem; color: var(--color-text-subtle); margin-top: 4px;">Paste high-res Unsplash food photography image link</p>
+          </div>
+
+          <div>
+            <label class="form-label">Description & Ingredients</label>
+            <textarea id="form-dish-desc" rows="3" placeholder="Succulent marinated pieces slow-cooked with fragrant spices and saffron..." required style="width: 100%; padding: 11px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-card); font-size: 0.875rem; resize: none;"></textarea>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="closeDishModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm" id="dish-submit-btn">Save Dish</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="../js/storage.js"></script>
+  <script>
+    let currentRestId = 'rest-1';
+    let selectedCat = 'all';
+    let searchQuery = '';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      initRestaurantData();
+      renderMenu();
+
+      window.addEventListener('quickbite:dishes-updated', renderMenu);
+    });
+
+    function initTheme() {
+      const themeBtn = document.getElementById('theme-toggle-btn');
+      const themeIcon = document.getElementById('theme-icon');
+      const saved = QuickBiteDB.getTheme();
+      document.documentElement.setAttribute('data-theme', saved);
+      if (themeIcon) themeIcon.className = saved === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+
+      themeBtn?.addEventListener('click', () => {
+        const next = QuickBiteDB.toggleTheme();
+        if (themeIcon) themeIcon.className = next === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+      });
+
+      document.getElementById('dish-search-input')?.addEventListener('input', (e) => {
+        searchQuery = e.target.value.trim().toLowerCase();
+        renderMenu();
+      });
+    }
+
+    function initRestaurantData() {
+      const user = QuickBiteDB.getCurrentUser();
+      if (user && user.restaurantId) {
+        currentRestId = user.restaurantId;
+      }
+      const rest = QuickBiteDB.getRestaurantById(currentRestId);
+      if (rest) {
+        document.getElementById('side-rest-name').textContent = rest.name;
+        document.getElementById('side-rest-img').src = rest.image;
+      }
+    }
+
+    function renderMenu() {
+      const allDishes = QuickBiteDB.getDishesByRestaurant(currentRestId);
+
+      // Render Categories Pills
+      const categories = ['all', ...new Set(allDishes.map(d => d.category))];
+      const catContainer = document.getElementById('menu-cat-filter-pills');
+      catContainer.innerHTML = categories.map(cat => `
+        <button class="c-filter-pill ${cat === selectedCat ? 'active' : ''}" onclick="selectCategory('${cat}')">
+          ${cat === 'all' ? 'All Dishes (' + allDishes.length + ')' : cat}
+        </button>
+      `).join('');
+
+      let filtered = [...allDishes];
+      if (selectedCat !== 'all') {
+        filtered = filtered.filter(d => d.category === selectedCat);
+      }
+      if (searchQuery) {
+        filtered = filtered.filter(d => d.name.toLowerCase().includes(searchQuery) || d.description.toLowerCase().includes(searchQuery));
+      }
+
+      const container = document.getElementById('menu-cards-container');
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: var(--color-surface); border-radius: var(--radius-xl); border: 1px solid var(--color-border);">
+            <i class="fa-solid fa-utensils" style="font-size: 3rem; color: var(--color-text-subtle); margin-bottom: 14px;"></i>
+            <h3>No Dishes Found</h3>
+            <p style="color: var(--color-text-muted); margin-top: 6px;">Click the button below to add your first delicacy to this category</p>
+            <button class="btn btn-primary btn-sm" style="margin-top: 16px;" onclick="openAddDishModal()">
+              <i class="fa-solid fa-plus"></i> Add New Dish
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(dish => {
+        const isAvailable = dish.available !== false;
+
+        return `
+          <div class="menu-dish-manage-card" data-id="${dish.id}">
+            <div class="manage-card-media">
+              <img src="${dish.image}" alt="${dish.name}" onerror="handleImageError(this, 'food')">
+              <span class="dish-diet-tag">
+                <span class="badge-diet ${dish.isVeg ? 'veg' : 'non-veg'}"></span>
+              </span>
+              ${dish.isBestseller ? `<span class="dish-badge-trending"><i class="fa-solid fa-fire"></i> Bestseller</span>` : ''}
+            </div>
+
+            <div class="manage-card-body">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">
+                <h3 style="font-size:1.05rem; font-weight:700;">${dish.name}</h3>
+                <span class="badge badge-primary" style="font-size:0.75rem;">${dish.category}</span>
+              </div>
+              <p style="font-size:0.825rem; color:var(--color-text-muted); margin-bottom:12px; line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">
+                ${dish.description}
+              </p>
+
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                <div style="display:flex; align-items:baseline; gap:8px;">
+                  <strong style="font-size:1.15rem; color:var(--color-primary);">₹${dish.discountPrice || dish.price}</strong>
+                  ${dish.discountPrice ? `<span style="text-decoration:line-through; font-size:0.8rem; color:var(--color-text-subtle);">₹${dish.price}</span>` : ''}
+                </div>
+                <span style="font-size:0.8rem; color:var(--color-text-muted);">
+                  <i class="fa-solid fa-clock"></i> ${dish.prepTime || '20 min'}
+                </span>
+              </div>
+
+              <!-- Action & Availability Row -->
+              <div class="manage-card-actions">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <label class="switch" style="width:36px; height:20px;">
+                    <input type="checkbox" ${isAvailable ? 'checked' : ''} onchange="toggleDishAvailability('${dish.id}', this.checked)">
+                    <span class="slider" style="border-radius:20px;"></span>
+                  </label>
+                  <span style="font-size:0.775rem; font-weight:700; color:${isAvailable ? 'var(--color-success)' : 'var(--color-danger)'};">
+                    ${isAvailable ? 'In Stock' : 'Sold Out'}
+                  </span>
+                </div>
+
+                <div style="display:flex; gap:6px;">
+                  <button class="btn-icon" style="width:32px; height:32px;" title="Edit Dish" onclick="openEditDishModal('${dish.id}')">
+                    <i class="fa-solid fa-pen-to-square" style="font-size:0.85rem;"></i>
+                  </button>
+                  <button class="btn-icon" style="width:32px; height:32px; color:var(--color-danger);" title="Delete Dish" onclick="deleteDishConfirm('${dish.id}', '${dish.name}')">
+                    <i class="fa-regular fa-trash-can" style="font-size:0.85rem;"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectCategory(cat) {
+      selectedCat = cat;
+      renderMenu();
+    }
+
+    function toggleDishAvailability(dishId, available) {
+      const dish = QuickBiteDB.getDishById(dishId);
+      if (dish) {
+        dish.available = available;
+        QuickBiteDB.saveDish(dish);
+        QuickBiteDB.showToast(`${dish.name} marked ${available ? 'IN STOCK' : 'SOLD OUT'}`, available ? 'success' : 'warning');
+        renderMenu();
+      }
+    }
+
+    function deleteDishConfirm(dishId, dishName) {
+      if (confirm(`Are you sure you want to delete "${dishName}" from your active menu?`)) {
+        QuickBiteDB.deleteDish(dishId);
+        QuickBiteDB.showToast(`Deleted "${dishName}" from menu`, 'info');
+        renderMenu();
+      }
+    }
+
+    // Add / Edit Modal Controls
+    function openAddDishModal() {
+      document.getElementById('dish-modal-title').textContent = "Add New Dish";
+      document.getElementById('dish-edit-id').value = "";
+      document.getElementById('form-dish-name').value = "";
+      document.getElementById('form-dish-category').value = "";
+      document.getElementById('form-dish-price').value = "";
+      document.getElementById('form-dish-discount-price').value = "";
+      document.getElementById('form-dish-preptime').value = "20 mins";
+      document.getElementById('form-dish-image').value = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80";
+      document.getElementById('form-dish-desc').value = "";
+      document.getElementById('diet-nonveg').checked = true;
+      document.getElementById('form-dish-bestseller').checked = false;
+
+      document.getElementById('dish-modal')?.classList.add('active');
+    }
+
+    function openEditDishModal(dishId) {
+      const dish = QuickBiteDB.getDishById(dishId);
+      if (!dish) return;
+
+      document.getElementById('dish-modal-title').textContent = `Edit ${dish.name}`;
+      document.getElementById('dish-edit-id').value = dish.id;
+      document.getElementById('form-dish-name').value = dish.name;
+      document.getElementById('form-dish-category').value = dish.category;
+      document.getElementById('form-dish-price').value = dish.price;
+      document.getElementById('form-dish-discount-price').value = dish.discountPrice || "";
+      document.getElementById('form-dish-preptime').value = dish.prepTime || "20 mins";
+      document.getElementById('form-dish-image').value = dish.image;
+      document.getElementById('form-dish-desc').value = dish.description;
+      
+      if (dish.isVeg) {
+        document.getElementById('diet-veg').checked = true;
+      } else {
+        document.getElementById('diet-nonveg').checked = true;
+      }
+
+      document.getElementById('form-dish-bestseller').checked = !!dish.isBestseller;
+
+      document.getElementById('dish-modal')?.classList.add('active');
+    }
+
+    function closeDishModal() {
+      document.getElementById('dish-modal')?.classList.remove('active');
+    }
+
+    // Modal Submit
+    document.getElementById('dish-modal-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const editId = document.getElementById('dish-edit-id').value;
+      const name = document.getElementById('form-dish-name').value.trim();
+      const category = document.getElementById('form-dish-category').value.trim();
+      const price = parseFloat(document.getElementById('form-dish-price').value);
+      const discountVal = document.getElementById('form-dish-discount-price').value;
+      const discountPrice = discountVal ? parseFloat(discountVal) : null;
+      const prepTime = document.getElementById('form-dish-preptime').value.trim();
+      const image = document.getElementById('form-dish-image').value.trim();
+      const description = document.getElementById('form-dish-desc').value.trim();
+      const isVeg = document.getElementById('diet-veg').checked;
+      const isBestseller = document.getElementById('form-dish-bestseller').checked;
+
+      const dishPayload = {
+        id: editId || `dish-${Date.now()}`,
+        restaurantId: currentRestId,
+        name,
+        category,
+        price,
+        discountPrice,
+        prepTime,
+        image,
+        description,
+        isVeg,
+        isBestseller,
+        isTrending: isBestseller,
+        rating: 4.8,
+        reviewsCount: 120,
+        available: true
+      };
+
+      QuickBiteDB.saveDish(dishPayload);
+      QuickBiteDB.showToast(`Saved dish "${name}" successfully!`, 'success');
+      closeDishModal();
+      renderMenu();
+    });
+  </script>
+</body>
+</html>

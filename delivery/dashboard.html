@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <meta name="color-scheme" content="light dark" />
+    <!-- Instant Anti-Flash Dark Mode Script -->
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('quickbite_theme');
+          var theme = null;
+          if (saved) {
+            try { theme = JSON.parse(saved); } catch(e) { theme = saved; }
+          }
+          if (!theme) {
+            theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+          }
+          document.documentElement.setAttribute('data-theme', theme);
+          document.documentElement.style.colorScheme = theme;
+          if (theme === 'dark') {
+            document.documentElement.style.backgroundColor = '#090D16';
+          } else {
+            document.documentElement.style.backgroundColor = '#F8FAFC';
+          }
+        } catch(e) {}
+      })();
+    </script>
+    <style>
+      :root { color-scheme: light dark; }
+      html { background-color: #F8FAFC; color: #0F172A; }
+      html[data-theme="dark"] { background-color: #090D16 !important; color: #F8FAFC !important; color-scheme: dark; }
+      html[data-theme="light"] { background-color: #F8FAFC !important; color: #0F172A !important; color-scheme: light; }
+      body { background-color: inherit; }
+      @view-transition { navigation: auto; }
+    </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Delivery Fleet Dashboard | QuickBite Partner</title>
+  
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍔</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/restaurant.css">
+  <link rel="stylesheet" href="../css/delivery.css">
+</head>
+<body>
+
+  <div class="dash-layout">
+    
+    <!-- Sidebar -->
+    <aside class="dash-sidebar">
+      <div class="sidebar-brand-box">
+        <a href="dashboard.html" class="brand-logo" style="font-size: 1.35rem;">
+          <div class="logo-icon-wrap" style="width:36px; height:36px; font-size:1rem; background: linear-gradient(135deg, #10B981 0%, #059669 100%);">
+            <i class="fa-solid fa-motorcycle"></i>
+          </div>
+          <div>Quick<span>Fleet</span></div>
+        </a>
+        <span class="badge badge-success" style="font-size:0.7rem;">RIDER</span>
+      </div>
+
+      <!-- Partner Profile Box -->
+      <div class="partner-profile-pill">
+        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80" alt="Vikram Singh" class="partner-avatar" onerror="handleImageError(this, 'avatar')">
+        <div style="min-width: 0;">
+          <div style="font-weight: 700; font-size: 0.925rem;" id="side-driver-name">Vikram Singh</div>
+          <div style="font-size: 0.775rem; color: var(--color-text-muted);" id="side-driver-vehicle">Honda Activa • TS 09 EQ 4022</div>
+          <div style="display:flex; align-items:center; gap:6px; margin-top:2px;">
+            <span class="rating-pill" style="font-size:0.7rem; padding:1px 6px;">
+              <i class="fa-solid fa-star"></i> 4.9
+            </span>
+            <span class="radar-pulse-dot"></span>
+            <span style="font-size:0.75rem; font-weight:700; color:var(--color-success);" id="side-duty-text">On Duty</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="sidebar-nav-list">
+        <a href="dashboard.html" class="sidebar-nav-link active">
+          <i class="fa-solid fa-gauge-high"></i> Rider Overview
+        </a>
+        <a href="deliveries.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-route"></i> Live Deliveries
+          <span class="sidebar-badge-count" id="side-requests-count">0</span>
+        </a>
+        <a href="history.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-wallet"></i> Earnings & History
+        </a>
+        
+        <div style="border-top: 1px solid var(--color-border-subtle); margin: 12px 0;"></div>
+
+        <a href="../customer/restaurants.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-utensils"></i> Customer View
+        </a>
+        <a href="../restaurant/dashboard.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-shop"></i> Restaurant Portal
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="btn btn-secondary btn-sm" style="width: 100%; color: var(--color-danger);" onclick="QuickBiteDB.logout(); window.location.href='../login.html';">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Container -->
+    <main class="dash-main">
+      
+      <!-- Topbar -->
+      <header class="dash-topbar">
+        <div class="topbar-left">
+          <h1 class="topbar-title">Rider Control Hub</h1>
+        </div>
+
+        <div class="topbar-right">
+          
+          <!-- Duty Status Toggle -->
+          <div class="rest-status-toggle-wrap">
+            <span id="duty-status-label" style="color: var(--color-success);"><i class="fa-solid fa-circle" style="font-size: 0.6rem;"></i> Duty: ONLINE</span>
+            <label class="switch">
+              <input type="checkbox" id="duty-status-toggle" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <!-- Alert bell -->
+          <button class="btn-icon" title="Test incoming delivery sound" onclick="QuickBiteDB.showToast('🔔 [Ping] New delivery request nearby! +₹65 Payout', 'info')">
+            <i class="fa-solid fa-bell" style="color: var(--color-primary);"></i>
+          </button>
+
+          <!-- Theme Switcher -->
+          <button class="btn-icon" id="theme-toggle-btn" title="Toggle Theme">
+            <i class="fa-solid fa-moon" id="theme-icon"></i>
+          </button>
+
+        </div>
+      </header>
+
+      <div class="dash-body">
+        
+        <!-- Duty Banner -->
+        <div style="padding: 14px 20px; border-radius: var(--radius-md); background: var(--color-success-bg); border: 1px solid var(--color-success); color: var(--color-success); font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;" id="duty-banner">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-motorcycle" style="font-size: 1.2rem;"></i>
+            <span>You are actively visible on the map. Ready to receive pickup requests in Banjara Hills & Jubilee Enclave.</span>
+          </div>
+          <span class="badge badge-success">GPS Active</span>
+        </div>
+
+        <!-- 4 Key Metrics -->
+        <div class="metrics-grid-4">
+          
+          <div class="metric-card">
+            <div class="metric-info">
+              <h4>Today's Earnings</h4>
+              <div class="metric-val" id="metric-today-earn">₹850</div>
+              <div class="metric-trend up"><i class="fa-solid fa-arrow-trend-up"></i> +₹120 tips included</div>
+            </div>
+            <div class="metric-icon-box metric-icon-green">
+              <i class="fa-solid fa-wallet"></i>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-info">
+              <h4>Trips Completed Today</h4>
+              <div class="metric-val" id="metric-trips-today">6</div>
+              <div class="metric-trend up"><i class="fa-solid fa-circle-check"></i> 100% on-time</div>
+            </div>
+            <div class="metric-icon-box metric-icon-orange">
+              <i class="fa-solid fa-route"></i>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-info">
+              <h4>Total Lifetime Balance</h4>
+              <div class="metric-val" id="metric-total-balance">₹14,250</div>
+              <div class="metric-trend up"><i class="fa-solid fa-building-columns"></i> Instant bank payout</div>
+            </div>
+            <div class="metric-icon-box metric-icon-blue">
+              <i class="fa-solid fa-indian-rupee-sign"></i>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-info">
+              <h4>Partner Service Rating</h4>
+              <div class="metric-val">4.9 <span style="font-size: 1.1rem; color: #F59E0B;">★</span></div>
+              <div class="metric-trend up"><i class="fa-solid fa-medal"></i> Top Fleet Tier</div>
+            </div>
+            <div class="metric-icon-box metric-icon-purple">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Active Delivery Hero Card (If there's an ongoing delivery) -->
+        <div id="active-delivery-container">
+          <!-- Injected by JavaScript -->
+        </div>
+
+        <!-- Available Requests Section -->
+        <div class="dash-card" style="margin-top: 10px;">
+          <div class="dash-card-header">
+            <div>
+              <h3 style="font-size: 1.25rem; font-weight: 700;">
+                <span class="radar-pulse-dot" style="margin-right: 8px;"></span> Available Delivery Orders Nearby
+              </h3>
+              <p style="font-size: 0.85rem; color: var(--color-text-muted);">
+                Orders marked ready or preparing by restaurants ready for driver assignment
+              </p>
+            </div>
+            <span class="badge badge-primary" id="available-badge-pill">0 Requests Open</span>
+          </div>
+
+          <div class="requests-grid" id="available-requests-grid">
+            <!-- Injected by JavaScript -->
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="../js/storage.js"></script>
+  <script>
+    let isOnline = true;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      initPartnerData();
+      renderDashboard();
+
+      // Listen for orders changes (customer orders, restaurant marks ready)
+      window.addEventListener('quickbite:orders-updated', renderDashboard);
+    });
+
+    function initTheme() {
+      const themeBtn = document.getElementById('theme-toggle-btn');
+      const themeIcon = document.getElementById('theme-icon');
+      const saved = QuickBiteDB.getTheme();
+      document.documentElement.setAttribute('data-theme', saved);
+      if (themeIcon) themeIcon.className = saved === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+
+      themeBtn?.addEventListener('click', () => {
+        const next = QuickBiteDB.toggleTheme();
+        if (themeIcon) themeIcon.className = next === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+      });
+
+      // Duty toggle
+      const dutyToggle = document.getElementById('duty-status-toggle');
+      dutyToggle.addEventListener('change', (e) => {
+        isOnline = e.target.checked;
+        updateDutyUI(isOnline);
+      });
+    }
+
+    function initPartnerData() {
+      const user = QuickBiteDB.getCurrentUser();
+      if (user && user.role === 'delivery') {
+        document.getElementById('side-driver-name').textContent = user.name;
+        if (user.vehicle) document.getElementById('side-driver-vehicle').textContent = user.vehicle;
+        if (user.earnings) document.getElementById('metric-total-balance').textContent = `₹${user.earnings.toLocaleString()}`;
+      }
+    }
+
+    function updateDutyUI(online) {
+      const label = document.getElementById('duty-status-label');
+      const banner = document.getElementById('duty-banner');
+      const sideText = document.getElementById('side-duty-text');
+
+      if (online) {
+        label.innerHTML = `<i class="fa-solid fa-circle" style="font-size: 0.6rem;"></i> Duty: ONLINE`;
+        label.style.color = "var(--color-success)";
+        banner.style.background = "var(--color-success-bg)";
+        banner.style.borderColor = "var(--color-success)";
+        banner.style.color = "var(--color-success)";
+        banner.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-motorcycle" style="font-size: 1.2rem;"></i>
+            <span>You are actively visible on the map. Ready to receive pickup requests in Banjara Hills & Jubilee Enclave.</span>
+          </div>
+          <span class="badge badge-success">GPS Active</span>
+        `;
+        sideText.textContent = "On Duty";
+        sideText.style.color = "var(--color-success)";
+        QuickBiteDB.showToast("You are now ONLINE and ready for orders!", "success");
+      } else {
+        label.innerHTML = `<i class="fa-solid fa-circle" style="font-size: 0.6rem;"></i> Duty: OFFLINE`;
+        label.style.color = "var(--color-danger)";
+        banner.style.background = "var(--color-danger-bg)";
+        banner.style.borderColor = "var(--color-danger)";
+        banner.style.color = "var(--color-danger)";
+        banner.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-pause" style="font-size: 1.2rem;"></i>
+            <span>You are currently OFFLINE. Switch on duty to receive delivery dispatches.</span>
+          </div>
+          <span class="badge badge-danger">Offline</span>
+        `;
+        sideText.textContent = "Offline";
+        sideText.style.color = "var(--color-danger)";
+        QuickBiteDB.showToast("You are now OFFLINE", "info");
+      }
+      renderDashboard();
+    }
+
+    function renderDashboard() {
+      const allOrders = QuickBiteDB.getOrders();
+      const user = QuickBiteDB.getCurrentUser() || { id: "usr-driver-1", name: "Vikram Singh" };
+
+      // Check if driver has an active ongoing delivery
+      const activeDelivery = allOrders.find(o => 
+        o.deliveryPartnerId === user.id && 
+        (o.status === 'out_for_delivery' || o.status === 'accepted_by_driver' || o.status === 'ready_for_pickup')
+      );
+
+      const activeContainer = document.getElementById('active-delivery-container');
+
+      if (activeDelivery) {
+        const isPickedUp = (activeDelivery.status === 'out_for_delivery');
+
+        activeContainer.innerHTML = `
+          <div class="delivery-active-hero-card">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
+              <div>
+                <span class="badge badge-primary" style="background:var(--color-primary); color:#FFFFFF; margin-bottom:8px;">
+                  <i class="fa-solid fa-motorcycle"></i> ACTIVE DELIVERY TASK
+                </span>
+                <h2 style="font-size:1.6rem; font-weight:800; color:#FFFFFF;">Order #${activeDelivery.id}</h2>
+                <p style="font-size:0.875rem; color:#CBD5E1;">Customer: <strong>${activeDelivery.customerName}</strong> (${activeDelivery.customerPhone})</p>
+              </div>
+              <div style="text-align:right;">
+                <span class="payout-tag" style="background:#10B981; color:#FFFFFF; font-size:1rem; padding:6px 16px;">
+                  +₹${activeDelivery.estimatedPayout || 65} Payout
+                </span>
+                <div style="font-size:0.8rem; color:#CBD5E1; margin-top:6px;">Distance: ~2.8 km</div>
+              </div>
+            </div>
+
+            <!-- Route Stepper -->
+            <div class="delivery-route-flow">
+              <div class="route-step-node completed">
+                <div class="route-step-bubble"><i class="fa-solid fa-check"></i></div>
+                <span>Accepted</span>
+              </div>
+              <div class="route-step-node ${isPickedUp ? 'completed' : 'active'}">
+                <div class="route-step-bubble"><i class="fa-solid fa-store"></i></div>
+                <span>Reach Restaurant</span>
+              </div>
+              <div class="route-step-node ${isPickedUp ? 'active' : ''}">
+                <div class="route-step-bubble"><i class="fa-solid fa-motorcycle"></i></div>
+                <span>Out for Delivery</span>
+              </div>
+              <div class="route-step-node">
+                <div class="route-step-bubble"><i class="fa-solid fa-house"></i></div>
+                <span>Customer Door</span>
+              </div>
+            </div>
+
+            <!-- Pickup and Drop Info Row -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; background:rgba(255,255,255,0.08); padding:18px; border-radius:var(--radius-lg); margin-bottom:20px;">
+              <div>
+                <div style="font-size:0.75rem; text-transform:uppercase; color:#94A3B8; font-weight:700; margin-bottom:4px;">1. Pickup From:</div>
+                <strong style="font-size:1.05rem; display:block;">${activeDelivery.restaurantName}</strong>
+                <p style="font-size:0.825rem; color:#CBD5E1;">${activeDelivery.restaurantAddress}</p>
+                <button class="btn btn-secondary btn-sm" style="margin-top:10px; background:rgba(255,255,255,0.15); color:#FFFFFF; border:none;" onclick="QuickBiteDB.showToast('Calling kitchen at +91 98490 11223...', 'info')">
+                  <i class="fa-solid fa-phone"></i> Call Kitchen
+                </button>
+              </div>
+
+              <div>
+                <div style="font-size:0.75rem; text-transform:uppercase; color:#94A3B8; font-weight:700; margin-bottom:4px;">2. Deliver To:</div>
+                <strong style="font-size:1.05rem; display:block;">${activeDelivery.customerName}</strong>
+                <p style="font-size:0.825rem; color:#CBD5E1;">${activeDelivery.customerAddress}</p>
+                <button class="btn btn-secondary btn-sm" style="margin-top:10px; background:rgba(255,255,255,0.15); color:#FFFFFF; border:none;" onclick="QuickBiteDB.showToast('Calling customer at ${activeDelivery.customerPhone}...', 'info')">
+                  <i class="fa-solid fa-phone"></i> Call Customer
+                </button>
+              </div>
+            </div>
+
+            <!-- Action Controls -->
+            <div style="display:flex; justify-content:flex-end; gap:12px;">
+              ${!isPickedUp ? `
+                <button class="btn btn-primary btn-lg" style="background:var(--color-primary);" onclick="confirmFoodPickup('${activeDelivery.id}')">
+                  <i class="fa-solid fa-box-check"></i> Confirm Food Picked Up
+                </button>
+              ` : `
+                <button class="btn btn-primary btn-lg" style="background:#10B981;" onclick="completeDeliveryPrompt('${activeDelivery.id}')">
+                  <i class="fa-solid fa-circle-check"></i> Mark Order Delivered
+                </button>
+              `}
+            </div>
+
+          </div>
+        `;
+      } else {
+        activeContainer.innerHTML = '';
+      }
+
+      // Available Deliveries list
+      const available = QuickBiteDB.getAvailableDeliveries();
+      document.getElementById('side-requests-count').textContent = available.length;
+      document.getElementById('available-badge-pill').textContent = `${available.length} Requests Open`;
+
+      const grid = document.getElementById('available-requests-grid');
+
+      if (!isOnline) {
+        grid.innerHTML = `
+          <div style="grid-column:1 / -1; text-align:center; padding:40px; color:var(--color-text-muted);">
+            <i class="fa-solid fa-toggle-off" style="font-size:3rem; margin-bottom:12px;"></i>
+            <h3>You are currently Offline</h3>
+            <p style="margin-top:4px;">Toggle duty switch at the top to Online to start receiving pickup requests.</p>
+          </div>
+        `;
+        return;
+      }
+
+      if (available.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column:1 / -1; text-align:center; padding:50px; color:var(--color-text-muted);">
+            <i class="fa-solid fa-radar" style="font-size:3rem; color:var(--color-primary); margin-bottom:14px;"></i>
+            <h3>Scanning for Delivery Requests Nearby...</h3>
+            <p style="margin-top:6px;">When a customer places an order and the restaurant marks it ready, it will appear here immediately.</p>
+            <div style="margin-top:16px;">
+              <a href="../customer/restaurants.html" target="_blank" class="btn btn-secondary btn-sm">
+                Place a Test Order as Customer
+              </a>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = available.map(req => `
+        <div class="request-card urgent">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="font-size:1.05rem;">#${req.id}</strong>
+            <span class="payout-tag">+₹${req.estimatedPayout || 65} Payout</span>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            <div class="req-point-row">
+              <span class="req-point-dot pickup"></span>
+              <div>
+                <strong style="font-size:0.95rem;">${req.restaurantName}</strong>
+                <p style="font-size:0.8rem; color:var(--color-text-muted);">${req.restaurantAddress}</p>
+              </div>
+            </div>
+
+            <div class="req-point-row">
+              <span class="req-point-dot drop"></span>
+              <div>
+                <strong style="font-size:0.95rem;">Drop to: ${req.customerName}</strong>
+                <p style="font-size:0.8rem; color:var(--color-text-muted);">${req.customerAddress}</p>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; padding-top:12px; border-top:1px solid var(--color-border-subtle); font-size:0.85rem; color:var(--color-text-muted);">
+            <span><i class="fa-solid fa-route"></i> ~2.6 km total</span>
+            <span><i class="fa-solid fa-utensils"></i> ${req.items.length} items</span>
+          </div>
+
+          <div style="display:flex; gap:10px;">
+            <button class="btn btn-primary btn-sm" style="flex:1;" onclick="acceptTask('${req.id}')">
+              <i class="fa-solid fa-check"></i> Accept Delivery
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="declineTask(this)">
+              Decline
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function acceptTask(orderId) {
+      const user = QuickBiteDB.getCurrentUser() || { id: "usr-driver-1", name: "Vikram Singh" };
+      QuickBiteDB.acceptDelivery(orderId, user);
+      renderDashboard();
+    }
+
+    function declineTask(btn) {
+      btn.closest('.request-card').remove();
+      QuickBiteDB.showToast("Delivery request skipped", "info");
+    }
+
+    function confirmFoodPickup(orderId) {
+      QuickBiteDB.confirmPickup(orderId);
+      renderDashboard();
+    }
+
+    function completeDeliveryPrompt(orderId) {
+      const otp = prompt("Enter 4-digit customer delivery OTP (or click OK to confirm handover):", "8492");
+      if (otp !== null) {
+        QuickBiteDB.markOrderDelivered(orderId, 65);
+        renderDashboard();
+      }
+    }
+  </script>
+</body>
+</html>

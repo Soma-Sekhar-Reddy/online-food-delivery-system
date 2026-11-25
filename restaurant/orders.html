@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <meta name="color-scheme" content="light dark" />
+    <!-- Instant Anti-Flash Dark Mode Script -->
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('quickbite_theme');
+          var theme = null;
+          if (saved) {
+            try { theme = JSON.parse(saved); } catch(e) { theme = saved; }
+          }
+          if (!theme) {
+            theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+          }
+          document.documentElement.setAttribute('data-theme', theme);
+          document.documentElement.style.colorScheme = theme;
+          if (theme === 'dark') {
+            document.documentElement.style.backgroundColor = '#090D16';
+          } else {
+            document.documentElement.style.backgroundColor = '#F8FAFC';
+          }
+        } catch(e) {}
+      })();
+    </script>
+    <style>
+      :root { color-scheme: light dark; }
+      html { background-color: #F8FAFC; color: #0F172A; }
+      html[data-theme="dark"] { background-color: #090D16 !important; color: #F8FAFC !important; color-scheme: dark; }
+      html[data-theme="light"] { background-color: #F8FAFC !important; color: #0F172A !important; color-scheme: light; }
+      body { background-color: inherit; }
+      @view-transition { navigation: auto; }
+    </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orders Management | QuickBite Partner</title>
+  
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍔</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/restaurant.css">
+</head>
+<body>
+
+  <div class="dash-layout">
+    
+    <!-- Sidebar -->
+    <aside class="dash-sidebar">
+      <div class="sidebar-brand-box">
+        <a href="dashboard.html" class="brand-logo" style="font-size: 1.35rem;">
+          <div class="logo-icon-wrap" style="width:36px; height:36px; font-size:1rem;">
+            <i class="fa-solid fa-burger"></i>
+          </div>
+          <div>Quick<span>Bite</span></div>
+        </a>
+        <span class="badge badge-primary" style="font-size:0.7rem;">PARTNER</span>
+      </div>
+
+      <div class="sidebar-rest-card">
+        <img src="https://images.unsplash.com/photo-1589302168068-964664d93dc0?auto=format&fit=crop&w=120&q=80" alt="Restaurant Avatar" class="sidebar-rest-thumb" id="side-rest-img" onerror="handleImageError(this, 'restaurant')">
+        <div style="min-width: 0;">
+          <div class="sidebar-rest-name" id="side-rest-name">The Royal Biryani</div>
+          <div class="sidebar-rest-status"><i class="fa-solid fa-circle" style="font-size: 0.55rem;"></i> Accepting Orders</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav-list">
+        <a href="dashboard.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-chart-pie"></i> Overview
+        </a>
+        <a href="orders.html" class="sidebar-nav-link active">
+          <i class="fa-solid fa-bell-concierge"></i> Incoming Orders
+          <span class="sidebar-badge-count" id="side-active-orders-count">0</span>
+        </a>
+        <a href="menu.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-utensils"></i> Menu Management
+        </a>
+        <a href="analytics.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-chart-line"></i> Sales & Analytics
+        </a>
+        <div style="border-top: 1px solid var(--color-border-subtle); margin: 12px 0;"></div>
+        <a href="../customer/restaurants.html" class="sidebar-nav-link">
+          <i class="fa-solid fa-utensils"></i> Customer View
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dash-main">
+      
+      <header class="dash-topbar">
+        <div class="topbar-left">
+          <h1 class="topbar-title">Live Kitchen Orders</h1>
+        </div>
+
+        <div class="topbar-right">
+          <!-- Filter Search -->
+          <div style="position: relative; width: 260px;">
+            <input type="text" id="order-search-input" placeholder="Search Order ID or customer..." style="width: 100%; padding: 8px 12px 8px 34px; border: 1px solid var(--color-border); border-radius: var(--radius-full); font-size: 0.85rem; background: var(--color-surface-card);">
+            <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 12px; top: 10px; color: var(--color-text-subtle); font-size: 0.85rem;"></i>
+          </div>
+
+          <!-- Theme Toggle -->
+          <button class="btn-icon" id="theme-toggle-btn" title="Toggle Theme">
+            <i class="fa-solid fa-moon" id="theme-icon"></i>
+          </button>
+        </div>
+      </header>
+
+      <div class="dash-body">
+        
+        <!-- Status Tabs Bar -->
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px;" id="order-lifecycle-tabs">
+          <button class="c-filter-pill active" data-tab="active">
+            <i class="fa-solid fa-bell"></i> Live / Active (<span id="tab-count-active">0</span>)
+          </button>
+          <button class="c-filter-pill" data-tab="placed">
+            Incoming / New (<span id="tab-count-placed">0</span>)
+          </button>
+          <button class="c-filter-pill" data-tab="preparing">
+            In Kitchen / Cooking (<span id="tab-count-preparing">0</span>)
+          </button>
+          <button class="c-filter-pill" data-tab="ready_for_pickup">
+            Ready for Pickup (<span id="tab-count-ready">0</span>)
+          </button>
+          <button class="c-filter-pill" data-tab="delivered">
+            Completed Delivered (<span id="tab-count-delivered">0</span>)
+          </button>
+          <button class="c-filter-pill" data-tab="all">
+            All Orders (<span id="tab-count-all">0</span>)
+          </button>
+        </div>
+
+        <!-- Orders Cards List -->
+        <div id="orders-cards-container" style="display: flex; flex-direction: column; gap: 18px;">
+          <!-- Injected by JavaScript -->
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Kitchen Order Ticket (KOT) Modal -->
+  <div class="modal-overlay" id="kot-modal">
+    <div class="modal-card" style="max-width: 480px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Kitchen Order Ticket (KOT)</h3>
+        <button class="toast-close" onclick="closeKotModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body" id="kot-modal-body">
+        <!-- Injected by JS -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" onclick="window.print()">
+          <i class="fa-solid fa-print"></i> Print Ticket
+        </button>
+        <button class="btn btn-primary btn-sm" onclick="closeKotModal()">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="../js/storage.js"></script>
+  <script>
+    let currentRestId = 'rest-1';
+    let currentTab = 'active';
+    let searchQuery = '';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      initRestaurantData();
+      renderOrders();
+
+      // Real-time synchronization: when a customer places an order or updates status, update orders view!
+      window.addEventListener('quickbite:orders-updated', renderOrders);
+    });
+
+    function initTheme() {
+      const themeBtn = document.getElementById('theme-toggle-btn');
+      const themeIcon = document.getElementById('theme-icon');
+      const saved = QuickBiteDB.getTheme();
+      document.documentElement.setAttribute('data-theme', saved);
+      if (themeIcon) themeIcon.className = saved === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+
+      themeBtn?.addEventListener('click', () => {
+        const next = QuickBiteDB.toggleTheme();
+        if (themeIcon) themeIcon.className = next === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+      });
+
+      // Tabs click listener
+      document.querySelectorAll('#order-lifecycle-tabs .c-filter-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('#order-lifecycle-tabs .c-filter-pill').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentTab = btn.dataset.tab;
+          renderOrders();
+        });
+      });
+
+      // Search query listener
+      document.getElementById('order-search-input')?.addEventListener('input', (e) => {
+        searchQuery = e.target.value.trim().toLowerCase();
+        renderOrders();
+      });
+    }
+
+    function initRestaurantData() {
+      const user = QuickBiteDB.getCurrentUser();
+      if (user && user.restaurantId) {
+        currentRestId = user.restaurantId;
+      }
+      const rest = QuickBiteDB.getRestaurantById(currentRestId);
+      if (rest) {
+        document.getElementById('side-rest-name').textContent = rest.name;
+        document.getElementById('side-rest-img').src = rest.image;
+      }
+    }
+
+    function renderOrders() {
+      const allOrders = QuickBiteDB.getOrders();
+      const restOrders = allOrders.filter(o => o.restaurantId === currentRestId);
+
+      // Tab Counts
+      const activeList = restOrders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled');
+      const placedList = restOrders.filter(o => o.status === 'placed');
+      const prepList = restOrders.filter(o => o.status === 'preparing' || o.status === 'accepted');
+      const readyList = restOrders.filter(o => o.status === 'ready_for_pickup');
+      const deliveredList = restOrders.filter(o => o.status === 'delivered');
+
+      document.getElementById('side-active-orders-count').textContent = activeList.length;
+      document.getElementById('tab-count-active').textContent = activeList.length;
+      document.getElementById('tab-count-placed').textContent = placedList.length;
+      document.getElementById('tab-count-preparing').textContent = prepList.length;
+      document.getElementById('tab-count-ready').textContent = readyList.length;
+      document.getElementById('tab-count-delivered').textContent = deliveredList.length;
+      document.getElementById('tab-count-all').textContent = restOrders.length;
+
+      // Filter by tab
+      let filtered = [...restOrders];
+      if (currentTab === 'active') {
+        filtered = activeList;
+      } else if (currentTab === 'placed') {
+        filtered = placedList;
+      } else if (currentTab === 'preparing') {
+        filtered = prepList;
+      } else if (currentTab === 'ready_for_pickup') {
+        filtered = readyList;
+      } else if (currentTab === 'delivered') {
+        filtered = deliveredList;
+      }
+
+      // Filter by search
+      if (searchQuery) {
+        filtered = filtered.filter(o => 
+          o.id.toLowerCase().includes(searchQuery) ||
+          o.customerName.toLowerCase().includes(searchQuery) ||
+          o.items.some(i => i.name.toLowerCase().includes(searchQuery))
+        );
+      }
+
+      const container = document.getElementById('orders-cards-container');
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; padding:60px 20px; background:var(--color-surface); border-radius:var(--radius-xl); border:1px solid var(--color-border);">
+            <i class="fa-solid fa-bell-concierge" style="font-size:3.5rem; color:var(--color-text-subtle); margin-bottom:16px;"></i>
+            <h3>No Orders in this Section</h3>
+            <p style="color:var(--color-text-muted); margin-top:6px;">There are no orders matching "${currentTab}". Place a new order from customer portal to see it live!</p>
+          </div>
+        `;
+        return;
+      }
+
+      const statusMap = {
+        placed: '<span class="badge badge-warning"><i class="fa-solid fa-bell"></i> New Order Received</span>',
+        accepted: '<span class="badge badge-info">Kitchen Accepted</span>',
+        preparing: '<span class="badge badge-primary"><i class="fa-solid fa-fire-burner"></i> Cooking in Kitchen</span>',
+        ready_for_pickup: '<span class="badge badge-success"><i class="fa-solid fa-box"></i> Ready for Pickup</span>',
+        out_for_delivery: '<span class="badge badge-primary"><i class="fa-solid fa-motorcycle"></i> With Delivery Rider</span>',
+        delivered: '<span class="badge badge-success"><i class="fa-solid fa-check"></i> Delivered</span>',
+        cancelled: '<span class="badge badge-danger">Cancelled / Rejected</span>'
+      };
+
+      container.innerHTML = filtered.map(order => {
+        const orderTime = new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const orderDate = new Date(order.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' });
+
+        let actionsBar = '';
+        if (order.status === 'placed') {
+          actionsBar = `
+            <button class="btn btn-primary" onclick="setOrderStatus('${order.id}', 'accepted')">
+              <i class="fa-solid fa-check"></i> Accept Order
+            </button>
+            <button class="btn btn-secondary" style="color:var(--color-danger);" onclick="rejectOrderPrompt('${order.id}')">
+              <i class="fa-solid fa-xmark"></i> Reject
+            </button>
+          `;
+        } else if (order.status === 'accepted') {
+          actionsBar = `
+            <button class="btn btn-primary" onclick="setOrderStatus('${order.id}', 'preparing')">
+              <i class="fa-solid fa-fire-burner"></i> Start Kitchen Preparation
+            </button>
+          `;
+        } else if (order.status === 'preparing') {
+          actionsBar = `
+            <button class="btn btn-primary" style="background:#10B981;" onclick="setOrderStatus('${order.id}', 'ready_for_pickup')">
+              <i class="fa-solid fa-box-check"></i> Food is Ready for Pickup
+            </button>
+          `;
+        } else if (order.status === 'ready_for_pickup') {
+          actionsBar = `
+            <div style="display:flex; align-items:center; gap:8px; color:var(--color-success); font-weight:700; font-size:0.9rem;">
+              <i class="fa-solid fa-circle-check"></i> Food Packaged — Awaiting Rider Collection
+            </div>
+          `;
+        } else if (order.status === 'out_for_delivery') {
+          actionsBar = `
+            <div style="display:flex; align-items:center; gap:8px; color:var(--color-primary); font-weight:700; font-size:0.9rem;">
+              <i class="fa-solid fa-motorcycle"></i> Assigned to Rider: Vikram Singh
+            </div>
+          `;
+        }
+
+        return `
+          <div class="dash-card ${order.status === 'placed' ? 'order-live-card new-pulse' : ''}" style="margin-bottom:0;">
+            <!-- Order Header -->
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px; padding-bottom:14px; border-bottom:1px solid var(--color-border-subtle);">
+              <div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <strong style="font-size:1.15rem;">#${order.id}</strong>
+                  ${statusMap[order.status] || order.status}
+                </div>
+                <div style="font-size:0.8rem; color:var(--color-text-muted); margin-top:2px;">
+                  Placed at: ${orderTime}, ${orderDate} • Customer: <strong>${order.customerName}</strong> (${order.customerPhone})
+                </div>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <button class="btn btn-secondary btn-sm" onclick="openKotModal('${order.id}')">
+                  <i class="fa-solid fa-receipt"></i> View KOT
+                </button>
+                <div style="font-size:1.25rem; font-weight:800; color:var(--color-primary);">₹${order.grandTotal}</div>
+              </div>
+            </div>
+
+            <!-- Ordered Dishes List -->
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:12px; margin-bottom:18px;">
+              ${order.items.map(i => `
+                <div style="display:flex; align-items:center; gap:10px; background:var(--color-surface-card); padding:10px 14px; border-radius:var(--radius-md); border:1px solid var(--color-border);">
+                  <span class="badge-diet ${i.isVeg ? 'veg' : 'non-veg'}"></span>
+                  <div style="flex:1;">
+                    <div style="font-weight:700; font-size:0.925rem;">${i.name}</div>
+                    <div style="font-size:0.775rem; color:var(--color-text-muted);">Qty: <strong>${i.quantity}</strong> × ₹${i.price}</div>
+                  </div>
+                  <strong>₹${i.price * i.quantity}</strong>
+                </div>
+              `).join('')}
+            </div>
+
+            <!-- Delivery Address and Notes -->
+            <div style="background:var(--color-bg); padding:12px 16px; border-radius:var(--radius-md); margin-bottom:16px; font-size:0.85rem; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+              <div><strong>Deliver to:</strong> ${order.customerAddress}</div>
+              ${order.instructions?.contactless ? `<span class="badge badge-info"><i class="fa-solid fa-shield-halved"></i> Contactless</span>` : ''}
+            </div>
+
+            <!-- Action Buttons Bar -->
+            <div style="display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap;">
+              ${actionsBar}
+            </div>
+
+          </div>
+        `;
+      }).join('');
+    }
+
+    function setOrderStatus(orderId, newStatus) {
+      QuickBiteDB.updateOrderStatus(orderId, newStatus);
+      QuickBiteDB.showToast(`Order #${orderId} moved to ${newStatus.replace('_', ' ').toUpperCase()}`, 'success');
+      renderOrders();
+    }
+
+    function rejectOrderPrompt(orderId) {
+      const reason = prompt("Enter reason for rejecting this order (e.g. Items sold out, Kitchen busy):", "Kitchen currently at capacity");
+      if (reason) {
+        QuickBiteDB.cancelOrder(orderId, reason);
+        renderOrders();
+      }
+    }
+
+    function openKotModal(orderId) {
+      const order = QuickBiteDB.getOrderById(orderId);
+      if (!order) return;
+
+      const modalBody = document.getElementById('kot-modal-body');
+      modalBody.innerHTML = `
+        <div style="text-align:center; padding-bottom:16px; border-bottom:1px dashed var(--color-border); margin-bottom:16px;">
+          <h2 style="font-size:1.4rem; font-weight:800;">${order.restaurantName}</h2>
+          <p style="font-size:0.85rem; color:var(--color-text-muted);">KITCHEN ORDER TICKET (KOT)</p>
+          <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-top:10px;">
+            <span>Order: <strong>#${order.id}</strong></span>
+            <span>Time: <strong>${new Date(order.createdAt).toLocaleTimeString()}</strong></span>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:18px;">
+          ${order.items.map(item => `
+            <div style="display:flex; justify-content:space-between; font-size:0.95rem; font-weight:600;">
+              <span>${item.name}</span>
+              <span>× ${item.quantity}</span>
+            </div>
+          `).join('')}
+        </div>
+
+        <div style="border-top:1px dashed var(--color-border); padding-top:12px; font-size:0.85rem;">
+          <div><strong>Customer:</strong> ${order.customerName}</div>
+          <div><strong>Payment:</strong> ${order.paymentMethod || 'Paid'} (₹${order.grandTotal})</div>
+        </div>
+      `;
+
+      document.getElementById('kot-modal')?.classList.add('active');
+    }
+
+    function closeKotModal() {
+      document.getElementById('kot-modal')?.classList.remove('active');
+    }
+  </script>
+</body>
+</html>
