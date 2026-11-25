@@ -139,7 +139,7 @@ git push -u origin main
 The GitHub Actions workflow builds the app and deploys it to GitHub Pages on every push to `main`. It configures the Vite asset base path for the repository and preserves React Router routes on refresh.
 
 1. Push this project to a GitHub repository using the Git setup steps above.
-2. In the repository, open **Settings -> Pages** and set the source to **GitHub Actions** if it is not already selected.
+2. Before the first deployment, open **Settings -> Pages** and set the source to **GitHub Actions**. The workflow cannot change this repository setting itself.
 3. Push to `main` or run **Actions -> Deploy to GitHub Pages -> Run workflow**.
 4. Find the published URL in the workflow run or under **Settings -> Pages**.
 
